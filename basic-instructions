@@ -1,0 +1,23 @@
+to run this proj - npm run start
+
+test deploy changes - 
+
+(first time)
+1- firebase login
+2- firebase init
+ What do you want to use as your public directory? build
+  ? Configure as a single-page app (rewrite all urls to /index.html)? Yes
+  ? Set up automatic builds and deploys with GitHub? No
+  ? File build/index.html already exists. Overwrite? Yes
+
+3- npm run build
+4- firebase deploy
+
+You only need to do Step #1 (login) the first time when you setup building on that machine (or maybe when a new firebase revision has been released)
+
+You only need to do Step #2 (init) to initialize a new project. That is, when you don't have your firebase.json yet (which will be created by the init command).
+
+To re-deploy, it's simply:
+
+npm run build
+firebase deploy

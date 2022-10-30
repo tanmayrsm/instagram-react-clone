@@ -1,0 +1,14 @@
+.imgUpload {
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: .5em;
+    margin-bottom: .5em;
+    padding: 2em;
+    border: 1px solid lightgrey;
+}
+
+.imgUpload-progress {
+    width: 100%;
+}
