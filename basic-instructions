@@ -21,3 +21,10 @@ To re-deploy, it's simply:
 
 npm run build
 firebase deploy
+
+add to git - 
+
+git pull
+git add -A (push new files, changes only)
+git commit -m "added logo"
+git push -u origin main
