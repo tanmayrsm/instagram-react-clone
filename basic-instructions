@@ -1,8 +1,6 @@
-to run this proj - npm run start
+# to run this proj - npmi && npm run start
 
-test deploy changes - 
-
-(first time)
+# test deploy changes (first time) -
 1- firebase login
 2- firebase init
  What do you want to use as your public directory? build
@@ -17,7 +15,7 @@ You only need to do Step #1 (login) the first time when you setup building on th
 
 You only need to do Step #2 (init) to initialize a new project. That is, when you don't have your firebase.json yet (which will be created by the init command).
 
-To re-deploy, it's simply:
+# To re-deploy, it's simply:
 
 npm run build (delete old build folder first)
 firebase deploy
@@ -28,3 +26,6 @@ git pull
 git add -A (push new files, changes only)
 git commit -m "added logo"
 git push -u origin main
+
+# full command
+git pull && git add -A && git commit -m ${COMMIT_MESSAGE} && git push -u origin main
