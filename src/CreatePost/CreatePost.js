@@ -5,7 +5,7 @@ import { getStorage, ref, getDownloadURL, uploadBytesResumable  } from "firebase
 import {db} from '../firebase-config';
 import { serverTimestamp } from "firebase/firestore";
 
-function CreatePost({username}) {
+function CreatePost({username, user}) {
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState(0);
     const [caption, setCaption] = useState(null);
@@ -42,7 +42,8 @@ function CreatePost({username}) {
                         timestamp: serverTimestamp(),
                         caption: caption,
                         imgUrl: downloadURL,
-                        username: username
+                        username: username,
+                        uid: user.uid
                     });
 
                     setCaption("");

@@ -1,0 +1,26 @@
+.edit-profile-container {
+    border: 1px solid lightgrey;
+}
+.edit-profile-container ul {
+    list-style-type: none;
+}
+.edit-profile-container li {
+    padding-top: .5em;
+    padding-bottom: .5em;
+}
+.divider {
+    border-right: 1px solid lightgrey;
+    margin: .5em;
+}
+.change-pp-text {
+    color: darkblue;
+}
+.edit-profile-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.input-textfield {
+    margin-top: .5em;
+    margin-bottom: .5em;
+}

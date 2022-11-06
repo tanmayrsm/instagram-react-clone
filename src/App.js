@@ -6,11 +6,18 @@ import CreatePost from './CreatePost/CreatePost';
 import {db} from './firebase-config';
 
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, signInWithEmailAndPassword } from "firebase/auth";
-
+import { doc, getDoc } from "firebase/firestore";
 import InstagramEmbed from 'react-instagram-embed';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Input, Modal } from '@material-ui/core';
+import MiniDrawer from './Drawerr/Drawerr';
+import Drawerr from './Drawerr/Drawerr';
+
+import Box from '@mui/material/Box';
+import UserProfile from './UserProfile/UserProfile';
+import Grid from '@mui/material/Grid';
+
 
 function getModalStyle() {
   const top = 50;
@@ -54,6 +61,9 @@ function App() {
   // sign In vars
   const [openSignIn, setOpenSignIn] = useState(false);
 
+  // current view
+  const [currentView, setCurrentView] = useState("POSTS");
+
   // current user
   const [user, setUser] = useState(null);
 
@@ -68,6 +78,25 @@ function App() {
     })
   }, []);
 
+  const updateUserDetails = () => {
+    if(user !== null && db.collection('user').doc(user.uid) != null) {
+      const fetchDocById = async () => {
+        const docRef = doc(db, "user", user.uid) // db = getFirestore()
+  
+        // Fetch document
+        const docSnap = await getDoc(docRef)
+        
+        if (docSnap.exists()) {
+          setUser({
+            ...user,
+            ...docSnap.data()
+          });
+        }
+      }
+      fetchDocById();
+    }
+  }
+
   // login user in case he already logged in before
   useEffect(() => {
     const auth = getAuth();
@@ -76,7 +105,24 @@ function App() {
       if(authUser) {
         // user has logged in
         console.log("user :: ",authUser);
-        setUser(authUser);
+        
+
+        if(db.collection('user').doc(authUser.uid) != null && user === null) {
+          const fetchDocById = async () => {
+            const docRef = doc(db, "user", authUser.uid) // db = getFirestore()
+      
+            // Fetch document
+            const docSnap = await getDoc(docRef)
+            
+            if (docSnap.exists()) {
+              setUser({
+                ...authUser,
+                ...docSnap.data()
+              });
+            }
+          }
+          fetchDocById();
+        }
       } else {
         // user has logged out
         setUser(null);
@@ -97,7 +143,14 @@ function App() {
     createUserWithEmailAndPassword(auth, email, password) // email and password are from this.state
     .then((userCredential) => {
       // Signed in 
-      // const user = userCredential.user;
+      const authUser = userCredential.user;
+      // also update user details in dB
+        db.collection('user').doc(authUser.uid).set({
+          bio: "Hi there! I'm using instagram!",
+          displayName: username,
+          imgUrl: "",
+          username: username
+        });
       return updateProfile(userCredential.user, {
         displayName: username
       })
@@ -133,6 +186,12 @@ function App() {
     });
 
     setOpenSignIn(false);
+  }
+
+  // change view
+  const changeView = (view) => {
+    setCurrentView(view);
+    updateUserDetails();
   }
 
   return (
@@ -181,22 +240,32 @@ function App() {
       </div>  
       
       <div className='main-app'>
-        <div className='app-posts'>
-          {
-            posts && posts.length && posts.map(({id, post}) => (
-              <Posts key={id} 
-                postId={id} 
-                user={user}
-                username={post.username} 
-                imgUrl={post.imgUrl} 
-                caption={post.caption}/>
-            ))
+        <Box sx={{ display: 'flex' }}>
+        <Drawerr changeView={changeView}/>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          {currentView === "POSTS" && 
+            <div className='app-posts'>
+              {
+                posts && posts.length && posts.map(({id, post}) => (
+                  <Posts key={id} 
+                    postId={id} 
+                    user={user}
+                    username={post.username} 
+                    imgUrl={post.imgUrl} 
+                    caption={post.caption}/>
+                ))
+              }
+              {
+                user?.displayName ? 
+                  <CreatePost username={user.displayName} user={user}/> :
+                  <h4>Please login to uplaod posts!!</h4>
+              }
+            </div>
           }
-        </div>
-        {user?.displayName ? 
-        <CreatePost username={user.displayName}/> :
-        <h4>Please login to uplaod posts!!</h4>}
-
+          {/* profile view */}
+          {user && currentView === "PROFILE" && <UserProfile user={user}/>}
+        </Box>
+            </Box>
       </div>
       
     </div>
