@@ -19,7 +19,7 @@ You only need to do Step #2 (init) to initialize a new project. That is, when yo
 
 To re-deploy, it's simply:
 
-npm run build
+npm run build (delete old build folder first)
 firebase deploy
 
 add to git - 
