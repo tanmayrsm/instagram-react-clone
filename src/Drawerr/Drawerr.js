@@ -3,6 +3,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Home from "@mui/icons-material/Home";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -14,6 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import { styled, useTheme } from "@mui/material/styles";
 import * as React from "react";
 import './Drawerr.css';
+import SearchUser from "../SearchUser/SearchUser";
 
 const drawerWidth = 240;
 
@@ -90,8 +92,8 @@ export default function Drawerr({changeView}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Home", "Profile"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index === 0 ? "POSTS" : "PROFILE")}>
+          {["Home", "Profile", "Search"].map((text, index) => (
+            <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
@@ -106,7 +108,9 @@ export default function Drawerr({changeView}) {
                     justifyContent: "center"
                   }}
                 >
-                  {index % 2 === 1 ? <AccountCircle /> : <Home />}
+                  {index === 0 && <AccountCircle />}
+                  {index === 1 && <Home />}
+                  {index === 2 && <PersonSearchIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>

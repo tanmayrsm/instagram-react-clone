@@ -30,7 +30,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-function UserProfile({user}) {
+function UserProfile({user, currentUserId}) {
   const [setEditPageOpen, openEditProfilePage] = useState(false);
   
   const openEditProfile = () => {
@@ -53,12 +53,12 @@ function UserProfile({user}) {
             <span className='user-header'>
               {/* TODO - replace with username */}
               <strong className='text-space'>{user.username}</strong>
-              <div>
+              {currentUserId && currentUserId === user.uid && <div>
                 <Button  className='text-space' onClick={() => openEditProfile()}>Edit profile</Button>
                 <IconButton  className='text-space'>
                   <LogoutIcon />
                 </IconButton>
-              </div>
+              </div>}
             </span>
             <span className='user-header my-3'>
               <span className='text-space'>0 Posts</span>

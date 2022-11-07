@@ -17,6 +17,7 @@ import Drawerr from './Drawerr/Drawerr';
 import Box from '@mui/material/Box';
 import UserProfile from './UserProfile/UserProfile';
 import Grid from '@mui/material/Grid';
+import SearchUser from './SearchUser/SearchUser';
 
 
 function getModalStyle() {
@@ -149,7 +150,8 @@ function App() {
           bio: "Hi there! I'm using instagram!",
           displayName: username,
           imgUrl: "",
-          username: username
+          username: username,
+          uid: authUser.uid
         });
       return updateProfile(userCredential.user, {
         displayName: username
@@ -189,7 +191,18 @@ function App() {
   }
 
   // change view
-  const changeView = (view) => {
+  const changeView = (index) => {
+    let view = "";
+    switch(index) {
+      case 0: view = "POSTS";
+              break;
+      case 1: view = "PROFILE";
+        break;
+      case 2: view = "SRUSER";
+        break;
+      default: view = "SRUSER";
+        break;
+    }
     setCurrentView(view);
     updateUserDetails();
   }
@@ -252,7 +265,8 @@ function App() {
                     user={user}
                     username={post.username} 
                     imgUrl={post.imgUrl} 
-                    caption={post.caption}/>
+                    caption={post.caption}
+                    userWhoPosted={post.uid}/>
                 ))
               }
               {
@@ -263,7 +277,9 @@ function App() {
             </div>
           }
           {/* profile view */}
-          {user && currentView === "PROFILE" && <UserProfile user={user}/>}
+          {user && currentView === "PROFILE" && <UserProfile user={user} currentUserId={user.uid}/>}
+          {/* search user */}
+          {currentView === "SRUSER" && <SearchUser user={user} currentUserId={user.uid}/>}
         </Box>
             </Box>
       </div>

@@ -5,8 +5,9 @@ import {db} from '../firebase-config';
 import { Button } from '@material-ui/core';
 import { serverTimestamp } from "firebase/firestore";
 import { doc, getDoc } from "firebase/firestore";
+import {getUser} from "../Utils";
 
-function Posts({postId, user, username, imgUrl, caption}) {
+function Posts({postId, user, username, imgUrl, caption, userWhoPosted}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
   const [postUserDetails, setPostUserDetails] = useState(null);
@@ -19,8 +20,17 @@ function Posts({postId, user, username, imgUrl, caption}) {
                   .doc(postId)
                   .collection('comments')
                   .orderBy('timestamp', 'desc')
-                  .onSnapshot(snapshot => {
-                    setComments(snapshot.docs.map(doc => doc.data()))
+                  .onSnapshot((snapshot) => {
+                    let commentsData = snapshot.docs.map(doc => doc.data());
+
+                    var promises = commentsData.map((data) => {
+                      return getUser(data.uid).then((userData) => {
+                         return {...data, userDp: userData.imgUrl, userDisplayName: userData.displayName}
+                      })
+                    })
+                    Promise.all(promises).then((results) => {
+                        setComments(results);
+                    });
                   });
     }
     return () => {
@@ -28,11 +38,15 @@ function Posts({postId, user, username, imgUrl, caption}) {
     }
   }, [postId]);
 
+  useEffect(() => {
+    console.log("Comments received ::", comments);
+  }, [comments]);
+
   // get particular posts, user details
   useEffect(() => {
-    if(user !== null && user.uid && db.collection('user').doc(user.uid) != null) {
+    if(user !== null && userWhoPosted && db.collection('user').doc(userWhoPosted) != null) {
       const fetchDocById = async () => {
-        const docRef = doc(db, "user", user.uid) // db = getFirestore()
+        const docRef = doc(db, "user", userWhoPosted);
   
         // Fetch document
         const docSnap = await getDoc(docRef)
@@ -68,10 +82,11 @@ function Posts({postId, user, username, imgUrl, caption}) {
       <div className='post-comments'>
         <hr/>
         {
-              comments && comments.length && comments.map(({username, text, timestamp}) => (
-                <p key={timestamp}>
-                  <strong>{postUserDetails?.displayName ||username}</strong> {text}
-                </p>
+              comments && comments.length && comments.map(({userDisplayName, userDp, text, timestamp}) => (
+                <div key={timestamp} className="d-flex align-items-center mb-2">
+                  <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
+                  <div className='mr-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</div>
+                </div>
               ))
         }
       </div>

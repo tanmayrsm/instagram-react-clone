@@ -33,6 +33,17 @@ function CreatePost({username, user}) {
             // catch error
             (error) => {
                 console.log("Err while uplaoding post",error);
+                db.collection('posts').add({
+                    timestamp: serverTimestamp(),
+                    caption: caption,
+                    imgUrl: "CANT UPLOAD",
+                    username: username,
+                    uid: user.uid
+                });
+
+                setCaption("");
+                setProgress(0);
+                setFile(null);
             },
             // function to be called once file is completely uploaded
             () => {

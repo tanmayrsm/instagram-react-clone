@@ -39,3 +39,8 @@
 .post-comments {
     padding: .5em;
 }
+.post-comments .MuiAvatar-root {
+    width: 1.3em !important;
+    height: 1.3em !important;
+    border: 1px solid lightgrey;
+}

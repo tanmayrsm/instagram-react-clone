@@ -1,0 +1,23 @@
+
+.search-container {
+    width: 100%;
+}
+.search-container .MuiAvatar-root {
+    width: 2.3em !important;
+    height: 2.3em !important;
+    border: 1px solid lightgrey;
+}
+.userName {
+    margin-left: .8em;
+}
+.search-text {
+    border: 1px solid lightgrey;
+    border-radius: 1em;
+    padding: .4em;
+    outline: none;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+.empty-state  {
+    flex-direction: column;
+}
