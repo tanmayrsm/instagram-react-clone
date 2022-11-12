@@ -31,8 +31,12 @@
     max-height: 18em;
     object-fit: contain;
 }
+.content video {
+    max-height: 100%;
+    max-width: 100%;
+}
 .cancel-content {
     position: absolute;
-    top: 0.1em;
+    top: 1.1em;
     left: 1em;
 }

@@ -10,6 +10,7 @@ import {db} from '../firebase-config';
 import { serverTimestamp } from "firebase/firestore";
 import { Avatar, TextField } from '@mui/material';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
+import { useEffect } from 'react';
 
 function CreatePost({username, user}) {
     const [file, setFile] = useState(null);
@@ -21,10 +22,17 @@ function CreatePost({username, user}) {
 
     const handleFileChange = (event) => {
         if(event.target.files[0]){
+            const blobURL = URL.createObjectURL(event.target.files[0]);
+            setCurrFile(blobURL);
             setFile(event.target.files[0]);
-            setCurrFile(URL.createObjectURL(event.target.files[0]));
         }
     }
+
+    useEffect(() => {
+        if(file !== null && file.type === 'video/mp4' && currFile) {
+            document.querySelector("video").src = currFile;
+        }
+    }, [file, currFile]);
 
     const handlePost = () => {
         // upload file to fb storage
@@ -59,13 +67,20 @@ function CreatePost({username, user}) {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     // upload complete post in dB
+                    file.type === 'video/mp4' ?
                     db.collection('posts').add({
+                        timestamp: serverTimestamp(),
+                        caption: caption,
+                        vidUrl: downloadURL,
+                        username: username,
+                        uid: user.uid
+                    }) : db.collection('posts').add({
                         timestamp: serverTimestamp(),
                         caption: caption,
                         imgUrl: downloadURL,
                         username: username,
                         uid: user.uid
-                    });
+                    }) ;
 
                     setCaption("");
                     setProgress(0);
@@ -89,9 +104,9 @@ function CreatePost({username, user}) {
                         </div>
                         <input ref={refe} type="file" style={{display: 'none'}} onChange={handleFileChange}/>
                     </div>}
-                    {currFile && <div className='content h-100' onClick={() =>  refe.current.click()}>
+                    {currFile && file && <div className='content h-100' onClick={() =>  refe.current.click()}>
                         {file.type === 'image/jpeg' && <img src={currFile} alt='post-image'/>}
-                        {file.type === 'video/mp4' && <video src={currFile} alt='post-video'/>}
+                        {file.type === 'video/mp4' && <video alt='post-video' controls/>}
                         <div className='cancel-content'>
                             <CancelOutlinedIcon onClick={() => setCurrFile(null)}/>
                         </div>

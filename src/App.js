@@ -283,6 +283,7 @@ function App() {
                     user={user}
                     username={post.username} 
                     imgUrl={post.imgUrl} 
+                    vidUrl={post.vidUrl}
                     caption={post.caption}
                     userWhoPosted={post.uid}/>
                 ))

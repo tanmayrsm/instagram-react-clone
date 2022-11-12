@@ -7,7 +7,7 @@ import { serverTimestamp } from "firebase/firestore";
 import { doc, getDoc } from "firebase/firestore";
 import {getUser} from "../Utils";
 
-function Posts({postId, user, username, imgUrl, caption, userWhoPosted}) {
+function Posts({postId, user, username, imgUrl, vidUrl, caption, userWhoPosted}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
   const [postUserDetails, setPostUserDetails] = useState(null);
@@ -77,7 +77,9 @@ function Posts({postId, user, username, imgUrl, caption, userWhoPosted}) {
             <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
             <h3>{postUserDetails?.displayName || username}</h3>
         </div>
-      <img src={imgUrl} alt='post' className='post-image'></img>
+      {imgUrl && <img src={imgUrl} alt='post' className='post-image'></img>}
+      {vidUrl && <video src={vidUrl} alt='post' className='post-image' controls></video>}
+      
       <h4 className='post_text'><strong>{postUserDetails?.displayName || username}</strong>: {caption}</h4>
 
       {/* list of comments */}
