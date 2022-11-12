@@ -16,6 +16,8 @@ import { styled, useTheme } from "@mui/material/styles";
 import * as React from "react";
 import './Drawerr.css';
 import SearchUser from "../SearchUser/SearchUser";
+import CreatePost from "../CreatePost/CreatePost";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const drawerWidth = 240;
 
@@ -92,7 +94,7 @@ export default function Drawerr({changeView}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Home", "Profile", "Search"].map((text, index) => (
+          {["Home", "Profile", "Search", "Create"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{
@@ -108,9 +110,10 @@ export default function Drawerr({changeView}) {
                     justifyContent: "center"
                   }}
                 >
-                  {index === 0 && <AccountCircle />}
-                  {index === 1 && <Home />}
+                  {index === 0 && <Home />}
+                  {index === 1 && <AccountCircle />}
                   {index === 2 && <PersonSearchIcon />}
+                  {index === 3 && <AddCircleIcon/>}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>

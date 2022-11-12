@@ -25,11 +25,13 @@ function Posts({postId, user, username, imgUrl, caption, userWhoPosted}) {
 
                     var promises = commentsData.map((data) => {
                       return getUser(data.uid).then((userData) => {
-                         return {...data, userDp: userData.imgUrl, userDisplayName: userData.displayName}
+                         return userData && {...data, userDp: userData.imgUrl, userDisplayName: userData.displayName}
                       })
                     })
                     Promise.all(promises).then((results) => {
+                      if(results) {
                         setComments(results);
+                      }
                     });
                   });
     }

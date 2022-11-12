@@ -42,17 +42,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const useStyles2 = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 800,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
 
 function App() {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
   // modal styles
   const classes = useStyles();
+  const classes2 = useStyles2();
+
   const [modalStyle] = useState(getModalStyle);
   // modal set close/open
   const [open, setOpen] = useState(false);
   
   const [posts, setPosts] = useState([]);
 
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   // sign up fields
   const [username, setUsername] = useState('');
@@ -200,11 +214,15 @@ function App() {
         break;
       case 2: view = "SRUSER";
         break;
+      case 3: setShowCreatePost(true);
+        break;
       default: view = "SRUSER";
         break;
     }
-    setCurrentView(view);
-    updateUserDetails();
+    if(index !== 3) {
+      setCurrentView(view);
+      updateUserDetails();
+    }
   }
 
   return (
@@ -271,7 +289,7 @@ function App() {
               }
               {
                 user?.displayName ? 
-                  <CreatePost username={user.displayName} user={user}/> :
+                  "" :
                   <h4>Please login to uplaod posts!!</h4>
               }
             </div>
@@ -280,6 +298,13 @@ function App() {
           {user && currentView === "PROFILE" && <UserProfile user={user} currentUserId={user.uid}/>}
           {/* search user */}
           {currentView === "SRUSER" && <SearchUser user={user} currentUserId={user.uid}/>}
+          {/* create Post modal*/}
+          {showCreatePost && user?.displayName && <Modal open={showCreatePost}
+            onClose={() => setShowCreatePost(false)}>
+              <div style={modalStyle} className={classes2.paper}>
+                <CreatePost username={user.displayName} user={user}/>
+              </div>
+            </Modal>}
         </Box>
             </Box>
       </div>
