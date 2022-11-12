@@ -13,10 +13,10 @@
 .imgUpload-progress {
     width: 100%;
 }
-.MuiTextField-root {
+.create-post .MuiTextField-root {
     width: 100%;
 }
-.MuiButton-root {
+.create-post .MuiButton-root {
     width: 100%;
 }
 .content {

@@ -75,47 +75,49 @@ function CreatePost({username, user}) {
         );
     }
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={7}>
-                {progress > 0 && <progress className='imgUpload-progress' value={progress} max="100"></progress>}
-                {
-                    progress >= 100 && <p>Done!</p>
-                }
-                {currFile === null && <div className='imgUpload h-100' onClick={() =>  refe.current.click()}>
-                    <div className='h-100 d-flex flex-column justify-content-center align-items-center'>
-                        <AddPhotoAlternateOutlinedIcon width={'6em'} height={'4em'}/>
-                        <span className='mt-1'>Add file</span>
+        <div className='create-post'>
+            <Grid container spacing={2}>
+                <Grid item xs={7}>
+                    {progress > 0 && <progress className='imgUpload-progress' value={progress} max="100"></progress>}
+                    {
+                        progress >= 100 && <p>Done!</p>
+                    }
+                    {currFile === null && <div className='imgUpload h-100' onClick={() =>  refe.current.click()}>
+                        <div className='h-100 d-flex flex-column justify-content-center align-items-center'>
+                            <AddPhotoAlternateOutlinedIcon width={'6em'} height={'4em'}/>
+                            <span className='mt-1'>Add file</span>
+                        </div>
+                        <input ref={refe} type="file" style={{display: 'none'}} onChange={handleFileChange}/>
+                    </div>}
+                    {currFile && <div className='content h-100' onClick={() =>  refe.current.click()}>
+                        {file.type === 'image/jpeg' && <img src={currFile} alt='post-image'/>}
+                        {file.type === 'video/mp4' && <video src={currFile} alt='post-video'/>}
+                        <div className='cancel-content'>
+                            <CancelOutlinedIcon onClick={() => setCurrFile(null)}/>
+                        </div>
+                    </div>}
+                </Grid>
+                <Grid item xs={5}>
+                    <div className='d-flex align-items-center mt-1'>
+                        <Avatar alt={user.displayName} src={user.imgUrl}
+                        sx={{ width: 25, height: 25 }}/>
+                        <span className='m-1'>{user.username}</span>
                     </div>
-                    <input ref={refe} type="file" style={{display: 'none'}} onChange={handleFileChange}/>
-                </div>}
-                {currFile && <div className='content h-100' onClick={() =>  refe.current.click()}>
-                    {file.type === 'image/jpeg' && <img src={currFile} alt='post-image'/>}
-                    {file.type === 'video/mp4' && <video src={currFile} alt='post-video'/>}
-                    <div className='cancel-content'>
-                        <CancelOutlinedIcon onClick={() => setCurrFile(null)}/>
+                    <div className='mt-3 w-100'>
+                        <TextField
+                            id="outlined-multiline-static"
+                            multiline
+                            rows={8}
+                            onChange={(event) => setCaption(event.target.value)} 
+                            placeholder='Enter your caption...'
+                        />
                     </div>
-                </div>}
+                </Grid>
+                <Grid item xs={12}>
+                    <Button onClick={handlePost}>Upload</Button>
+                </Grid>
             </Grid>
-            <Grid item xs={5}>
-                <div className='d-flex align-items-center mt-1'>
-                    <Avatar alt={user.displayName} src={user.imgUrl}
-                    sx={{ width: 25, height: 25 }}/>
-                    <span className='m-1'>{user.username}</span>
-                </div>
-                <div className='mt-3 w-100'>
-                    <TextField
-                        id="outlined-multiline-static"
-                        multiline
-                        rows={8}
-                        onChange={(event) => setCaption(event.target.value)} 
-                        placeholder='Enter your caption...'
-                    />
-                </div>
-            </Grid>
-            <Grid item xs={12}>
-                <Button onClick={handlePost}>Upload</Button>
-            </Grid>
-        </Grid>
+        </div>
     )
 }
 
