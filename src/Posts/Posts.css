@@ -44,3 +44,37 @@
     height: 1.3em !important;
     border: 1px solid lightgrey;
 }
+.post-header .MuiAvatar-root {
+    width: 1.5em !important;
+    height: 1.5em !important;
+    border: 1px solid lightgrey;
+}
+
+.post-content img {
+    object-fit: contain;
+    height: 17em;
+    width: 100%;
+}
+.post-content video {
+    max-height: 100%;
+    max-width: 100%;
+}
+.carousel-container {
+    max-height: 35em;
+    height: 35em;
+}
+.carousel-container>div {
+    max-height: 35em;
+}
+.carousel-container.no-buttons .MuiIconButton-root {
+    display: none;
+}
+.icon-container > div div:nth-child(2) {
+    margin-left: .5em;
+}
+.icon-container > div div {
+    cursor: pointer;
+}
+.icon-container div:nth-child(2) {
+    cursor: pointer;
+}

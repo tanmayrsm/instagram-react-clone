@@ -21,6 +21,8 @@
 }
 .app-posts {
   padding: 1em;
+  max-height: 33em;
+  overflow-y: scroll;
 }
 .img-header {
   width: 8em;

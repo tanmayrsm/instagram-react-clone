@@ -190,7 +190,7 @@ function UserProfile({user, currentUserId}) {
                 <Tab icon={<GridOnIcon />} iconPosition="start" label="Posts" />
                 <Tab icon={<BookmarkBorderIcon />} iconPosition="start" label="Saved" />
               </Tabs>
-                {tabValue === 0 && <PostsGrid user={user}/>}
+                {tabValue === 0 && <PostsGrid user={user} currentUserId={currentUserId}/>}
                 {tabValue === 1 && <p>Under construction!</p>}
             </Item>
           </Grid>

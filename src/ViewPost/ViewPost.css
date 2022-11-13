@@ -1,0 +1,5 @@
+.view-comments {
+    max-height: 14em;
+    padding: .3em;
+    overflow-y: auto;
+}

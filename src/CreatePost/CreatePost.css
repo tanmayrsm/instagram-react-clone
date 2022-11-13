@@ -25,11 +25,9 @@
     align-items: center;
 }
 .content img {
-    width: 100%;
-    height: 100%;
-    max-width: 15em;
-    max-height: 18em;
     object-fit: contain;
+    height: 17em;
+    width: 100%;
 }
 .content video {
     max-height: 100%;
@@ -37,6 +35,16 @@
 }
 .cancel-content {
     position: absolute;
-    top: 1.1em;
-    left: 1em;
+    top: -2em;
+    left: 0em;
+    cursor: pointer;
+}
+.add-file {
+    position: absolute;
+    right: 22.5em;
+    cursor: pointer;
+    top: 0.95em;
+}
+.carousel-container.no-buttons .MuiIconButton-root {
+    display: none;
 }

@@ -280,12 +280,15 @@ function App() {
                 posts && posts.length && posts.map(({id, post}) => (
                   <Posts key={id} 
                     postId={id} 
-                    user={user}
+                    currentUser={user}
                     username={post.username} 
-                    imgUrl={post.imgUrl} 
-                    vidUrl={post.vidUrl}
+                    media={post.media}
                     caption={post.caption}
-                    userWhoPosted={post.uid}/>
+                    userWhoPosted={post.uid}
+                    timestamp={post.timestamp}
+                    likes={post.likes}
+                    tags={post.tags}
+                    saved={post.saved}/>
                 ))
               }
               {
