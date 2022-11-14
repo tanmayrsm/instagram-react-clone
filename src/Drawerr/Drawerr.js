@@ -18,6 +18,8 @@ import './Drawerr.css';
 import SearchUser from "../SearchUser/SearchUser";
 import CreatePost from "../CreatePost/CreatePost";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import { useDispatch } from "react-redux";
 
 const drawerWidth = 240;
 
@@ -69,17 +71,31 @@ const Drawer = styled(MuiDrawer, {
   })
 }));
 
-export default function Drawerr({changeView}) {
+export default function Drawerr() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const dispatcher = useDispatch();
 
   const handleDrawer = () => {
     setOpen(!open);
   };
 
-  const handleDrawerClose = () => {
-    setOpen(!open);
-  };
+  const changeView = (index) => {
+      switch(index) {
+        case 0: dispatcher({type : "POSTS"});
+                break;
+        case 1: dispatcher({type : "PROFILE"});
+          break;
+        case 2: dispatcher({type : "SRUSER"});
+          break;
+        case 3: dispatcher({type : "CREATEPOST"});
+          break;
+        case 4: dispatcher({type : "MESSAGING"});
+          break;
+        default: dispatcher({type : "POSTS"});
+          break;
+      }
+  }
 
   return (
     <div className="drawer-container">
@@ -94,7 +110,7 @@ export default function Drawerr({changeView}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Home", "Profile", "Search", "Create"].map((text, index) => (
+          {["Home", "Profile", "Search", "Create", "Messaging"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{
@@ -114,6 +130,7 @@ export default function Drawerr({changeView}) {
                   {index === 1 && <AccountCircle />}
                   {index === 2 && <PersonSearchIcon />}
                   {index === 3 && <AddCircleIcon/>}
+                  {index === 4 && <TelegramIcon/>}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>

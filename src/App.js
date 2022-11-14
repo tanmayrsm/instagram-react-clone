@@ -18,6 +18,8 @@ import Box from '@mui/material/Box';
 import UserProfile from './UserProfile/UserProfile';
 import Grid from '@mui/material/Grid';
 import SearchUser from './SearchUser/SearchUser';
+import Messaging from './Messaging/Messaging';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 function getModalStyle() {
@@ -56,6 +58,10 @@ const useStyles2 = makeStyles((theme) => ({
 
 function App() {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
+  
+  const currView = useSelector((state) => state.view);
+  const dispatcher = useDispatch();
+
   // modal styles
   const classes = useStyles();
   const classes2 = useStyles2();
@@ -77,7 +83,7 @@ function App() {
   const [openSignIn, setOpenSignIn] = useState(false);
 
   // current view
-  const [currentView, setCurrentView] = useState("POSTS");
+  // const [currentView, setCurrentView] = useState("POSTS");
 
   // current user
   const [user, setUser] = useState(null);
@@ -205,25 +211,14 @@ function App() {
   }
 
   // change view
-  const changeView = (index) => {
-    let view = "";
-    switch(index) {
-      case 0: view = "POSTS";
-              break;
-      case 1: view = "PROFILE";
-        break;
-      case 2: view = "SRUSER";
-        break;
-      case 3: setShowCreatePost(true);
-        break;
-      default: view = "SRUSER";
-        break;
+  useEffect(() => {
+    if(currView === "CREATEPOST") {
+      setShowCreatePost(true);
     }
-    if(index !== 3) {
-      setCurrentView(view);
+    else {
       updateUserDetails();
     }
-  }
+  }, [currView]);
 
   return (
     <div className="app">
@@ -272,9 +267,9 @@ function App() {
       
       <div className='main-app'>
         <Box sx={{ display: 'flex' }}>
-        <Drawerr changeView={changeView}/>
+        <Drawerr/>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {currentView === "POSTS" && 
+          {(currView === "CREATEPOST" || currView === "POSTS") && 
             <div className='app-posts'>
               {
                 posts && posts.length && posts.map(({id, post}) => (
@@ -299,9 +294,11 @@ function App() {
             </div>
           }
           {/* profile view */}
-          {user && currentView === "PROFILE" && <UserProfile user={user} currentUserId={user.uid}/>}
+          {user && (currView === "CREATEPOST" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
           {/* search user */}
-          {currentView === "SRUSER" && <SearchUser user={user} currentUserId={user.uid}/>}
+          {(currView === "CREATEPOST" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
+          {/* message user */}
+          {(currView === "CREATEPOST" || currView === "MESSAGING") && <Messaging user={user} currentUserId={user.uid}/>}
           {/* create Post modal*/}
           {showCreatePost && user?.displayName && <Modal open={showCreatePost}
             onClose={() => setShowCreatePost(false)}>

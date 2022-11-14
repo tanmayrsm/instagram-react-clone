@@ -18,6 +18,7 @@ import GridOnIcon from '@mui/icons-material/GridOn';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import UserLists from '../UserLists/UserLists';
 import {getModalStyle, useStyles} from '../stylesUtil.js';
+import { useDispatch } from 'react-redux';
 
 const ItemImage = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -52,6 +53,8 @@ function UserProfile({user, currentUserId}) {
   const classes = useStyles();
   
   const [tabValue, setTabValue] = useState(0);
+
+  const dispatcher = useDispatch();
 
   useEffect(() => {
     // set no of followers
@@ -130,6 +133,10 @@ function UserProfile({user, currentUserId}) {
     openEditProfilePage(!setEditPageOpen);
   }
 
+  const setMessageView = () => {
+    dispatcher({type : "MESSAGING"});
+  }
+
   return (
     <div>
       {!setEditPageOpen && 
@@ -159,6 +166,7 @@ function UserProfile({user, currentUserId}) {
                   <div>
                     {!doIFollow && <Button  className='text-space' onClick={() => followUserID(user)}>Follow</Button>}
                     {doIFollow && <Button  className='text-space' onClick={() => unfollowUserID(user)}>UnFollow</Button>}
+                    <Button onClick={() => setMessageView()}>Message</Button>
                   </div>
                 }
               </span>
