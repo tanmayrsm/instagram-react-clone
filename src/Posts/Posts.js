@@ -71,11 +71,13 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
                     });
                   });
     }
-    if(likes && likes.includes(currentUser.uid)){
-      setLiked(true);
-    }
-    if(saved && saved.includes(currentUser.uid)){
-      setPostSaved(true);
+    if(currentUser) {
+      if(likes && likes.includes(currentUser.uid)){
+        setLiked(true);
+      }
+      if(saved && saved.includes(currentUser.uid)){
+        setPostSaved(true);
+      }
     }
     return () => {
       unSubs();

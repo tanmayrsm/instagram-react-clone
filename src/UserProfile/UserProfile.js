@@ -134,7 +134,7 @@ function UserProfile({user, currentUserId}) {
   }
 
   const setMessageView = () => {
-    dispatcher({type : "MESSAGING"});
+    dispatcher({type : "MESSAGING", metaData: {uid: user.uid}});
   }
 
   return (

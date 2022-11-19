@@ -2,6 +2,8 @@ import {db} from './firebase-config';
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { useState } from 'react';
 import { async } from '@firebase/util';
+import { onValue, ref, set, update, child, push } from "firebase/database";
+import {realtime_db} from './firebase-config';
 
 export function getUser(uid) {
     if(db.collection('user').doc(uid) !== null) {
@@ -144,4 +146,20 @@ export function getAllFollowing(uid) {
         return followersId;
     }
     return getDocById();
+}
+
+export function messageUser(from, to, messageBody) {
+    const query = ref(realtime_db, "messages/" + from)
+    const refe = child(query, to);
+    const newMsgRef = push(refe);
+    const msgId = newMsgRef.key;
+    push(refe, {...messageBody, id: msgId}); 
+    
+    // push same message in 'to' user's message list
+    const query2 = ref(realtime_db, "messages/" + to)
+    const refe2 = child(query2, from);
+    const newMsgRef2 = push(refe2);
+    const msgId2 = newMsgRef2.key;
+    push(refe2, {...messageBody, id: msgId2}); 
+    
 }

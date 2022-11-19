@@ -1,0 +1,11 @@
+.message-fragment {
+    padding: .3em;
+    border-bottom: 1px solid lightgrey;
+}
+.msg-user {
+    border-bottom: 1px solid lightgrey;
+}
+.msg-list-container{
+    border: 1px solid lightgrey;
+    height: 30em;
+}

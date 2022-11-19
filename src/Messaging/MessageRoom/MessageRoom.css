@@ -1,0 +1,31 @@
+.message-room {
+    height: 30em;
+    border: 1px solid lightgrey;
+    background-color: white;
+}
+.otheruser-header {
+    height: 3em;   
+    padding: 1.5em;
+    border-bottom: 1px solid lightgrey;
+}
+.main-container {
+    justify-content: space-between;
+}
+.message-scroll-container {
+    overflow-y: scroll;
+    display: block;
+}
+.user-message {
+    min-width: 10em;
+}
+.titleUserName {
+    min-width: 5em;
+    margin-left: 0.3em;
+    background: gainsboro;
+    border-radius: 1em;
+    padding: .5em;
+}
+.titleUserName.other {
+    background: white !important;
+    border: 1px solid lightgrey;
+}

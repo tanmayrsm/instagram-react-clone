@@ -60,8 +60,8 @@ function App() {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
   
   const currView = useSelector((state) => state.view);
-  const dispatcher = useDispatch();
-
+  const metaData = useSelector((state) => state.metaData);
+  
   // modal styles
   const classes = useStyles();
   const classes2 = useStyles2();
@@ -218,7 +218,7 @@ function App() {
     else {
       updateUserDetails();
     }
-  }, [currView]);
+  }, [currView, metaData]);
 
   return (
     <div className="app">
@@ -298,7 +298,7 @@ function App() {
           {/* search user */}
           {(currView === "CREATEPOST" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
           {/* message user */}
-          {(currView === "CREATEPOST" || currView === "MESSAGING") && <Messaging user={user} currentUserId={user.uid}/>}
+          {(currView === "CREATEPOST" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
           {/* create Post modal*/}
           {showCreatePost && user?.displayName && <Modal open={showCreatePost}
             onClose={() => setShowCreatePost(false)}>
