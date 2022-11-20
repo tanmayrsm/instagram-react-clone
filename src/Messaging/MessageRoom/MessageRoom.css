@@ -19,7 +19,7 @@
     min-width: 10em;
 }
 .titleUserName {
-    min-width: 5em;
+    min-width: 1em;
     margin-left: 0.3em;
     background: gainsboro;
     border-radius: 1em;
@@ -28,4 +28,73 @@
 .titleUserName.other {
     background: white !important;
     border: 1px solid lightgrey;
+}
+.file-upload-msg {
+    cursor: pointer;
+}
+img.content-msg-img, video.content-msg-video {
+    border-radius: 1em;
+    max-width: 15em;
+    min-width: 15em;
+    margin-left: 0.3em;
+}
+.emoji-btn {
+    cursor: pointer;
+}
+.msg-reaction {
+    position: absolute;
+    bottom: -1.5em;
+    right: .5em;
+    display: flex;
+    justify-content: end;
+    font-size: 11px;
+}
+.msg-reaction div {
+    background: lightgrey;
+    padding: 2px;
+    border-radius: 2em;
+    border: 2px solid white;
+}
+.msg-reaction-other {
+    position: absolute;
+    bottom: -1.5em;
+    right: .5em;
+    display: flex;
+    justify-content: start;
+    font-size: 11px;
+    width: 90%;
+}
+.msg-reaction-other div {
+    background: lightgrey;
+    padding: 2px;
+    border-radius: 2em;
+    border: 2px solid white;
+}
+.replied-container {
+    border-top: 1px solid lightgrey;
+}
+.replied-to-text {
+    font-size: .8em;
+    color: gray;
+}
+.limit-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.reply-right {
+    border-right: 2px solid lightgrey;
+    padding: .5em;
+}
+
+.reply-left {
+    border-left: 2px solid lightgrey;
+    padding: .5em;
+    margin-left: .3em;
+}
+.msg-extra-btn {
+    visibility: hidden;
+}
+.user-message:hover .msg-extra-btn {
+    visibility: visible !important;
 }

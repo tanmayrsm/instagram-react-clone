@@ -18,7 +18,7 @@ function MessageFragment({userKey, message, time}) {
 
   return (
     <div>
-        {userInfo && <div className="d-flex align-items-center">
+        {userInfo && <div className="d-flex align-items-center msg-fragment">
             <Avatar className='search-avatar' alt={userInfo.username || 'UNKNOWN USER'} src={userInfo.imgUrl || 'dnsj.com'}/>
             <div>
               <div className='userName'><strong>{userInfo.username || 'UNKNOWN USER'}</strong></div>

@@ -2,7 +2,7 @@ import {db} from './firebase-config';
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { useState } from 'react';
 import { async } from '@firebase/util';
-import { onValue, ref, set, update, child, push } from "firebase/database";
+import { onValue, ref, set, update, child, push, remove } from "firebase/database";
 import {realtime_db} from './firebase-config';
 
 export function getUser(uid) {
@@ -150,16 +150,35 @@ export function getAllFollowing(uid) {
 
 export function messageUser(from, to, messageBody) {
     const query = ref(realtime_db, "messages/" + from)
-    const refe = child(query, to);
+    let refe = child(query, to);
     const newMsgRef = push(refe);
     const msgId = newMsgRef.key;
-    push(refe, {...messageBody, id: msgId}); 
+    refe = child(query, to + "/" + msgId);
+    update(refe, {...messageBody}); 
     
     // push same message in 'to' user's message list
     const query2 = ref(realtime_db, "messages/" + to)
-    const refe2 = child(query2, from);
-    const newMsgRef2 = push(refe2);
-    const msgId2 = newMsgRef2.key;
-    push(refe2, {...messageBody, id: msgId2}); 
+    const refe2 = child(query2, from + "/" + msgId);
+    update(refe2, {...messageBody}); 
+}
+
+export function deleteMessageFromDB(from, to, msgKey) {
+    const query = ref(realtime_db, "messages/" + from + "/" + to)
+    const refe = child(query, msgKey);
+    remove(refe);
     
+    const query2 = ref(realtime_db, "messages/" + to + "/" + from)
+    const refe2 = child(query2, msgKey);
+    remove(refe2);
+}
+
+export function updateReaction(from, to, key, value) {
+    const query = ref(realtime_db, "messages/" + from + "/" + to)
+    const refe = child(query, key + '/reaction');
+    update(refe, value);
+
+    const query2 = ref(realtime_db, "messages/" + to + "/" + from)
+    const refe2 = child(query2, key + '/reaction');
+    update(refe2, value);
+
 }
