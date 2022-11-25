@@ -15,6 +15,7 @@ import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 import { Modal } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import ViewPost from '../ViewPost/ViewPost';
+import AvatarStory from '../ViewStory/AvatarStory';
 
 function getModalStyle() {
   const top = 50;
@@ -159,7 +160,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
   return (
     <div className='post'>
         <div className='post-header'>
-            <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
+          {postUserDetails && currentUser && <AvatarStory user={postUserDetails} currentUserId={currentUser.uid}/>}
             <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
         </div>
       {

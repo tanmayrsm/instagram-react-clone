@@ -20,6 +20,9 @@ import Grid from '@mui/material/Grid';
 import SearchUser from './SearchUser/SearchUser';
 import Messaging from './Messaging/Messaging';
 import { useDispatch, useSelector } from 'react-redux';
+import CreateStory from './CreateStory/CreateStory';
+import { checkIfStoryExists, getAllFollowing, getUser } from './Utils';
+import AvatarStory from './ViewStory/AvatarStory';
 
 
 function getModalStyle() {
@@ -55,6 +58,18 @@ const useStyles2 = makeStyles((theme) => ({
   },
 }));
 
+const useStyles3 = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 400,
+    height: 600,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
 
 function App() {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
@@ -65,6 +80,7 @@ function App() {
   // modal styles
   const classes = useStyles();
   const classes2 = useStyles2();
+  const classes3 = useStyles3();
 
   const [modalStyle] = useState(getModalStyle);
   // modal set close/open
@@ -73,6 +89,8 @@ function App() {
   const [posts, setPosts] = useState([]);
 
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showCreateStory, setShowCreateStory] = useState(false);
+  const [allFollowing, setAllFollowing] = useState([]);
 
   // sign up fields
   const [username, setUsername] = useState('');
@@ -96,7 +114,7 @@ function App() {
         id: doc.id,
         post:doc.data()
       })));
-    })
+    });
   }, []);
 
   const updateUserDetails = () => {
@@ -139,6 +157,14 @@ function App() {
               setUser({
                 ...authUser,
                 ...docSnap.data()
+              });
+              // get all following users for myself
+              getAllFollowing(authUser.uid).then( (val) => {
+                return Promise.all(val.map(id => getUser(id)));
+              }).then(allUsers => {
+                if(allUsers) {
+                      setAllFollowing(allUsers);
+                }
               });
             }
           }
@@ -214,6 +240,8 @@ function App() {
   useEffect(() => {
     if(currView === "CREATEPOST") {
       setShowCreatePost(true);
+    } else if(currView === "STORY") {
+      setShowCreateStory(true);
     }
     else {
       updateUserDetails();
@@ -269,8 +297,18 @@ function App() {
         <Box sx={{ display: 'flex' }}>
         <Drawerr/>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {(currView === "CREATEPOST" || currView === "POSTS") && 
+          {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
             <div className='app-posts'>
+              {/* all stories */}
+              {
+                allFollowing && allFollowing.length && 
+                  <div className='d-flex'> 
+                    {allFollowing.map(userInfo => (
+                      <div>
+                        <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
+                      </div>))} 
+                  </div>
+              }
               {
                 posts && posts.length && posts.map(({id, post}) => (
                   <Posts key={id} 
@@ -294,16 +332,23 @@ function App() {
             </div>
           }
           {/* profile view */}
-          {user && (currView === "CREATEPOST" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
+          {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
           {/* search user */}
-          {(currView === "CREATEPOST" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
+          {(currView === "CREATEPOST" || currView === "STORY" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
           {/* message user */}
-          {(currView === "CREATEPOST" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
+          {(currView === "CREATEPOST" || currView === "STORY" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
           {/* create Post modal*/}
           {showCreatePost && user?.displayName && <Modal open={showCreatePost}
             onClose={() => setShowCreatePost(false)}>
               <div style={modalStyle} className={classes2.paper}>
                 <CreatePost username={user.displayName} user={user}/>
+              </div>
+            </Modal>}
+          {/* create story modal*/}
+          {showCreateStory && user?.displayName && <Modal open={showCreateStory}
+            onClose={() => setShowCreateStory(false)}>
+              <div style={modalStyle} className={classes3.paper}>
+                <CreateStory user={user} close={() => setShowCreateStory(false)}/>
               </div>
             </Modal>}
         </Box>

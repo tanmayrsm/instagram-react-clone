@@ -4,6 +4,7 @@ import Home from "@mui/icons-material/Home";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -73,12 +74,25 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Drawerr() {
   const theme = useTheme();
+  const refe = React.useRef();
   const [open, setOpen] = React.useState(true);
   const dispatcher = useDispatch();
+  const [file, setFile] = React.useState(null);
 
   const handleDrawer = () => {
     setOpen(!open);
   };
+
+  const handleFileChange = (event) => {
+    if(event.target.files){
+        const file_ = Array.from(event.target.files)[0];
+        if(file_) {
+          setFile(file_);
+          dispatcher({type: "STORY", metaData: {file : file_}});
+        }
+    }
+}
+
 
   const changeView = (index) => {
       switch(index) {
@@ -92,6 +106,10 @@ export default function Drawerr() {
           break;
         case 4: dispatcher({type : "MESSAGING"});
           break;
+        case 5: {
+          refe.current.click();
+          break;
+        }
         default: dispatcher({type : "POSTS"});
           break;
       }
@@ -110,7 +128,7 @@ export default function Drawerr() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Home", "Profile", "Search", "Create", "Messaging"].map((text, index) => (
+          {["Home", "Profile", "Search", "Create", "Messaging", "Story"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{
@@ -131,12 +149,19 @@ export default function Drawerr() {
                   {index === 2 && <PersonSearchIcon />}
                   {index === 3 && <AddCircleIcon/>}
                   {index === 4 && <TelegramIcon/>}
+                  {index === 5 && 
+                    <div>
+                      <HistoryToggleOffIcon onClick={() =>  refe.current.click()}/>
+                    </div>
+                  }
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
+        <input ref={refe} style={{display: 'none'}} type="file" onChange={handleFileChange}/> 
+                      
       </Drawer>
     </div>
   );

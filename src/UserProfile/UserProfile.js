@@ -19,6 +19,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import UserLists from '../UserLists/UserLists';
 import {getModalStyle, useStyles} from '../stylesUtil.js';
 import { useDispatch } from 'react-redux';
+import AvatarStory from '../ViewStory/AvatarStory';
 
 const ItemImage = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -145,8 +146,9 @@ function UserProfile({user, currentUserId}) {
           <Grid item xs={4}>
             <ItemImage>
               <div className='user-profile-avatar'>
-                <Avatar alt={user.displayName} src={user.imgUrl}
-                sx={{ width: 100, height: 100 }}/>
+                {/* <Avatar alt={user.displayName} src={user.imgUrl}
+                sx={{ width: 100, height: 100 }}/> */}
+                <AvatarStory user={user} currentUserId={currentUserId} />
               </div>
             </ItemImage>
           </Grid>

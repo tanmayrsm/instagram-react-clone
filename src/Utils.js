@@ -139,11 +139,11 @@ export function getAllFollowing(uid) {
     const getDocById = async () => {
         const docRef = doc(db, 'following', uid);
         const docSnap = await getDoc(docRef);
-        let followersId = [];
+        let followingId = [];
         if(docSnap.exists()) {
-            followersId = Object.entries(docSnap.data()).filter(([id, val]) => !!val).map(([id, val]) => id);
+            followingId = Object.entries(docSnap.data()).filter(([id, val]) => !!val).map(([id, val]) => id);
         }
-        return followersId;
+        return followingId;
     }
     return getDocById();
 }
@@ -180,5 +180,9 @@ export function updateReaction(from, to, key, value) {
     const query2 = ref(realtime_db, "messages/" + to + "/" + from)
     const refe2 = child(query2, key + '/reaction');
     update(refe2, value);
+}
 
+export function addStory(from, messageBody) {
+    const query = ref(realtime_db, "story/" + from)
+    push(query, {...messageBody}); 
 }

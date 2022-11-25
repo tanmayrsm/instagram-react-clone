@@ -1,0 +1,26 @@
+.story-avatar .MuiAvatar-root {
+    cursor: pointer;
+}
+.view-story {
+    position: fixed;
+    background-color: black;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 20000;
+    padding: 1em;
+    display: flex;
+    justify-content: center;
+}
+.view-story > div {
+    height: 100% !important;
+}
+.story-avatar .space-div-border {
+    padding: 2px;
+    background-color: transparent;
+}
+.story-avatar .bordered-div {
+    border: 1px solid red;
+    border-radius: 10em;
+}

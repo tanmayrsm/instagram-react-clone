@@ -1,0 +1,45 @@
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.content img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+.content video {object-fit: cover;
+    object-fit: cover;
+    
+    max-height: 100%;
+    max-width: 100%;
+}
+.cancel-content {
+    position: absolute;
+    top: 0em;
+    left: 0em;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+    padding: .5em;
+}
+.story-container {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+.btn {
+    justify-content: center;
+    align-items: center;
+}
+.send-story-btn {
+    margin-left: .3em;
+    padding: .25em;
+    background-color: white;
+    text-align: center;
+    border-radius: 2em;
+}
