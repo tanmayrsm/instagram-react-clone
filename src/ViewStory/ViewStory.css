@@ -8,12 +8,12 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 20000;
+    z-index: 10000;
     padding: 1em;
     display: flex;
     justify-content: center;
 }
-.view-story > div {
+.view-story > div > div {
     height: 100% !important;
 }
 .story-avatar .space-div-border {
@@ -23,4 +23,15 @@
 .story-avatar .bordered-div {
     border: 1px solid red;
     border-radius: 10em;
+}
+.story-avatar .unbordered-div {
+    border-radius: 10em;
+    border: 1px solid lightgrey;    
+}
+.seen-story-div {
+    z-index: 10000;
+    position: absolute;
+    color: white;
+    bottom: 1em;
+    margin-left: -1em;
 }

@@ -302,7 +302,7 @@ function App() {
               {/* all stories */}
               {
                 allFollowing && allFollowing.length && 
-                  <div className='d-flex'> 
+                  <div className='d-flex all-user-stories'> 
                     {allFollowing.map(userInfo => (
                       <div>
                         <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>

@@ -186,3 +186,9 @@ export function addStory(from, messageBody) {
     const query = ref(realtime_db, "story/" + from)
     push(query, {...messageBody}); 
 }
+
+export function addUserToSeenListOfStory(addUsrId, userIdWhoPostedStory, storyId) {
+    const query = ref(realtime_db, "story/" + userIdWhoPostedStory + "/" + storyId)
+    const refe = child(query, '/seen');
+    update(refe, {[addUsrId] : true});
+}

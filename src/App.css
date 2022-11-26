@@ -20,7 +20,6 @@
   flex-direction: column;
 }
 .app-posts {
-  padding: 1em;
   max-height: 33em;
   overflow-y: scroll;
 }
@@ -33,4 +32,11 @@
 }
 .app-form .img-header{
   align-self: center;
+}
+.all-user-stories .post-avatar {
+  margin-right: 0 !important;
+}
+.all-user-stories .story-container-avatar {
+  padding-left: .5em;
+  padding-right: .5em;
 }
