@@ -185,7 +185,7 @@ function MessageRoom({currentUser, otherUser}) {
                         }
                       </div>
                       </div>
-                      <div className='msg-extra-btn d-flex align-items-center'>
+                      <div className={(allMessages.length - 1 === index || (allMessages[index + 1] &&  allMessages[index + 1].whoWrote && allMessages[index + 1].whoWrote === currentUser.uid)) ? 'msg-extra-btn d-flex align-items-center' :'msg-extra-btn d-flex align-items-center shift-left'}>
                         <EmojiKeyboard className='mx-1' setInputText={setMessageInput} customEmoji={reactedEmoji} msgKey={index}/>
                         <ReplyAllOutlinedIcon role="button" className='mx-1' onClick={() => replyToMsg(index)}  />
                       </div>

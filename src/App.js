@@ -21,7 +21,7 @@ import SearchUser from './SearchUser/SearchUser';
 import Messaging from './Messaging/Messaging';
 import { useDispatch, useSelector } from 'react-redux';
 import CreateStory from './CreateStory/CreateStory';
-import { checkIfStoryExists, getAllFollowing, getUser, setUserStatus } from './Utils';
+import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, setUserStatus } from './Utils';
 import AvatarStory from './ViewStory/AvatarStory';
 
 
@@ -143,10 +143,9 @@ function App() {
     const unSubs = onAuthStateChanged(auth, (authUser) => {
       if(authUser) {
         // user has logged in
-        console.log("user :: ",authUser);
-        
-
         if(db.collection('user').doc(authUser.uid) != null && user === null) {
+          setUserStatus(authUser.uid, true);
+          establishUserConnection(authUser.uid);
           const fetchDocById = async () => {
             const docRef = doc(db, "user", authUser.uid) // db = getFirestore()
       
@@ -171,7 +170,9 @@ function App() {
           fetchDocById();
         }
       } else {
-        
+        if(user?.uid) {
+          setUserStatus(user.uid, false);
+        }
         setUser(null);
       }
     });

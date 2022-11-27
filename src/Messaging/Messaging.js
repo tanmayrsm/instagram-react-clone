@@ -13,13 +13,11 @@ function Messaging({currentUser, otherUserId}) {
   const [allMessagedUsers, setAllMessagedUsers] = useState(null);
   const [activatedChatWith, setActivatedChatWith] = useState(otherUserId);
   const [sortedUserList, setSortedUserList] = useState([]);
-    
   useEffect(() => {
     if(otherUserId) {
       getUser(otherUserId).then(data => setOtherUser(data));
     }
     const query = ref(realtime_db, "messages/" + currentUser.uid );
-    setUserStatus(currentUser.uid, true);  // set user online status
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
       if (snapshot.exists()) {
@@ -53,8 +51,6 @@ function Messaging({currentUser, otherUserId}) {
     setSortedUserList(sortedList);
   }, [allMessagedUsers]);
 
-  useEffect( () => () => setUserStatus(currentUser.uid, false), [] ); // user offline status
-
   return (
     <div className=''>
       <Grid container spacing={2}>
@@ -66,7 +62,7 @@ function Messaging({currentUser, otherUserId}) {
                   {currentUser.username}
                 </span>
               </div>
-              {sortedUserList && sortedUserList.length && sortedUserList.map(val => 
+              {sortedUserList && sortedUserList.length && sortedUserList.map((val, index) => 
                 (<div className='message-fragment' key={val[0]} onClick={() => setActivatedChatWith(val[0])}>
                   <MessageFragment userKey={val[0]} message={val[1]} time={val[2]} />
                 </div>)
@@ -75,7 +71,7 @@ function Messaging({currentUser, otherUserId}) {
           </Grid>
           <Grid item xs={8}>
             {/* message form container */}
-            <MessageRoom currentUser={currentUser} otherUser={activatedChatWith}/>
+            <MessageRoom currentUser={currentUser} otherUser={activatedChatWith} />
           </Grid>
       </Grid>
     </div>

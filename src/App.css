@@ -40,3 +40,6 @@
   padding-left: .5em;
   padding-right: .5em;
 }
+.justify-content-space-between {
+  justify-content: space-between;
+}

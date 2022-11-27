@@ -1,9 +1,19 @@
 import {db} from './firebase-config';
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
-import { useState } from 'react';
-import { async } from '@firebase/util';
-import { onValue, ref, set, update, child, push, remove } from "firebase/database";
+import { getDatabase, onDisconnect, onValue, ref, set, update, child, push, remove, serverTimestamp } from "firebase/database";
 import {realtime_db} from './firebase-config';
+import TimeAgo from 'javascript-time-ago'
+// English.
+import en from 'javascript-time-ago/locale/en'
+
+TimeAgo.addDefaultLocale(en)
+
+// Create formatter (English).
+const timeAgo = new TimeAgo('en-US')
+
+export function getTimeAgo(ts) {
+    return timeAgo.format(ts, 'twitter');
+}
 
 export function getUser(uid) {
     if(db.collection('user').doc(uid) !== null) {
@@ -194,12 +204,41 @@ export function addUserToSeenListOfStory(addUsrId, userIdWhoPostedStory, storyId
 }
 
 export function setUserStatus(currentUserid, onlineStatus) {
-    const updateDocByID = async () => {
-        const docRef = doc(db, 'user', currentUserid);
-        const docSnap = await getDoc(docRef);
-        if(docSnap.exists()) {
-            await updateDoc(docRef, {online: onlineStatus});
-        }
+    if(onlineStatus) {
+        const query = ref(realtime_db, "users/" + currentUserid);
+        update(query, {register : onlineStatus});
+    } else {
+        const lastOnlineRef = ref(realtime_db, 'online/' + currentUserid);
+        set(lastOnlineRef, serverTimestamp())
     }
-    return updateDocByID();
+}
+
+// this method consists of logic to set user offline in db, when app is closed
+export function establishUserConnection (userId) {
+    // Since I can connect from multiple devices or browser tabs, we store each connection instance separately
+    // any time that connectionsRef's value is null (i.e. has no children) I am offline
+    const db = getDatabase();
+    const myConnectionsRef = ref(db, 'online/' + userId);
+    
+    // stores the timestamp of my last disconnect (the last time I was seen online)
+    const lastOnlineRef = ref(db, 'online/' + userId);
+    
+    // update(myConnectionsRef, {online: true});
+    // const connectedRef = ref(db, '.info/connected');
+    onValue(ref(db, 'users/' + userId), (snap) => {
+      if (!!snap.val()) {
+        // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
+        const con = push(myConnectionsRef);
+    
+        // When I disconnect, remove this device
+        onDisconnect(con).remove();
+    
+        // Add this device to my connections list
+        // this value could contain info about the device or a timestamp too
+        set(con, true);
+    
+        // When I disconnect, update the last time I was seen online
+        onDisconnect(lastOnlineRef).set(serverTimestamp());
+      }
+    });
 }

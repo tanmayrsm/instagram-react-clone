@@ -4,6 +4,9 @@
     overflow: hidden;
     max-width: 17em;
 }
+.msg-fragment .mw-modified.userName {
+    max-width: 12em;
+}
 .online-div {
     width: .5em;
     height: .5em;
@@ -13,4 +16,8 @@
     position: absolute;
     bottom: 0em;
     border: 1px solid lightgrey;
+}
+.last-seen {
+    color: lightgrey;
+    font-size: .9em;
 }
