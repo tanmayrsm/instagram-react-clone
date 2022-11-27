@@ -98,16 +98,6 @@ img.content-msg-img, video.content-msg-video {
 .user-message:hover .msg-extra-btn {
     visibility: visible !important;
 }
-.online-div {
-    width: .5em;
-    height: .5em;
-    background-color: greenyellow;
-    border-radius: 1em;
-    right: 0;
-    position: absolute;
-    bottom: 0em;
-    border: 1px solid lightgrey;
-}
 .shift-left {
     left: 2.5em;
     position: relative;

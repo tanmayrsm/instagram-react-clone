@@ -143,7 +143,6 @@ function MessageRoom({currentUser, otherUser}) {
           <div className='otheruser-header d-flex align-items-center'>
             <div className='position-relative'>
               <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
-              {otherUserInfo.online && <div className='online-div'></div>}
             </div>
               <div>
                 <div className='userName'><strong>{otherUserInfo.username || 'UNKNOWN USER'}</strong></div>
