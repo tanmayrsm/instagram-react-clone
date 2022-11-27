@@ -141,7 +141,10 @@ function MessageRoom({currentUser, otherUser}) {
         otherUserInfo !== null && 
         <div className='d-flex flex-column main-container h-100'>
           <div className='otheruser-header d-flex align-items-center'>
-            <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
+            <div className='position-relative'>
+              <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
+              {otherUserInfo.online && <div className='online-div'></div>}
+            </div>
               <div>
                 <div className='userName'><strong>{otherUserInfo.username || 'UNKNOWN USER'}</strong></div>
               </div>
@@ -154,8 +157,10 @@ function MessageRoom({currentUser, otherUser}) {
                   {
                     data.whoWrote === otherUserInfo.uid && 
                     <div className='d-flex flex-start align-items-center user-message other'>
-                        <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
-                        <div className='d-flex flex-column'>
+                        {(allMessages.length - 1 === index || (allMessages[index + 1] &&  allMessages[index + 1].whoWrote && allMessages[index + 1].whoWrote === currentUser.uid)) && 
+                            <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
+                        }
+                        <div className={(allMessages.length - 1 === index || (allMessages[index + 1] &&  allMessages[index + 1].whoWrote && allMessages[index + 1].whoWrote === currentUser.uid)) ? 'd-flex flex-column' :'d-flex flex-column shift-left'}>
                         {data.repliedTo && 
                           <div className='reply-left'>
                             <div className='replied-to-text'>Replied to {data.repliedTo.id === currentUser.uid ? 'You' : 'themself'}</div>

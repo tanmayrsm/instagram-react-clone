@@ -192,3 +192,14 @@ export function addUserToSeenListOfStory(addUsrId, userIdWhoPostedStory, storyId
     const refe = child(query, '/seen');
     update(refe, {[addUsrId] : true});
 }
+
+export function setUserStatus(currentUserid, onlineStatus) {
+    const updateDocByID = async () => {
+        const docRef = doc(db, 'user', currentUserid);
+        const docSnap = await getDoc(docRef);
+        if(docSnap.exists()) {
+            await updateDoc(docRef, {online: onlineStatus});
+        }
+    }
+    return updateDocByID();
+}

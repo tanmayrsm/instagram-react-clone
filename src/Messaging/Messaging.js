@@ -4,7 +4,7 @@ import { onValue, ref, set, update } from "firebase/database";
 import Grid from '@mui/material/Grid';
 import MessageRoom from './MessageRoom/MessageRoom';
 import { useState } from 'react';
-import {getUser} from '../Utils';
+import {getUser, setUserStatus} from '../Utils';
 import MessageFragment from './MessageFragment/MessageFragment';
 import './Messaging.css';
 
@@ -19,6 +19,7 @@ function Messaging({currentUser, otherUserId}) {
       getUser(otherUserId).then(data => setOtherUser(data));
     }
     const query = ref(realtime_db, "messages/" + currentUser.uid );
+    setUserStatus(currentUser.uid, true);  // set user online status
     return onValue(query, (snapshot) => {
       const data = snapshot.val();
       if (snapshot.exists()) {
@@ -51,6 +52,8 @@ function Messaging({currentUser, otherUserId}) {
     })
     setSortedUserList(sortedList);
   }, [allMessagedUsers]);
+
+  useEffect( () => () => setUserStatus(currentUser.uid, false), [] ); // user offline status
 
   return (
     <div className=''>

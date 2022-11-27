@@ -107,13 +107,6 @@ function AvatarStory({user, currentUserId, dontShowAvatar, showName}) {
         }
     }
 
-    const setAllStoriesSeenExplicitly = () => {
-        allUserStories.map((story, index) => {
-            setStorySeen(index);
-        });
-        checkForUserStory();
-    }
-
     return (
         <span>
             {showNormalAvatar && <div className='d-flex story-container-avatar justify-content-center align-items-center'>

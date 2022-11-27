@@ -21,7 +21,7 @@ import SearchUser from './SearchUser/SearchUser';
 import Messaging from './Messaging/Messaging';
 import { useDispatch, useSelector } from 'react-redux';
 import CreateStory from './CreateStory/CreateStory';
-import { checkIfStoryExists, getAllFollowing, getUser } from './Utils';
+import { checkIfStoryExists, getAllFollowing, getUser, setUserStatus } from './Utils';
 import AvatarStory from './ViewStory/AvatarStory';
 
 
@@ -171,7 +171,7 @@ function App() {
           fetchDocById();
         }
       } else {
-        // user has logged out
+        
         setUser(null);
       }
     });
@@ -301,7 +301,7 @@ function App() {
             <div className='app-posts'>
               {/* all stories */}
               {
-                allFollowing && allFollowing.length && 
+                user && user.uid && allFollowing && allFollowing.length && 
                   <div className='d-flex all-user-stories'> 
                     {allFollowing.map(userInfo => (
                       <div>
