@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import CreateStory from './CreateStory/CreateStory';
 import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, setUserStatus } from './Utils';
 import AvatarStory from './ViewStory/AvatarStory';
+import Login from './Authentication/Login';
+import Registration from './Authentication/Registration';
 
 
 function getModalStyle() {
@@ -35,17 +37,6 @@ function getModalStyle() {
     transform: `translate(-${top}%, -${left}%)`,
   };
 }
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    position: 'absolute',
-    width: 400,
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-}));
 
 const useStyles2 = makeStyles((theme) => ({
   paper: {
@@ -78,7 +69,6 @@ function App() {
   const metaData = useSelector((state) => state.metaData);
   
   // modal styles
-  const classes = useStyles();
   const classes2 = useStyles2();
   const classes3 = useStyles3();
 
@@ -91,11 +81,6 @@ function App() {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateStory, setShowCreateStory] = useState(false);
   const [allFollowing, setAllFollowing] = useState([]);
-
-  // sign up fields
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   // sign In vars
   const [openSignIn, setOpenSignIn] = useState(false);
@@ -174,6 +159,7 @@ function App() {
           setUserStatus(user.uid, false);
         }
         setUser(null);
+        setOpenSignIn(true);
       }
     });
 
@@ -182,11 +168,11 @@ function App() {
       // so that, on another app refresh, this listener gets dumped
       unSubs();
     }
-  }, [user, username]);
+  }, [user]);
 
   //sign up logic
-  const signUp = (event) => {
-    event.preventDefault();
+  const signUp = (email, password, username) => {
+    
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password) // email and password are from this.state
     .then((userCredential) => {
@@ -210,7 +196,6 @@ function App() {
       alert(errorMessage);
       // ..
     });
-
     setOpen(false);
   }
 
@@ -219,15 +204,15 @@ function App() {
     const auth = getAuth();
     signOut(auth).then(() => {
       console.log("USer logout successful");
+      setOpenSignIn(true);
     }).catch(err => {
       console.error(err);
     });
   }
 
   // sign In logic
-  const signIn = (event) => {
-    event.preventDefault();
-
+  const signIn = (email, password) => {
+    
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password) // email and password are from this.state
     .catch((error) => {
@@ -251,38 +236,8 @@ function App() {
 
   return (
     <div className="app">
-      {/* sign Up modal */}
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-         <div style={modalStyle} className={classes.paper}>
-            <form className='app-form'>
-                <img className='img-header' alt='logo' src={instaLogo}/>
-                <Input type='text' placeholder='username' value={username} onChange={(e) => setUsername(e.target.value)}/>
-                <Input type='email' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)}/>
-                <Input type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
-                <Button type='submit' onClick={signUp}>Sign Up</Button>
-            </form>
-          </div>
-      </Modal>
-
-      {/* sign In modal */}
-      <Modal
-        open={openSignIn}
-        onClose={() => setOpenSignIn(false)}
-      >
-         <div style={modalStyle} className={classes.paper}>
-            <form className='app-form'>
-                <img className='img-header' alt='logo' src={instaLogo}/>
-                <Input type='email' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)}/>
-                <Input type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
-                <Button type='submit' onClick={signIn}>Sign In</Button>
-            </form>
-          </div>
-      </Modal>
-
-      <div className='app-header'>
+      {/* app header */}
+      {!openSignIn && !open && <div className='app-header'>
         <img src={instaLogo} alt='logo' className='img-header'></img>
         {
           user ? 
@@ -292,9 +247,15 @@ function App() {
             <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
           </div>
         }
-      </div>  
+      </div>  }
+
+      {/* Sign up page */}
+      {open && <Registration signUp={signUp} openSignIn={() => {setOpen(false); setOpenSignIn(true)}} />}
+
+      {/* sign In page */}
+      {openSignIn && <Login signIn={signIn} openSignUp={() => {setOpen(true); setOpenSignIn(false)}} />}
       
-      <div className='main-app'>
+      {!openSignIn && !open && <div className='main-app'>
         <Box sx={{ display: 'flex' }}>
         <Drawerr/>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -354,7 +315,7 @@ function App() {
             </Modal>}
         </Box>
             </Box>
-      </div>
+      </div>}
       
     </div>
   );
