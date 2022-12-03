@@ -3,3 +3,7 @@
     padding: .3em;
     overflow-y: auto;
 }
+.view-post-header {
+    display: flex;
+    justify-content: space-between;
+}

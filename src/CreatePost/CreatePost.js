@@ -13,14 +13,33 @@ import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternate
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import { getPost, updatePost } from '../Utils';
 
-function CreatePost({username, user}) {
+function CreatePost({user, postId, close}) {
     const [files, setFiles] = useState(null);
     const [progress, setProgress] = useState(0);
     const [caption, setCaption] = useState(null);
     const [currFile, setCurrFile] = useState(null);
     const [showCarousel, setShowCarousel] = useState(false);
     const [fileUrls, setFileUrls] = useState([]);
+
+    // edit post fields
+    // all carousel items
+    // text entered
+    const [postData, setPostData] = useState(null);
+    const [newCaption, setNewCaption] = useState(null);
+
+    useEffect(() => {
+        if(postId) {
+            getPost(postId).then(post => {
+                setPostData(post);
+                if(post.media){
+                    setShowCarousel(true);
+                    setNewCaption(post.caption);
+                }
+            })
+        }
+    }, [postId])
 
     const refe = useRef();
 
@@ -123,7 +142,7 @@ function CreatePost({username, user}) {
                 timestamp: serverTimestamp(),
                 caption: caption,
                 media: fileUrls,
-                username: username,
+                username: user.username,
                 uid: user.uid,
                 likes: [],
                 tags: [],
@@ -144,6 +163,10 @@ function CreatePost({username, user}) {
         setShowCarousel(true);
     }
 
+    const updateCurrentPost = () => {
+        updatePost(postId, newCaption).then(() => close());
+    }
+
     return (
         <div className='create-post'>
             <Grid container spacing={2}>
@@ -152,7 +175,7 @@ function CreatePost({username, user}) {
                     {
                         progress >= 100 && <p>Done!</p>
                     }
-                    {<div className={'imgUpload' + currFile && currFile?.length > 0 ? 'add-file' : 'empty-file  h-100'} onClick={() =>  refe.current.click()}>
+                    {!postId && <div className={'imgUpload' + currFile && currFile?.length > 0 ? 'add-file' : 'empty-file  h-100'} onClick={() =>  refe.current.click()}>
                         {
                             currFile === null && 
                             <div className='h-100 d-flex flex-column justify-content-center align-items-center'>
@@ -169,7 +192,7 @@ function CreatePost({username, user}) {
                         <input ref={refe} multiple type="file" style={{display: 'none'}} onChange={handleFileChange}/>
                     </div>}
                     {
-                        currFile && files && showCarousel &&
+                        !postId && currFile && files && showCarousel &&
                         <div className='content h-100'>
                             {files.length > 0 && <Carousel sx={{width: '25em', height: '20em'}} className={'d-flex flex-column align-items-center justify-content-center mt-4 overflow-visible carousel-container' + (files.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(files.length === 1)}>
                                 {files.map((file_, index_) => (
@@ -184,6 +207,18 @@ function CreatePost({username, user}) {
                             </Carousel>}
                         </div>
                     }
+                    {
+                        postData && <div className='content h-100'>
+                        <Carousel sx={{width: '25em', height: '20em'}} className={'d-flex flex-column align-items-center justify-content-center mt-4 overflow-visible carousel-container' + (postData.media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(postData.media.length === 1)}>
+                            {postData.media.map((file_, index_) => (
+                                <div className='h-100 w-100' key={index_}>
+                                    {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img src={file_.url} alt='post-img'/>}
+                                    {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
+                                </div>
+                            ))}
+                        </Carousel>
+                    </div>
+                    }
                 </Grid>
                 <Grid item xs={5}>
                     <div className='d-flex align-items-center mt-4'>
@@ -192,17 +227,27 @@ function CreatePost({username, user}) {
                         <span className='m-1'>{user.username}</span>
                     </div>
                     <div className='mt-3 w-100'>
-                        <TextField
+                        {!postId && <TextField
                             id="outlined-multiline-static"
                             multiline
                             rows={8}
                             onChange={(event) => setCaption(event.target.value)} 
                             placeholder='Enter your caption...'
-                        />
+                        />}
+                        {
+                            postData && <TextField
+                                id="outlined-multiline-static"
+                                multiline
+                                rows={8}
+                                onChange={(event) => setNewCaption(event.target.value)} 
+                                value={newCaption}
+                            />
+                        }
                     </div>
                 </Grid>
                 <Grid item xs={12}>
-                    <Button onClick={handlePost}>Upload</Button>
+                    {!postId && <Button onClick={handlePost}>Upload</Button>}
+                    {postData && <Button onClick={updateCurrentPost}>Update</Button>}
                 </Grid>
             </Grid>
         </div>

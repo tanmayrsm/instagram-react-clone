@@ -71,7 +71,7 @@ function PostsGrid({user, currentUserId}) {
     <div>
       <ImageList cols={5}>
       {allPosts && allPosts.length && allPosts.map((item) => (
-        <ImageListItem key={item.postId} className='post-img' onClick={() => setActivePost(item)}>
+        <ImageListItem role="button" key={item.postId} className='post-img' onClick={() => setActivePost(item)}>
           <img
             src={item.imgUrl}
             alt={item.title}
@@ -100,6 +100,7 @@ function PostsGrid({user, currentUserId}) {
           saved={activePost.saved}
           postUserDetails={activePost.postUserDetails}
           comments={activePost.comments}
+          close={() => setActivePost(null)}
         />
       </div>
     </Modal>

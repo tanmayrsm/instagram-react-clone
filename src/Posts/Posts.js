@@ -104,15 +104,12 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
   }, [])
 
   const addComment = () => {
+    const timeSt = Date.now();
     db.collection('posts').doc(postId).collection('comments').add({
       username: currentUser.displayName,
       uid: currentUser.uid,
       text: comment,
-      media: media,
-      timestamp: serverTimestamp(),
-      likes: likes,
-      tags: tags,
-      saved: saved
+      timestamp: timeSt
     });
     setComment('');
   }
@@ -210,6 +207,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
             saved={saved}
             postUserDetails={postUserDetails}
             comments={comments}
+            close={() => setViewDetailedPost(false)}
           />
         </div>
       </Modal>

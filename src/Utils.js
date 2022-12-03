@@ -1,5 +1,5 @@
 import {db} from './firebase-config';
-import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { getDatabase, onDisconnect, onValue, ref, set, update, child, push, remove, serverTimestamp } from "firebase/database";
 import {realtime_db} from './firebase-config';
 import TimeAgo from 'javascript-time-ago'
@@ -241,4 +241,45 @@ export function establishUserConnection (userId) {
         onDisconnect(lastOnlineRef).set(serverTimestamp());
       }
     });
+}
+
+export function getPost(postId) {
+    if(db.collection('posts').doc(postId) !== null) {
+        const fetchDocById = async () => {
+          const docRef = doc(db, "posts", postId) // db = getFirestore()
+    
+          // Fetch document
+          const docSnap = await getDoc(docRef)
+          
+          if (docSnap.exists()) {
+              return docSnap.data();
+          }
+          return null;
+        }
+        return fetchDocById();
+    }
+    return null;
+}
+
+export function updatePost(postId, caption) {
+    const updateDocByID = async () => {
+        const docRef = doc(db, 'posts', postId);
+        const docSnap = await getDoc(docRef);
+        const st = new Date();
+        if(docSnap.exists()) {
+            await updateDoc(docRef, {caption: caption, timestamp: st});
+        }
+    };
+    return updateDocByID();
+}
+
+export function deletePost(postId) {
+    const deleteDocByID = async () => {
+        const docRef = doc(db, 'posts', postId);
+        const docSnap = await getDoc(docRef);
+        if(docSnap.exists()) {
+            await deleteDoc(docRef);
+        }
+    };
+    return deleteDocByID();
 }

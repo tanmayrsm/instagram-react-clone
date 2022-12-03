@@ -303,7 +303,7 @@ function App() {
           {showCreatePost && user?.displayName && <Modal open={showCreatePost}
             onClose={() => setShowCreatePost(false)}>
               <div style={modalStyle} className={classes2.paper}>
-                <CreatePost username={user.displayName} user={user}/>
+                <CreatePost user={user}/>
               </div>
             </Modal>}
           {/* create story modal*/}

@@ -1,23 +1,32 @@
-import { Avatar, Button, Grid } from '@mui/material';
+import { Avatar, Button, Grid, Modal } from '@mui/material';
 import React from 'react'
 import { useState, useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import './ViewPost.css';
 import {db} from '../firebase-config';
-import {getUser} from "../Utils";
+import {deletePost, getUser, getTimeAgo} from "../Utils";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import BookmarkOutlinedIcon from '@mui/icons-material/BookmarkOutlined';
 import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { serverTimestamp } from "firebase/firestore";
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import CreatePost from '../CreatePost/CreatePost';
+import { getModalStyle, useStyles } from '../stylesUtil';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
-function ViewPost({postId, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, postUserDetails}) {
+function ViewPost({postId, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, postUserDetails, close}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
   const [liked, setLiked] = useState(false);
   const [postSaved, setPostSaved] = useState(false);
+  const [editPost, setEditPost] = useState(false);
+
+  const classes = useStyles();
+
+  const [modalStyle] = useState(getModalStyle());
 
   // get all comments for this post
   useEffect(() => {
@@ -36,6 +45,7 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
                     })
                     Promise.all(promises).then((results) => {
                       if(results) {
+                        console.log("All comments ::", results);
                         setComments(results);
                       }
                     });
@@ -53,15 +63,12 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
   }, [postId]);
 
   const addComment = () => {
+    const timeSt = Date.now();
     db.collection('posts').doc(postId).collection('comments').add({
       username: currentUser.displayName,
       uid: currentUser.uid,
       text: comment,
-      media: media,
-      timestamp: serverTimestamp(),
-      likes: likes,
-      tags: tags,
-      saved: saved
+      timestamp: timeSt
     });
     setComment('');
   }
@@ -104,6 +111,12 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
       caption: caption
     });
   }
+
+  const deleteCurrentPost = () => {
+    deletePost(postId).then(() => {
+      close();
+    });
+  }
   return (
     <Grid container spacing={2}>
         <Grid item xs={5}>
@@ -122,9 +135,15 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
         </Grid>
         <Grid item xs={7}>
           <div>
-            <div className='post-header'>
-              <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
-              <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
+            <div className='view-post-header align-items-center'>
+              <div className='d-flex align-items-center'>
+                <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
+                <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
+              </div>
+              {currentUser.uid === postUserDetails.uid && <div>
+                <ModeEditIcon role="button" onClick={() => setEditPost(true)}/>
+                <DeleteIcon role="button" onClick={() => deleteCurrentPost()} />
+              </div>}
             </div>
             <hr/>
             {/* post caption */}
@@ -135,10 +154,18 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
             {/* comments list */}
             <div className='view-comments'>
             {
-                  comments && comments.length && comments.map(({userDisplayName, userDp, text, timestamp}) => (
-                    <div key={timestamp} className="d-flex align-items-center mb-2">
-                      <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
-                      <div className='mr-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</div>
+                  comments && comments.length && comments.map(({userDisplayName, userDp, text, timestamp, uid}) => (
+                    <div className=''>
+                      <div key={timestamp} className="d-flex align-items-center mb-2">
+                        <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
+                        <div className='mr-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</div>
+                        <div></div>
+                      </div>
+                      {timestamp && <div className='d-flex'>
+                        <div>{getTimeAgo(timestamp)}</div>
+                        <div role="button" style={{'marginLeft': '1em'}}>Reply</div>
+                        {uid === currentUser.uid && <div role="button" style={{'marginLeft': '1em'}}>Delete</div>}
+                      </div>}
                     </div>
                   ))
             }
@@ -168,6 +195,12 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
             }
           </div>
         </Grid>
+        <Modal open={editPost}
+            onClose={() => setEditPost(false)}>
+              <div style={modalStyle} className={classes.paper}>
+                {editPost && <CreatePost user={currentUser} postId={postId} close={() => setEditPost(false)} />}
+              </div>
+        </Modal>
     </Grid>
   )
 }
