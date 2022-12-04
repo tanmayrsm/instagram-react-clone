@@ -7,3 +7,6 @@
     display: flex;
     justify-content: space-between;
 }
+.view-replies {
+    margin-left: 1.5em;
+}

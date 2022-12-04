@@ -109,7 +109,9 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       username: currentUser.displayName,
       uid: currentUser.uid,
       text: comment,
-      timestamp: timeSt
+      timestamp: timeSt,
+      likes: {},
+      replies: []
     });
     setComment('');
   }

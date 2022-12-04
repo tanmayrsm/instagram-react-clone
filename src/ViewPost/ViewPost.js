@@ -20,9 +20,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 function ViewPost({postId, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, postUserDetails, close}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
+  const [commentKeys, setCommentKeys] = useState([]);
   const [liked, setLiked] = useState(false);
   const [postSaved, setPostSaved] = useState(false);
   const [editPost, setEditPost] = useState(false);
+  const [replyTo, setReplyTo] = useState(null);
+  const [viewAllReplies, setViewReplies] = useState(null);
+  const [userWhoReplies, setUserWhoReplies] = useState({});
 
   const classes = useStyles();
 
@@ -38,7 +42,14 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
                   .orderBy('timestamp', 'desc')
                   .onSnapshot((snapshot) => {
                     let commentsData = snapshot.docs.map(doc => doc.data());
-                    var promises = commentsData.map((data) => {
+                    setCommentKeys(snapshot.docs.map(doc => doc.id));
+                    var promises = commentsData.map((data, index) => {
+                      if(data.replies && data.replies.length > 0) {
+                        data.replies.map(data => getUser(data.key).then(data => {
+                          setUserWhoReplies(prev => ({...prev, [data.uid] : data}));
+                        }));
+                        
+                      }
                       return getUser(data.uid).then((userData) => {
                          return userData && {...data, userDp: userData.imgUrl, userDisplayName: userData.displayName}
                       })
@@ -63,15 +74,39 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
   }, [postId]);
 
   const addComment = () => {
-    const timeSt = Date.now();
-    db.collection('posts').doc(postId).collection('comments').add({
-      username: currentUser.displayName,
-      uid: currentUser.uid,
-      text: comment,
-      timestamp: timeSt
-    });
+    if(!replyTo) {
+      const timeSt = Date.now();
+      db.collection('posts').doc(postId).collection('comments').add({
+        username: currentUser.displayName,
+        uid: currentUser.uid,
+        text: comment,
+        timestamp: timeSt,
+        likes: {},
+        replies: []
+      });
+    } else {
+      const replyList = comments[replyTo.idx].replies || [];
+      const ts = Date.now();
+      db.collection('posts').doc(postId).collection('comments').doc(commentKeys[replyTo.idx]).set({
+        ...comments[replyTo.idx], replies: [...replyList, {key: currentUser.uid, value : comment, timestamp:ts}]
+      });
+    }
     setComment('');
+    setReplyTo(null);
   }
+
+  useEffect(() => {
+    if(comments && comments.length > 0) {
+      if(viewAllReplies === null) {
+        comments.map((comment, index) => {
+          if(comment.replies && !viewAllReplies) {
+            setViewReplies(prev => ({...prev, [index]:'closed'}));
+          }
+        })
+      }
+    }
+  }, [comments]);
+
   const toggleLike = (stateToggle) => {
     setLiked(!liked);
     if(stateToggle) {
@@ -117,6 +152,40 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
       close();
     });
   }
+
+  const likeComment = (commentIndex) => {
+    const likeList = comments[commentIndex].likes;
+    db.collection('posts').doc(postId).collection('comments').doc(commentKeys[commentIndex]).set({
+      ...comments[commentIndex], likes: {...likeList, [currentUser.uid] : true}
+    });
+  }
+
+  const unLikeComment = (commentIndex) => {
+    const likeList = comments[commentIndex].likes;
+    db.collection('posts').doc(postId).collection('comments').doc(commentKeys[commentIndex]).set({
+      ...comments[commentIndex], likes: {...likeList, [currentUser.uid] : false}
+    });
+  }
+
+
+  const toggleReply = (index) => {
+    const replyList = {...viewAllReplies, [index]: viewAllReplies[index] === 'closed' ? 'open' : 'closed'};
+    setViewReplies(replyList);
+  }
+
+  const deleteComment = (id) => {
+    db.collection('posts').doc(postId).collection('comments').doc(id).delete();
+  }
+
+  const deleteNestedComment = (commentId, commentIndex, replyIndex) => {
+    const prevReplies = comments[commentIndex].replies;
+    prevReplies.splice(replyIndex, 1);
+    db.collection('posts').doc(postId).collection('comments').doc(commentId).set({
+      ...comments[commentIndex], replies : [...prevReplies]
+    });
+  }
+
+
   return (
     <Grid container spacing={2}>
         <Grid item xs={5}>
@@ -154,18 +223,46 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
             {/* comments list */}
             <div className='view-comments'>
             {
-                  comments && comments.length && comments.map(({userDisplayName, userDp, text, timestamp, uid}) => (
-                    <div className=''>
+                  comments && comments.length > 0 && comments.map(({userDisplayName, userDp, text, timestamp, uid, likes, replies}, index) => (
+                    <div className='' key={commentKeys[index]}>
                       <div key={timestamp} className="d-flex align-items-center mb-2">
                         <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
                         <div className='mr-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</div>
-                        <div></div>
+                        <div role="button">{likes && likes[currentUser.uid] ? <FavoriteOutlinedIcon onClick={() => unLikeComment(index)}/> : <FavoriteBorderOutlinedIcon onClick={() => likeComment(index)}/>}</div>
                       </div>
                       {timestamp && <div className='d-flex'>
+                        {/* time */}
                         <div>{getTimeAgo(timestamp)}</div>
-                        <div role="button" style={{'marginLeft': '1em'}}>Reply</div>
-                        {uid === currentUser.uid && <div role="button" style={{'marginLeft': '1em'}}>Delete</div>}
+                        {/* no of likes */}
+                        {likes && Object.values(likes).filter(val => !!val).length > 0 && <div style={{'marginLeft': '1em'}}> {Object.values(likes).filter(val => !!val).length} likes</div>}
+                        {/* reply to comment */}
+                        <div role="button" style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userDisplayName); setReplyTo({id : uid, idx: index})}}>Reply</div>
+                        {/* delete comment */}
+                        {uid === currentUser.uid && <div role="button" style={{'marginLeft': '1em'}} onClick={() => deleteComment(commentKeys[index])}>Delete</div>}
                       </div>}
+                      {/* comment replies */}
+                      { replies && replies.length > 0 && viewAllReplies && viewAllReplies[index] !== undefined ? 
+                        <div role="button" className='view-replies'>
+                          {viewAllReplies[index] === 'closed' ? 
+                            <div onClick={() => toggleReply(index)}>View all replies</div> : 
+                            <div>
+                              <div onClick={() => toggleReply(index)}>Hide all replies</div>
+                              {userWhoReplies && replies.map((data, replyIndex) => 
+                                <div>
+                                  <div className='d-flex ml-3 align-items-center w-100'>
+                                      <Avatar className='post-avatar' alt={(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'} src={(userWhoReplies[data.key].imgUrl) || 'dnsj.com'}/>
+                                      <div className='mr-2'><strong>{(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'}</strong> {data.value}</div>
+                                  </div>   
+                                  <div className='d-flex'>
+                                    <div>{getTimeAgo(data.timestamp)}</div>
+                                    <div style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userWhoReplies[data.key].displayName); setReplyTo({id : uid, idx: index})}}>Reply</div>
+                                    {userWhoReplies[data.key].uid === currentUser.uid && <div onClick={() => deleteNestedComment(commentKeys[index], index, replyIndex)} role="button" style={{'marginLeft': '1em'}}>Delete</div>}
+                                  </div>
+                                </div>
+                            )}
+                            </div>
+                          }
+                        </div> : ''}
                     </div>
                   ))
             }
