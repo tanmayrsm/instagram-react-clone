@@ -17,7 +17,7 @@ import { getModalStyle, useStyles } from '../stylesUtil';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-function ViewPost({postId, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, postUserDetails, close}) {
+function ViewPost({postId, userUidWhoPosted, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, close}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
   const [commentKeys, setCommentKeys] = useState([]);
@@ -27,6 +27,13 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
   const [replyTo, setReplyTo] = useState(null);
   const [viewAllReplies, setViewReplies] = useState(null);
   const [userWhoReplies, setUserWhoReplies] = useState({});
+  const [postUserDetails, setPostUserDetails] = useState(null);
+
+  useEffect(() => {
+    getUser(userUidWhoPosted).then(data => {
+      setPostUserDetails(data);
+    });
+  }, [userUidWhoPosted])
 
   const classes = useStyles();
 
@@ -187,118 +194,120 @@ function ViewPost({postId, currentUser, username, media, caption, userWhoPosted,
 
 
   return (
-    <Grid container spacing={2}>
-        <Grid item xs={5}>
-        {
-          media && media.length > 0 &&
-            
-              <Carousel sx={{width: '25em', height: '20em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container h-100' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
-                  {media.map((file_, index_) => (
-                      <div className='post-content' key={index_}>
-                          {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img src={file_.url} alt='post-img'/>}
-                          {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
-                      </div>
-                  ))}
-              </Carousel>
-      }
-        </Grid>
-        <Grid item xs={7}>
-          <div>
-            <div className='view-post-header align-items-center'>
-              <div className='d-flex align-items-center'>
+    <>
+      <Grid container spacing={2}>
+          <Grid item xs={5}>
+          {
+            media && media.length > 0 &&
+              
+                <Carousel sx={{width: '25em', height: '20em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container h-100' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
+                    {media.map((file_, index_) => (
+                        <div className='post-content' key={index_}>
+                            {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img src={file_.url} alt='post-img'/>}
+                            {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
+                        </div>
+                    ))}
+                </Carousel>
+        }
+          </Grid>
+          <Grid item xs={7}>
+            <div>
+              <div className='view-post-header align-items-center'>
+                <div className='d-flex align-items-center'>
+                  <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
+                  <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
+                </div>
+                {postUserDetails && (currentUser.uid === postUserDetails.uid) && <div>
+                  <ModeEditIcon role="button" onClick={() => setEditPost(true)}/>
+                  <DeleteIcon role="button" onClick={() => deleteCurrentPost()} />
+                </div>}
+              </div>
+              <hr/>
+              {/* post caption */}
+              <div className='d-flex'>
                 <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
-                <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
+                  <h6 className='post_text'><strong>{postUserDetails?.displayName || username}</strong>: {caption}</h6>
               </div>
-              {currentUser.uid === postUserDetails.uid && <div>
-                <ModeEditIcon role="button" onClick={() => setEditPost(true)}/>
-                <DeleteIcon role="button" onClick={() => deleteCurrentPost()} />
-              </div>}
-            </div>
-            <hr/>
-            {/* post caption */}
-            <div className='d-flex'>
-              <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
-                <h6 className='post_text'><strong>{postUserDetails?.displayName || username}</strong>: {caption}</h6>
-            </div>
-            {/* comments list */}
-            <div className='view-comments'>
-            {
-                  comments && comments.length > 0 && comments.map(({userDisplayName, userDp, text, timestamp, uid, likes, replies}, index) => (
-                    <div className='' key={commentKeys[index]}>
-                      <div key={timestamp} className="d-flex align-items-center mb-2">
-                        <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
-                        <div className='mr-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</div>
-                        <div role="button">{likes && likes[currentUser.uid] ? <FavoriteOutlinedIcon onClick={() => unLikeComment(index)}/> : <FavoriteBorderOutlinedIcon onClick={() => likeComment(index)}/>}</div>
-                      </div>
-                      {timestamp && <div className='d-flex'>
-                        {/* time */}
-                        <div>{getTimeAgo(timestamp)}</div>
-                        {/* no of likes */}
-                        {likes && Object.values(likes).filter(val => !!val).length > 0 && <div style={{'marginLeft': '1em'}}> {Object.values(likes).filter(val => !!val).length} likes</div>}
-                        {/* reply to comment */}
-                        <div role="button" style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userDisplayName); setReplyTo({id : uid, idx: index})}}>Reply</div>
-                        {/* delete comment */}
-                        {uid === currentUser.uid && <div role="button" style={{'marginLeft': '1em'}} onClick={() => deleteComment(commentKeys[index])}>Delete</div>}
-                      </div>}
-                      {/* comment replies */}
-                      { replies && replies.length > 0 && viewAllReplies && viewAllReplies[index] !== undefined ? 
-                        <div role="button" className='view-replies'>
-                          {viewAllReplies[index] === 'closed' ? 
-                            <div onClick={() => toggleReply(index)}>View all replies</div> : 
-                            <div>
-                              <div onClick={() => toggleReply(index)}>Hide all replies</div>
-                              {userWhoReplies && replies.map((data, replyIndex) => 
-                                <div>
-                                  <div className='d-flex ml-3 align-items-center w-100'>
-                                      <Avatar className='post-avatar' alt={(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'} src={(userWhoReplies[data.key].imgUrl) || 'dnsj.com'}/>
-                                      <div className='mr-2'><strong>{(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'}</strong> {data.value}</div>
-                                  </div>   
-                                  <div className='d-flex'>
-                                    <div>{getTimeAgo(data.timestamp)}</div>
-                                    <div style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userWhoReplies[data.key].displayName); setReplyTo({id : uid, idx: index})}}>Reply</div>
-                                    {userWhoReplies[data.key].uid === currentUser.uid && <div onClick={() => deleteNestedComment(commentKeys[index], index, replyIndex)} role="button" style={{'marginLeft': '1em'}}>Delete</div>}
+              {/* comments list */}
+              <div className='view-comments'>
+              {
+                    comments && comments.length > 0 && comments.map(({userDisplayName, userDp, text, timestamp, uid, likes, replies}, index) => (
+                      <div className='' key={commentKeys[index]}>
+                        <div key={timestamp} className="d-flex align-items-center mb-2">
+                          <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
+                          <div className='mr-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</div>
+                          <div role="button">{likes && likes[currentUser.uid] ? <FavoriteOutlinedIcon onClick={() => unLikeComment(index)}/> : <FavoriteBorderOutlinedIcon onClick={() => likeComment(index)}/>}</div>
+                        </div>
+                        {timestamp && <div className='d-flex'>
+                          {/* time */}
+                          <div>{getTimeAgo(timestamp)}</div>
+                          {/* no of likes */}
+                          {likes && Object.values(likes).filter(val => !!val).length > 0 && <div style={{'marginLeft': '1em'}}> {Object.values(likes).filter(val => !!val).length} likes</div>}
+                          {/* reply to comment */}
+                          <div role="button" style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userDisplayName); setReplyTo({id : uid, idx: index})}}>Reply</div>
+                          {/* delete comment */}
+                          {uid === currentUser.uid && <div role="button" style={{'marginLeft': '1em'}} onClick={() => deleteComment(commentKeys[index])}>Delete</div>}
+                        </div>}
+                        {/* comment replies */}
+                        { replies && replies.length > 0 && viewAllReplies && viewAllReplies[index] !== undefined ? 
+                          <div role="button" className='view-replies'>
+                            {viewAllReplies[index] === 'closed' ? 
+                              <div onClick={() => toggleReply(index)}>View all replies</div> : 
+                              <div>
+                                <div onClick={() => toggleReply(index)}>Hide all replies</div>
+                                {userWhoReplies && replies.map((data, replyIndex) => 
+                                  <div>
+                                    <div className='d-flex ml-3 align-items-center w-100'>
+                                        <Avatar className='post-avatar' alt={(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'} src={(userWhoReplies[data.key].imgUrl) || 'dnsj.com'}/>
+                                        <div className='mr-2'><strong>{(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'}</strong> {data.value}</div>
+                                    </div>   
+                                    <div className='d-flex'>
+                                      <div>{getTimeAgo(data.timestamp)}</div>
+                                      <div style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userWhoReplies[data.key].displayName); setReplyTo({id : uid, idx: index})}}>Reply</div>
+                                      {userWhoReplies[data.key].uid === currentUser.uid && <div onClick={() => deleteNestedComment(commentKeys[index], index, replyIndex)} role="button" style={{'marginLeft': '1em'}}>Delete</div>}
+                                    </div>
                                   </div>
-                                </div>
-                            )}
-                            </div>
-                          }
-                        </div> : ''}
-                    </div>
-                  ))
-            }
-            </div>
-            {/* like, comment, save post icons */}
-            <div className='d-flex align-items-center post_text justify-content-between icon-container'>
-              <div className='d-flex justify-content-between'>
-                <div>
-                  {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
+                              )}
+                              </div>
+                            }
+                          </div> : ''}
+                      </div>
+                    ))
+              }
+              </div>
+              {/* like, comment, save post icons */}
+              <div className='d-flex align-items-center post_text justify-content-between icon-container'>
+                <div className='d-flex justify-content-between'>
+                  <div>
+                    {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
+                  </div>
+                  <div>
+                    <MapsUgcOutlinedIcon/>
+                  </div>
                 </div>
                 <div>
-                  <MapsUgcOutlinedIcon/>
+                {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
                 </div>
               </div>
-              <div>
-              {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
-              </div>
+              <div className='fw-bold post_text'>{likes && likes.length} likes</div>
+              
+              {/* add comment */}
+              {
+                currentUser && <form className='post-comment'>
+                  <input type='text' className='post-comment-text' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
+                  <Button onClick={addComment} className='post-comment-btn'>Post</Button>
+                </form>
+              }
             </div>
-            <div className='fw-bold post_text'>{likes && likes.length} likes</div>
-            
-            {/* add comment */}
-            {
-              currentUser && <form className='post-comment'>
-                <input type='text' className='post-comment-text' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
-                <Button onClick={addComment} className='post-comment-btn'>Post</Button>
-              </form>
-            }
-          </div>
-        </Grid>
-        <Modal open={editPost}
-            onClose={() => setEditPost(false)}>
-              <div style={modalStyle} className={classes.paper}>
-                {editPost && <CreatePost user={currentUser} postId={postId} close={() => setEditPost(false)} />}
-              </div>
-        </Modal>
-    </Grid>
+          </Grid>
+          <Modal open={editPost}
+              onClose={() => setEditPost(false)}>
+                <div style={modalStyle} className={classes.paper}>
+                  {editPost && <CreatePost user={currentUser} postId={postId} close={() => setEditPost(false)} />}
+                </div>
+          </Modal>
+      </Grid>
+    </>
   )
 }
 

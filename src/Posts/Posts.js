@@ -140,8 +140,10 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
     setPostSaved(!postSaved);
     if(stateToggle) {
       saved.push(currentUser.uid);
+      db.collection('user').doc(currentUser.uid).collection('saved').doc(postId).set({[postId]: true});
     } else {
       saved = saved.filter(uid => uid !== currentUser.uid);
+      db.collection('user').doc(currentUser.uid).collection('saved').doc(postId).delete();
     }
     db.collection('posts').doc(postId).set({
       username: postUserDetails.displayName,
@@ -191,7 +193,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       <div className='fw-bold post_text'>{likes && likes.length} likes</div>
       <h6 className='post_text'><strong>{postUserDetails?.displayName || username}</strong>: {caption}</h6>
 
-      {comments && comments.length && <p className='post_text' onClick={() => setViewDetailedPost(true)}>View all {comments && comments.length} comments</p>}
+      {comments && comments.length && <div role="button" className='post_text' onClick={() => setViewDetailedPost(true)}>View all {comments && comments.length} comments</div>}
       {/* list of comments */}
       <Modal open={viewDetailedPost}
         onClose={() => setViewDetailedPost(false)}>

@@ -146,8 +146,6 @@ function UserProfile({user, currentUserId}) {
           <Grid item xs={4}>
             <ItemImage>
               <div className='user-profile-avatar'>
-                {/* <Avatar alt={user.displayName} src={user.imgUrl}
-                sx={{ width: 100, height: 100 }}/> */}
                 <AvatarStory user={user} currentUserId={currentUserId} />
               </div>
             </ItemImage>
@@ -155,7 +153,6 @@ function UserProfile({user, currentUserId}) {
           <Grid item xs={8}>
             <Item>
               <span className='user-header'>
-                {/* TODO - replace with username */}
                 <strong className='text-space'>{user.username}</strong>
                 {currentUserId && currentUserId === user.uid && <div>
                   <Button  className='text-space' onClick={() => openEditProfile()}>Edit profile</Button>
@@ -201,7 +198,7 @@ function UserProfile({user, currentUserId}) {
                 <Tab icon={<BookmarkBorderIcon />} iconPosition="start" label="Saved" />
               </Tabs>
                 {tabValue === 0 && <PostsGrid user={user} currentUserId={currentUserId}/>}
-                {tabValue === 1 && <p>Under construction!</p>}
+                {tabValue === 1 && <PostsGrid saved={true} user={user} currentUserId={currentUserId}/>}
             </Item>
           </Grid>
         </div>
