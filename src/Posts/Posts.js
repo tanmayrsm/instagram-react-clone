@@ -201,6 +201,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
           <ViewPost 
             postId={postId} 
             currentUser={currentUser}
+            userUidWhoPosted={userWhoPosted}
             username={username} 
             media={media}
             caption={caption}
