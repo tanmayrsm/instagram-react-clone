@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { styled, useTheme } from "@mui/material/styles";
@@ -21,6 +22,7 @@ import CreatePost from "../CreatePost/CreatePost";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import { useDispatch } from "react-redux";
+import Call from "../Call/Call";
 
 const drawerWidth = 240;
 
@@ -110,6 +112,8 @@ export default function Drawerr() {
           refe.current.click();
           break;
         }
+        case 6: dispatcher({type : "TEST_VIDEO"});
+          break;
         default: dispatcher({type : "POSTS"});
           break;
       }
@@ -128,7 +132,7 @@ export default function Drawerr() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Home", "Profile", "Search", "Create", "Messaging", "Story"].map((text, index) => (
+          {["Home", "Profile", "Search", "Create", "Messaging", "Story", "Call"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{
@@ -152,6 +156,11 @@ export default function Drawerr() {
                   {index === 5 && 
                     <div>
                       <HistoryToggleOffIcon onClick={() =>  refe.current.click()}/>
+                    </div>
+                  }
+                  {index === 6 && 
+                    <div>
+                      <LocalPhoneIcon/>
                     </div>
                   }
                 </ListItemIcon>

@@ -314,7 +314,8 @@ function App() {
                 <CreateStory user={user} close={() => setShowCreateStory(false)}/>
               </div>
             </Modal>}
-            <Call/>
+          {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") && <Call/>}
+          
         </Box>
             </Box>
       </div>}
