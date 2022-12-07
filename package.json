@@ -35,6 +35,7 @@
     "socket.io-client": "^4.5.4",
     "web-vitals": "^2.1.4"
   },
+  "proxy": "https://tanmay-inst-clone-backend.onrender.com",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
