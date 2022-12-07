@@ -25,6 +25,7 @@ import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, 
 import AvatarStory from './ViewStory/AvatarStory';
 import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
+import Call from './Call/Call';
 
 
 function getModalStyle() {
@@ -313,6 +314,7 @@ function App() {
                 <CreateStory user={user} close={() => setShowCreateStory(false)}/>
               </div>
             </Modal>}
+            <Call/>
         </Box>
             </Box>
       </div>}
