@@ -9,7 +9,7 @@ import Peer from "simple-peer";
 import io from "socket.io-client";
 import "./Call.css";
 
-const socket = io.connect("http://localhost:5000");
+const socket = io.connect("https://tanmay-inst-clone-backend.onrender.com");
 
 function Call() {
   const [me, setMe] = useState("");
