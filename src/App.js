@@ -30,6 +30,7 @@ import Call2 from './Call/Call2';
 import {ContextProvider} from './Context/SocketContext';
 import Sidebar from './Call/Sidebar';
 import Notifications from './Call/Notifications';
+import GroupCall from './Call/GroupCall';
 
 function getModalStyle() {
   const top = 50;
@@ -319,8 +320,8 @@ function App() {
             </Modal>}
           {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") &&
           <> 
-            <Call2/><Sidebar/><Notifications/>
-          
+            {/* <Call2/><Sidebar/><Notifications/> */}
+            <GroupCall />
           </> }
           
         </Box>
