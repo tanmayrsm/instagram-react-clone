@@ -8,13 +8,16 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import {Provider} from 'react-redux';
 import store from './redux-store/index';
 import * as serviceWorker from './serviceWorker';
+import { ContextProvider } from './Context/SocketContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode> // disabled it, as react-insta-stories get stuck after first img/video
+  <ContextProvider>
     <Provider store={store}>
       <App />
     </Provider>
+  </ContextProvider>
   // </React.StrictMode>
 );
 serviceWorker.register();

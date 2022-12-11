@@ -9,9 +9,9 @@ import Peer from "simple-peer";
 import io from "socket.io-client";
 import "./Call.css";
 
-const socket = io.connect("https://tanmay-inst-clone-backend.onrender.com");
 
 function Call() {
+  const socket = io.connect("http://localhost:5000");
   const [me, setMe] = useState("");
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
@@ -21,6 +21,7 @@ function Call() {
   const [idToCall, setIdToCall] = useState("");
   const [callEnded, setCallEnded] = useState(false);
   const [name, setName] = useState("");
+  const [userVideoStream, setUserVideoStream] = useState();
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
@@ -45,6 +46,13 @@ function Call() {
     });
   }, []);
 
+  useEffect(() => {
+    if(userVideoStream) {
+      userVideo.current.srcObject = userVideoStream;
+      console.log("us vid stream ::", userVideoStream);
+    }
+  }, [userVideoStream])
+
   const callUser = (id) => {
     const peer = new Peer({
       initiator: true,
@@ -60,7 +68,7 @@ function Call() {
       });
     });
     peer.on("stream", (stream) => {
-      userVideo.current.srcObject = stream;
+      setUserVideoStream(stream);
     });
     socket.on("callAccepted", (signal) => {
       setCallAccepted(true);
@@ -81,7 +89,9 @@ function Call() {
       socket.emit("answerCall", { signal: data, to: caller });
     });
     peer.on("stream", (stream) => {
-      userVideo.current.srcObject = stream;
+      setUserVideoStream(stream);
+      // userVideo.current.onloadedmetadata = function(e) {
+      // };
     });
 
     peer.signal(callerSignal);
@@ -99,7 +109,6 @@ function Call() {
       <div className="container">
         <div className="video-container">
           <div className="video">
-            {stream && (
               <video
                 playsInline
                 muted
@@ -107,17 +116,16 @@ function Call() {
                 autoPlay
                 style={{ width: "300px" }}
               />
-            )}
           </div>
           <div className="video">
-            {callAccepted && !callEnded ? (
+            
               <video
                 playsInline
                 ref={userVideo}
                 autoPlay
                 style={{ width: "300px" }}
               />
-            ) : null}
+              
           </div>
         </div>
         <div className="myId">
@@ -129,6 +137,7 @@ function Call() {
             onChange={(e) => setName(e.target.value)}
             style={{ marginBottom: "20px" }}
           />
+          Me : {me}
           <CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
             <Button
               variant="contained"

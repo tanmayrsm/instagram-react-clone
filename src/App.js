@@ -25,8 +25,11 @@ import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, 
 import AvatarStory from './ViewStory/AvatarStory';
 import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
-import Call from './Call/Call';
+import Call2 from './Call/Call2';
 
+import {ContextProvider} from './Context/SocketContext';
+import Sidebar from './Call/Sidebar';
+import Notifications from './Call/Notifications';
 
 function getModalStyle() {
   const top = 50;
@@ -314,7 +317,11 @@ function App() {
                 <CreateStory user={user} close={() => setShowCreateStory(false)}/>
               </div>
             </Modal>}
-          {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") && <Call/>}
+          {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") &&
+          <> 
+            <Call2/><Sidebar/><Notifications/>
+          
+          </> }
           
         </Box>
             </Box>
