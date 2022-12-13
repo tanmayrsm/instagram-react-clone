@@ -67,6 +67,9 @@ const Video = (props) => {
       ref.current.srcObject = stream;
       console.log("Adding stream  ::", stream);
     });
+    if(props.othStream && props.id && props.othStream[props.id]) {
+      ref.current.srcObject = props.othStream[props.id];
+    }
   }, []);
 
   return <StyledVideo playsInline autoPlay ref={ref} />;
@@ -77,12 +80,14 @@ const GroupCall = (props) => {
   const [audioFlag, setAudioFlag] = useState(true);
   const [videoFlag, setVideoFlag] = useState(true);
   const [userUpdate, setUserUpdate] = useState([]);
+  const [otherStreans, setOtherStreams] = useState();
   const [roomID, setRoomId] = useState();
   const socketRef = useRef();
   const userVideo = useRef();
   const inptRef = useRef();
 
   const peersRef = useRef([]);
+  
 
   const videoConstraints = {
     minAspectRatio: 1.333,
@@ -180,6 +185,12 @@ const GroupCall = (props) => {
     peer.on("signal", (signal) => {
       socketRef.current.emit("returning signal", { signal, callerID });
     });
+
+    peer.on('stream', (currentStream) => {
+      setOtherStreams((str) => ({...str, [callerID]: currentStream}));
+      console.log("Adding incoming stream :", otherStreans);
+    });
+
 
     peer.signal(incomingSignal);
 
@@ -288,7 +299,7 @@ const GroupCall = (props) => {
                 return (
                 <div key={peer.peerID} >
                    id : {peer.peerID}
-                    <Video peer={peer.peer} />
+                    <Video othStream={otherStreans} peer={peer.peer} id={peer.peerID} />
                     <ControlSmall>
                     <ImgComponentSmall src={videoFlagTemp ? webcam : webcamoff} />
                     &nbsp;&nbsp;&nbsp;
