@@ -96,7 +96,7 @@ const GroupCall = (props) => {
     width: window.innerWidth / 2,
   };
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:5000");
+    socketRef.current = io.connect("https://tanmay-inst-clone-backend.onrender.com");
     // createStream();
   }, []);
 
