@@ -7,6 +7,7 @@
     height: 3em;   
     padding: 1.5em;
     border-bottom: 1px solid lightgrey;
+    justify-content: space-between;
 }
 .main-container {
     justify-content: space-between;

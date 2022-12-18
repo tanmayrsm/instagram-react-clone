@@ -1,10 +1,11 @@
 import {db} from './firebase-config';
 import { doc, getDoc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
-import { getDatabase, onDisconnect, onValue, ref, set, update, child, push, remove, serverTimestamp } from "firebase/database";
+import { getDatabase, onDisconnect, onValue, ref, set, update, child, push, remove, serverTimestamp, get } from "firebase/database";
 import {realtime_db} from './firebase-config';
 import TimeAgo from 'javascript-time-ago'
 // English.
 import en from 'javascript-time-ago/locale/en'
+import { v1 as uuid } from "uuid";
 
 TimeAgo.addDefaultLocale(en)
 
@@ -282,4 +283,100 @@ export function deletePost(postId) {
         }
     };
     return deleteDocByID();
+}
+
+// all call related utils
+
+export function callUser(data) {
+    const query = ref(realtime_db, "call/from/" + data.currentUser.uid);
+    const roomID = uuid();
+    get(query).then(snapshot => {
+        if(snapshot.val()) {
+          console.log("Cant have two separate calls at once");
+        }
+        else {
+          update(query, 
+            {
+                roomID : roomID, 
+                inCallList : [data.currentUser.uid], 
+                roomOwner : data.currentUser.uid,
+                callType: data.callType,
+                callingTo: [data.otherUser.uid]
+            }); 
+                // if he does not picks after 90 secs...
+                // add missed-call msg in his chat with u
+        }
+    })
+
+     const queryToReceiver = ref(realtime_db, "call/to/" + data.otherUser.uid);
+     get(queryToReceiver).then(snapshot => {
+        if(snapshot.val()) {
+          console.log("User busy");
+          // add msg in his chat with u
+        }
+        else {
+          update(queryToReceiver, 
+            {
+                roomID : roomID, 
+                inCallList : [data.currentUser.uid], 
+                roomOwner : data.currentUser.uid, 
+                whoCalls : data.currentUser.uid,
+                callType: data.callType
+            }); 
+          // if he does not picks after 90 secs...
+          // add missed-call msg in his chat with u
+        }
+     });
+
+
+}
+
+export function joinCall(data) {
+    // add my name in callList of otherUser
+    const query = ref(realtime_db, "call/from/" + data.otherUser.uid);
+    get(query).then(snapshot => {
+            let prevCallingToList = snapshot.val().inCallList;
+            if(prevCallingToList && prevCallingToList.length > 0) {
+                prevCallingToList = prevCallingToList.filter(item => item !== data.currentUser.uid);
+            }
+            update(query, 
+                {
+                    ...snapshot.val(), 
+                    inCallList : [...snapshot.val().inCallList, data.currentUser.uid],
+                    callingTo: prevCallingToList
+                }
+            );
+    });
+}
+
+export function listenInComingCall(currentUser, setInComingCallData) {
+    const query = ref(realtime_db, "call/to/" + currentUser.uid);
+    onValue(query, (snapshot) => {
+        if(snapshot.val()) {
+            // someones calling
+            const incomingData = snapshot.val();
+            if(incomingData.whoCalls) {
+                getUser(incomingData.whoCalls).then(callerData => {
+                    setInComingCallData(
+                        { 
+                            ...incomingData,
+                            callFrom : incomingData.whoCalls, 
+                            otherUser: callerData, 
+                            currentUser: currentUser,
+                            roomId: incomingData.roomID, 
+                            callType: incomingData.callType}
+                    );
+                })
+            }
+        }
+    });
+}
+
+export function getRoomInfo(roomOwner, setRoomData) {
+    const query = ref(realtime_db, "call/from/" + roomOwner + "/inCallList");
+    onValue(query, (snapshot) => {
+        if(snapshot.val()) {
+            setRoomData(snapshot.val());
+        }
+    });
 }

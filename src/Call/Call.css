@@ -1,0 +1,21 @@
+.pre-call-main-container {
+    height: 90vh !important;
+}
+
+.users-vid {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16em;
+    height: 9em;
+    object-fit: cover;
+    margin: 1em;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-container {
+    bottom: 1em;
+}

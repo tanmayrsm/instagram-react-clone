@@ -3,6 +3,8 @@ import './MessageRoom.css';
 import logo from '../../assets/logo2.png';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { getUser, messageUser, deleteMessageFromDB, updateReaction } from '../../Utils';
 import { Avatar, Button, Popover } from '@mui/material';
 import { onValue, ref, set, update, child, push } from "firebase/database";
@@ -18,6 +20,8 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { Close } from '@mui/icons-material';
 import { LinkPreview } from '@dhaiwat10/react-link-preview';  // will need express server to do get http reuqest and overcome cors
+import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
+import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
 
 function MessageRoom({currentUser, otherUser}) {
   const [otherUserInfo, setOtherUserInfo] = useState(null);
@@ -26,6 +30,12 @@ function MessageRoom({currentUser, otherUser}) {
   const [reset, setReset] = useState('');
   const [messageKeys, setMessageKeys] = useState([]);
   const [repliedTo, setRepliedTo] = useState(null);
+  const [callAttr, setCallAttr] = useState(null);
+
+  const currView = useSelector((state) => state.view);
+  const metaData = useSelector((state) => state.metaData);
+  const dispatcher = useDispatch();
+  
 
   const refe = useRef();
 
@@ -135,18 +145,33 @@ function MessageRoom({currentUser, otherUser}) {
     setRepliedTo(body);
   }
 
+  const callUser = (callType) => {
+    setCallAttr({callTo : otherUser, currentUser: currentUser, otherUser: otherUserInfo, callType : callType});
+    dispatcher({type: "CALL", metaData: {callTo : otherUser, currentUser: currentUser, otherUser: otherUserInfo, callType : callType, roomOwner: currentUser.uid} });
+  }
+
   return (
     <div className='message-room'>
       {
         otherUserInfo !== null && 
         <div className='d-flex flex-column main-container h-100'>
           <div className='otheruser-header d-flex align-items-center'>
-            <div className='position-relative'>
-              <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
-            </div>
-              <div>
-                <div className='userName'><strong>{otherUserInfo.username || 'UNKNOWN USER'}</strong></div>
+            <div className='d-flex align-items-center'>
+              <div className='position-relative'>
+                <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
               </div>
+                <div>
+                  <div className='userName'><strong>{otherUserInfo.username || 'UNKNOWN USER'}</strong></div>
+                </div>
+            </div>
+            <div className='d-flex'>
+              <div className='p-1' role="button" onClick={() => callUser("VOICE")}>
+                <LocalPhoneOutlinedIcon/>
+              </div>
+              <div className='p-1' role="button" onClick={() => callUser("VIDEO")}>
+                <VideoCallOutlinedIcon/>
+              </div>
+            </div>
           </div>
           {/* msg list */}
           <div className='message-scroll-container h-100 p-4'>

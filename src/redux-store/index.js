@@ -38,6 +38,11 @@ const reducer = (state = {view : "POSTS", metaData: undefined}, action) => {
                 view: 'TEST_VIDEO',
                 metaData: action.metaData
             };
+        case 'CALL' : 
+            return {
+                view: 'CALL',
+                metaData: action.metaData
+            };
         default :
             return {
                 view: 'POSTS',

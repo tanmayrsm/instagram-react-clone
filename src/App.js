@@ -21,7 +21,7 @@ import SearchUser from './SearchUser/SearchUser';
 import Messaging from './Messaging/Messaging';
 import { useDispatch, useSelector } from 'react-redux';
 import CreateStory from './CreateStory/CreateStory';
-import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, setUserStatus } from './Utils';
+import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, listenInComingCall, setUserStatus } from './Utils';
 import AvatarStory from './ViewStory/AvatarStory';
 import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
@@ -31,6 +31,10 @@ import {ContextProvider} from './Context/SocketContext';
 import Sidebar from './Call/Sidebar';
 import Notifications from './Call/Notifications';
 import GroupCall from './Call/GroupCall';
+import PreCall from './Call/PreCall';
+import { Avatar } from '@mui/material';
+import CallIcon from '@mui/icons-material/Call';
+import CloseIcon from '@mui/icons-material/Close';
 
 function getModalStyle() {
   const top = 50;
@@ -85,6 +89,10 @@ function App() {
 
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateStory, setShowCreateStory] = useState(false);
+  const [preCall, setPreCall] = useState(false);
+  const [incomingCall, setInComingCallData] = useState();
+  const [outgoingCall, setOutGoingCallData] = useState();
+
   const [allFollowing, setAllFollowing] = useState([]);
 
   // sign In vars
@@ -135,7 +143,9 @@ function App() {
         // user has logged in
         if(db.collection('user').doc(authUser.uid) != null && user === null) {
           setUserStatus(authUser.uid, true);
+
           establishUserConnection(authUser.uid);
+          
           const fetchDocById = async () => {
             const docRef = doc(db, "user", authUser.uid) // db = getFirestore()
       
@@ -147,6 +157,12 @@ function App() {
                 ...authUser,
                 ...docSnap.data()
               });
+              // listen incoming calls for this user
+              listenInComingCall({
+                ...authUser,
+                ...docSnap.data()
+              }, setInComingCallData);
+    
               // get all following users for myself
               getAllFollowing(authUser.uid).then( (val) => {
                 return Promise.all(val.map(id => getUser(id)));
@@ -233,102 +249,139 @@ function App() {
       setShowCreatePost(true);
     } else if(currView === "STORY") {
       setShowCreateStory(true);
+    } else if(currView === "CALL") {
+      setPreCall(true);
+      setOutGoingCallData(metaData);
+      setInComingCallData(undefined);
     }
     else {
       updateUserDetails();
     }
   }, [currView, metaData]);
 
+  useEffect(() => {
+    if(incomingCall) {
+      // setting incoming call metadata
+      setOutGoingCallData(undefined);
+    }
+  }, [incomingCall]);
+
+  const cancelCall = () => {
+    setInComingCallData(undefined);
+    // also delete from db, and inform 'from' user
+  }
+
   return (
-    <div className="app">
-      {/* app header */}
-      {!openSignIn && !open && <div className='app-header'>
-        <img src={instaLogo} alt='logo' className='img-header'></img>
-        {
-          user ? 
-          <Button onClick={() => signOutApp()}>Logout</Button> : 
-          <div className='app-login-container'>
-            <Button onClick={() => setOpen(true)}>Sign Up</Button>
-            <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-          </div>
-        }
-      </div>  }
-
-      {/* Sign up page */}
-      {open && <Registration signUp={signUp} openSignIn={() => {setOpen(false); setOpenSignIn(true)}} />}
-
-      {/* sign In page */}
-      {openSignIn && <Login signIn={signIn} openSignUp={() => {setOpen(true); setOpenSignIn(false)}} />}
-      
-      {!openSignIn && !open && <div className='main-app'>
-        <Box sx={{ display: 'flex' }}>
-        <Drawerr/>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
-            <div className='app-posts'>
-              {/* all stories */}
-              {
-                user && user.uid && allFollowing && allFollowing.length && 
-                  <div className='d-flex all-user-stories'> 
-                    {allFollowing.map(userInfo => (
-                      <div>
-                        <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
-                      </div>))} 
-                  </div>
-              }
-              {
-                posts && posts.length && posts.map(({id, post}) => (
-                  <Posts key={id} 
-                    postId={id} 
-                    currentUser={user}
-                    username={post.username} 
-                    media={post.media}
-                    caption={post.caption}
-                    userWhoPosted={post.uid}
-                    timestamp={post.timestamp}
-                    likes={post.likes}
-                    tags={post.tags}
-                    saved={post.saved}/>
-                ))
-              }
-              {
-                user?.displayName ? 
-                  "" :
-                  <h4>Please login to uplaod posts!!</h4>
-              }
+    <>
+      {!preCall  ? <div className="app">
+        {/* app header */}
+        {!openSignIn && !open && <div className='app-header'>
+          <img src={instaLogo} alt='logo' className='img-header'></img>
+          {
+            user ? 
+            <Button onClick={() => signOutApp()}>Logout</Button> : 
+            <div className='app-login-container'>
+              <Button onClick={() => setOpen(true)}>Sign Up</Button>
+              <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
             </div>
           }
-          {/* profile view */}
-          {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
-          {/* search user */}
-          {(currView === "CREATEPOST" || currView === "STORY" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
-          {/* message user */}
-          {(currView === "CREATEPOST" || currView === "STORY" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
-          {/* create Post modal*/}
-          {showCreatePost && user?.displayName && <Modal open={showCreatePost}
-            onClose={() => setShowCreatePost(false)}>
-              <div style={modalStyle} className={classes2.paper}>
-                <CreatePost user={user}/>
+        </div>  }
+
+        {/* Sign up page */}
+        {open && <Registration signUp={signUp} openSignIn={() => {setOpen(false); setOpenSignIn(true)}} />}
+
+        {/* sign In page */}
+        {openSignIn && <Login signIn={signIn} openSignUp={() => {setOpen(true); setOpenSignIn(false)}} />}
+        
+        {!openSignIn && !open && <div className='main-app'>
+          <Box sx={{ display: 'flex' }}>
+          <Drawerr/>
+          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
+              <div className='app-posts'>
+                {/* all stories */}
+                {
+                  user && user.uid && allFollowing && allFollowing.length && 
+                    <div className='d-flex all-user-stories'> 
+                      {allFollowing.map(userInfo => (
+                        <div>
+                          <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
+                        </div>))} 
+                    </div>
+                }
+                {
+                  posts && posts.length && posts.map(({id, post}) => (
+                    <Posts key={id} 
+                      postId={id} 
+                      currentUser={user}
+                      username={post.username} 
+                      media={post.media}
+                      caption={post.caption}
+                      userWhoPosted={post.uid}
+                      timestamp={post.timestamp}
+                      likes={post.likes}
+                      tags={post.tags}
+                      saved={post.saved}/>
+                  ))
+                }
+                {
+                  user?.displayName ? 
+                    "" :
+                    <h4>Please login to uplaod posts!!</h4>
+                }
               </div>
-            </Modal>}
-          {/* create story modal*/}
-          {showCreateStory && user?.displayName && <Modal open={showCreateStory}
-            onClose={() => setShowCreateStory(false)}>
-              <div style={modalStyle} className={classes3.paper}>
-                <CreateStory user={user} close={() => setShowCreateStory(false)}/>
+            }
+            {/* profile view */}
+            {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
+            {/* search user */}
+            {(currView === "CREATEPOST" || currView === "STORY" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
+            {/* message user */}
+            {(currView === "CREATEPOST" || currView === "STORY" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
+            {/* create Post modal*/}
+            {showCreatePost && user?.displayName && <Modal open={showCreatePost}
+              onClose={() => setShowCreatePost(false)}>
+                <div style={modalStyle} className={classes2.paper}>
+                  <CreatePost user={user}/>
+                </div>
+              </Modal>}
+            {/* create story modal*/}
+            {showCreateStory && user?.displayName && <Modal open={showCreateStory}
+              onClose={() => setShowCreateStory(false)}>
+                <div style={modalStyle} className={classes3.paper}>
+                  <CreateStory user={user} close={() => setShowCreateStory(false)}/>
+                </div>
+              </Modal>}
+            {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") &&
+            <> 
+              {/* <Call2/><Sidebar/><Notifications/> */}
+              <GroupCall />
+            </> }
+            
+          </Box>
+              </Box>
+        </div>}
+        
+      </div> : <PreCall data={outgoingCall || incomingCall} />}
+      {incomingCall && !preCall && 
+        <Modal open={!!incomingCall}
+          onClose={() => setShowCreatePost(false)}>
+          <div style={modalStyle} className={classes2.paper}>
+            <div className='d-flex align-items-center flex-column justify-content-center'>
+              <Avatar sx={{width: 100, height: 100}}  alt={incomingCall.otherUser.displayName} src={incomingCall.otherUser.imgUrl}/>
+              <h4 className="p-2">{incomingCall.otherUser.displayName}</h4>
+              <span>incoming {incomingCall.callType === "VOICE" ? 'audio' :'video'} call...</span>
+              <div className='d-flex align-items-center justify-content-center'>
+                <div className='p-2'>
+                  <CallIcon role="button" onClick={() => setPreCall(true)} />
+                </div>
+                <div className='p-2'>
+                  <CloseIcon role="button" onClick={() => cancelCall()} />
+                </div>
               </div>
-            </Modal>}
-          {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") &&
-          <> 
-            {/* <Call2/><Sidebar/><Notifications/> */}
-            <GroupCall />
-          </> }
-          
-        </Box>
-            </Box>
-      </div>}
-      
-    </div>
+            </div>
+          </div>
+        </Modal>}
+    </>
   );
 }
 
