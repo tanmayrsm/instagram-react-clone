@@ -328,7 +328,7 @@ export function callUser(data) {
         }
      });
 
-
+    return roomID;
 }
 
 export function joinCall(data) {
@@ -372,11 +372,41 @@ export function listenInComingCall(currentUser, setInComingCallData) {
     });
 }
 
-export function getRoomInfo(roomOwner, setRoomData) {
+export function getRoomInfo(roomOwner, setRoomData, setRoom) {
     const query = ref(realtime_db, "call/from/" + roomOwner + "/inCallList");
     onValue(query, (snapshot) => {
         if(snapshot.val()) {
             setRoomData(snapshot.val());
         }
     });
+
+    const queryForRoomID = ref(realtime_db, "call/from/" + roomOwner);
+    onValue(queryForRoomID, (snapshot) => {
+        if(snapshot.val()) {
+            setRoom(snapshot.val());
+        }
+    });
+}
+
+export function addUserToCall(callOwnerId, roomID, currentUserId,  otherUser) {
+    
+     const queryToReceiver = ref(realtime_db, "call/to/" + otherUser.uid);
+     get(queryToReceiver).then(snapshot => {
+        if(snapshot.val()) {
+          console.log("The user u r calling is busy");
+          // add msg in his chat with u
+        }
+        else {
+          update(queryToReceiver, 
+            {
+                roomID : roomID, 
+                inCallList : [otherUser.uid], 
+                roomOwner : callOwnerId, 
+                whoCalls : currentUserId,
+                callType: "VOICE"
+            }); 
+          // if he does not picks after 90 secs...
+          // add missed-call msg in his chat with u
+        }
+     });
 }
