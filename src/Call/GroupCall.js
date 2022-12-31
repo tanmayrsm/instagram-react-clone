@@ -70,7 +70,7 @@ const Video = (props) => {
     if(props.othStream && props.id && props.othStream[props.id]) {
       ref.current.srcObject = props.othStream[props.id];
     }
-  }, []);
+  }, [props]);
 
   return <StyledVideo playsInline autoPlay ref={ref} />;
 };
