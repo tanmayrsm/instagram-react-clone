@@ -84,7 +84,7 @@ const Video = (props) => {
       if(props.othStream && props.id && props.othStream[props.id]) {
         ref.current.srcObject = props.othStream[props.id];
       }
-    }, []);
+    }, [props]);
   
     return <StyledVideo playsInline autoPlay ref={ref} />;
 };
@@ -92,6 +92,7 @@ const Video = (props) => {
 
 function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream}) {
   const [callStarted, setCallStarted] = useState(callStarter);
+  const [testBool, setTestBool] = useState(true);
   const [videoSettingOn, setVideoSettingOn] = useState(vidOn);
   const [currVidStream, setStream] = useState(currentUserVidStream);
   const [inRoomData, setInRoomData] = useState();
@@ -167,67 +168,69 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
-
-        // 2- set currentUsers video stream in <video> 
-        selfVideoRef.current.srcObject = stream;
-
-        // 3- emit roomID, with user who joined
-        socketRef.current.emit("join room", currentRoomID.roomID);
-
-        // 4- in server.js
-
-        // 5- listen to all users in current call
-        socketRef.current.on("all users", (users) => {
-          console.log(users)
-          const peers = [];
-          users.forEach((userID) => {
-            const peer = createPeer(userID, socketRef.current.id, stream);
+        if(testBool) {
+          setTestBool(false);
+          // 2- set currentUsers video stream in <video> 
+          selfVideoRef.current.srcObject = stream;
+  
+          // 3- emit roomID, with user who joined
+          socketRef.current.emit("join room", currentRoomID.roomID);
+  
+          // 4- in server.js
+  
+          // 5- listen to all users in current call
+          socketRef.current.on("all users", (users) => {
+            console.log(users)
+            const peers = [];
+            users.forEach((userID) => {
+              const peer = createPeer(userID, socketRef.current.id, stream);
+              peersRef.current.push({
+                peerID: userID,
+                peer,
+              });
+              peers.push({
+                peerID: userID,
+                peer,
+              });
+            });
+            setPeers(peers);
+          });
+  
+          // 8- in server.js
+          // 9- push newly created user in Peers list
+          socketRef.current.on("user joined", (payload) => {
+            console.log("==",payload)
+            const peer = addPeer(payload.signal, payload.callerID, stream);
             peersRef.current.push({
-              peerID: userID,
+              peerID: payload.callerID,
               peer,
             });
-            peers.push({
-              peerID: userID,
+            const peerObj = {
               peer,
-            });
+              peerID: payload.callerID,
+            };
+            setPeers((users) => [...users, peerObj]);
           });
-          setPeers(peers);
-        });
-
-        // 8- in server.js
-        // 9- push newly created user in Peers list
-        socketRef.current.on("user joined", (payload) => {
-          console.log("==",payload)
-          const peer = addPeer(payload.signal, payload.callerID, stream);
-          peersRef.current.push({
-            peerID: payload.callerID,
-            peer,
+  
+          socketRef.current.on("user left", (id) => {
+            const peerObj = peersRef.current.find((p) => p.peerID === id);
+            if (peerObj) {
+              peerObj.peer.destroy();
+            }
+            const peers = peersRef.current.filter((p) => p.peerID !== id);
+            peersRef.current = peers;
+            setPeers(peers);
           });
-          const peerObj = {
-            peer,
-            peerID: payload.callerID,
-          };
-          setPeers((users) => [...users, peerObj]);
-        });
-
-        socketRef.current.on("user left", (id) => {
-          const peerObj = peersRef.current.find((p) => p.peerID === id);
-          if (peerObj) {
-            peerObj.peer.destroy();
-          }
-          const peers = peersRef.current.filter((p) => p.peerID !== id);
-          peersRef.current = peers;
-          setPeers(peers);
-        });
-
-        socketRef.current.on("receiving returned signal", (payload) => {
-          const item = peersRef.current.find((p) => p.peerID === payload.id);
-          item.peer.signal(payload.signal);
-        });
-
-        socketRef.current.on("change", (payload) => {
-          setUserUpdate(payload);
-        });
+  
+          socketRef.current.on("receiving returned signal", (payload) => {
+            const item = peersRef.current.find((p) => p.peerID === payload.id);
+            item.peer.signal(payload.signal);
+          });
+  
+          socketRef.current.on("change", (payload) => {
+            setUserUpdate(payload);
+          });
+        }
       });
   }
 
@@ -280,7 +283,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
   useEffect(() => {
     if(currentRoomID && currentRoomID.roomID) {
       setTimeout(() => {
-        setVideo(false);
+        // setVideo(false);
         createStream();
       }, 3000);
     }
