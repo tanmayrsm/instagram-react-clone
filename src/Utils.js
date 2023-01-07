@@ -242,6 +242,13 @@ export function establishUserConnection (userId) {
         onDisconnect(lastOnlineRef).set(serverTimestamp());
       }
     });
+
+    // remove call-from and call-to queries on disconnect
+    const query = ref(realtime_db, "call/from/" + userId);
+    const query2 = ref(realtime_db, "call/to/" + userId);
+    onDisconnect(query).remove();
+    onDisconnect(query2).remove();
+    
 }
 
 export function getPost(postId) {
@@ -409,4 +416,34 @@ export function addUserToCall(callOwnerId, roomID, currentUserId,  otherUser) {
           // add missed-call msg in his chat with u
         }
      });
+}
+
+export function removeFromCall(currentUserId, roomOwnerId, noOfPeopleInCall) {
+    // remove -to call if it exists
+    const query = ref(realtime_db, "call/to/" + currentUserId);
+    get(query).then(snapshot => {
+        if(snapshot.val()) {
+            remove(query);
+        }
+    });
+
+    const query2 = ref(realtime_db, "call/from/" + roomOwnerId);
+    get(query2).then(snapshot => {
+        let callingList = snapshot.val().inCallList;
+        if(callingList && callingList.length > 0) {
+            callingList = callingList.filter(item => item !== currentUserId);
+        }
+        if(callingList.length === 0) {
+            remove(query2);
+        } else {
+            update(query2, 
+                {
+                    ...snapshot.val(), 
+                    inCallList : callingList,
+                    callingTo: callingList
+                }
+            );
+        }
+});
+    
 }

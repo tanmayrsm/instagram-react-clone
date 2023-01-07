@@ -253,11 +253,19 @@ function App() {
       setPreCall(true);
       setOutGoingCallData(metaData);
       setInComingCallData(undefined);
+    } else if(metaData && metaData.call === "END") {
+      setPreCall(false);
+      setInComingCallData(undefined);
+      setOutGoingCallData(undefined);
     }
     else {
       updateUserDetails();
     }
   }, [currView, metaData]);
+
+  useEffect(() => {
+    console.log("View change ?", currView);
+  }, [currView]);
 
   useEffect(() => {
     if(incomingCall) {
@@ -361,7 +369,7 @@ function App() {
               </Box>
         </div>}
         
-      </div> : <PreCall data={outgoingCall || incomingCall} />}
+      </div> : <PreCall data={outgoingCall || incomingCall}  />}
       {incomingCall && !preCall && 
         <Modal open={!!incomingCall}
           onClose={() => setShowCreatePost(false)}>
