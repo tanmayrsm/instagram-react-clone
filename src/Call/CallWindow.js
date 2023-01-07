@@ -139,6 +139,9 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   useEffect(() => {
     socketRef.current = io.connect(SERVER_URL);
     getRoomInfo(callStarter, setInRoomData, setCurrRoomID);
+    if(callData?.currentUser?.uid === callStarter && showCallDialog === undefined) {
+      setShowCallDialog(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -246,11 +249,6 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
     if(!videoSettingOn) {
         stream.getTracks().forEach(function (track) {
           if (track.kind === "video" && track.enabled) {
-                socketRef.current.emit("change", [...userUpdate,{
-                id: socketRef.current.id,
-                videoFlag: false,
-                audioFlag,
-                }]);
                 track.enabled = false;
                 setVideoFlag(false);
                 console.log("Video off for  ::", socketRef.current.id, allUsersInfo);
@@ -372,9 +370,6 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   useEffect(() => {
     if(inRoomData > 1 && showCallDialog) {
       setShowCallDialog(false);
-    } 
-    else if(callData?.currentUser?.uid === callStarter && showCallDialog === undefined) {
-      setShowCallDialog(true);
     }
   }, [inRoomData]);
 
