@@ -315,16 +315,20 @@ export function callUser(data) {
         }
     })
 
-     const queryToReceiver = ref(realtime_db, "call/to/" + data.otherUser.uid);
+    return roomID;
+}
+
+export function triggerOtherUser(data) {
+    const queryToReceiver = ref(realtime_db, "call/to/" + data.otherUser.uid);
      get(queryToReceiver).then(snapshot => {
         if(snapshot.val()) {
-          console.log("User busy");
+          alert("User busy");
           // add msg in his chat with u
         }
         else {
           update(queryToReceiver, 
             {
-                roomID : roomID, 
+                roomID : data.roomID, 
                 inCallList : [data.currentUser.uid], 
                 roomOwner : data.currentUser.uid, 
                 whoCalls : data.currentUser.uid,
@@ -335,7 +339,6 @@ export function callUser(data) {
         }
      });
 
-    return roomID;
 }
 
 export function joinCall(data) {

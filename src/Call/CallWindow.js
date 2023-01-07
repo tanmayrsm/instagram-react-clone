@@ -96,16 +96,17 @@ const Video = (props) => {
 };
   
 
-function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream}) {
+function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, setTriggerCall}) {
   const [callStarted, setCallStarted] = useState(callStarter);
   const [testBool, setTestBool] = useState(true);
   const [videoSettingOn, setVideoSettingOn] = useState(vidOn);
-  const [currVidStream, setStream] = useState(currentUserVidStream);
+  const [currVidStream, setStream] = useState();
   const [inRoomData, setInRoomData] = useState();
   const [currentRoomID, setCurrRoomID] = useState();
   const [followingUsers, setFollowingUsers] = useState();   // you can only add people whom you follow
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [allUsersInfo, setAllUsersInfo] = useState(null);
+  const [showCallDialog, setShowCallDialog] = useState(undefined);
   const classes = useStyles();
 
   const [micSettingOn, setMicSettingOn] = useState(micOn);
@@ -113,7 +114,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
   // socket variables
   const [peers, setPeers] = useState([]);
   const [audioFlag, setAudioFlag] = useState(true);
-  const [videoFlag, setVideoFlag] = useState(true);
+  const [videoFlag, setVideoFlag] = useState(videoSettingOn);
   const [userUpdate, setUserUpdate] = useState([]);
   const [otherStreans, setOtherStreams] = useState();
 //   const [roomID, setRoomId] = useState();
@@ -183,87 +184,12 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
       .then((stream) => {
         if(testBool) {
           setTestBool(false);
-          // 2- set currentUsers video stream in <video> 
-          userVideo.current.srcObject = stream;
-  
-          // 3- emit roomID, with user who joined
-          socketRef.current.emit("join room", {roomID : currentRoomID.roomID, user: callData.currentUser});
-  
-          // 4- in server.js
-  
-          // 5- listen to all users in current call
-          socketRef.current.on("all users", (users) => {
-            console.log(users)
-            const peers = [];
-            users.forEach((userID) => {
-              const rem = peers.filter(user => user.peerID === userID);
-              if(rem.length === 0) {
-                const peer = createPeer(userID, socketRef.current.id, stream);
-                peersRef.current.push({
-                  peerID: userID,
-                  peer,
-                });
-                peers.push({
-                  peerID: userID,
-                  peer,
-                });
-              }
-            });
-            setPeers(peers);
-          });
-
-          socketRef.current.on("all full users", (allUsersInfo) => {
-            const rem = {};
-            allUsersInfo.forEach(user => {
-              const key = Object.keys(user)[0];
-              rem[key] = {...user[key]};
-            });
-            setAllUsersInfo(rem);
-          })
-  
-          // 8- in server.js
-          // 9- push newly created user in Peers list
-          socketRef.current.on("user joined", (payload) => {
-            console.log("==",payload)
-            const peer = addPeer(payload.signal, payload.callerID, stream);
-            peersRef.current.push({
-              peerID: payload.callerID,
-              peer,
-            });
-            const peerObj = {
-              peer,
-              peerID: payload.callerID,
-            };
-            const peerCheck = peers.filter(user => user.peerID === payload.callerID);
-            if(peerCheck.length === 0)
-              setPeers((users) => [...users, peerObj]);
-          });
-  
-          socketRef.current.on("user left", (id) => {
-            const peerObj = peersRef.current.find((p) => p.peerID === id);
-            if (peerObj) {
-              peerObj.peer.destroy();
-            }
-            const peers = peersRef.current.filter((p) => p.peerID !== id);
-            peersRef.current = peers;
-            setPeers(peers);
-            // delete allUsersInfo[id];
-            // setAllUsersInfo(allUsersInfo);        
-            // // reset available users to be called
-            // getAllFollowing(callData?.currentUser?.uid).then((val) => {
-            //   setFollowingUsers({userIdList : val.filter(id => id !== callData.otherUser.uid )});
-            // });
-          });
-  
-          socketRef.current.on("receiving returned signal", (payload) => {
-            const item = peersRef.current.find((p) => p.peerID === payload.id);
-            item.peer.signal(payload.signal);
-          });
-  
-          socketRef.current.on("change", (payload) => {
-            setUserUpdate(payload);
-          });
+          listenSocketEvents(stream);
         }
+      })
+      .catch(err => {
+        alert("Cant open users video");
+        dispatcher({type: "POSTS", metaData: {call : "END"}});
       });
   }
 
@@ -313,6 +239,108 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
     return peer;
   }
 
+  const listenSocketEvents = (stream) => {
+    // 2- set currentUsers video stream in <video> 
+    userVideo.current.srcObject = stream;
+    if(!videoSettingOn) {
+        stream.getTracks().forEach(function (track) {
+          if (track.kind === "video" && track.enabled) {
+                socketRef.current.emit("change", [...userUpdate,{
+                id: socketRef.current.id,
+                videoFlag: false,
+                audioFlag,
+                }]);
+                track.enabled = false;
+                setVideoFlag(false);
+                console.log("Video off for  ::", socketRef.current.id, allUsersInfo);
+          }
+      });
+    }
+
+    // intermediate -> once currentUsers video is on, then
+    // call other user from backend
+    if(callStarter === callData?.currentUser?.uid)
+      setTriggerCall(true);
+
+    // 3- emit roomID, with user who joined
+    socketRef.current.emit("join room", {roomID : currentRoomID.roomID, user: callData.currentUser});
+
+    // 4- in server.js
+
+    // 5- listen to all users in current call
+    socketRef.current.on("all users", (users) => {
+      console.log(users)
+      const peers = [];
+      users.forEach((userID) => {
+        const rem = peers.filter(user => user.peerID === userID);
+        if(rem.length === 0) {
+          const peer = createPeer(userID, socketRef.current.id, stream);
+          peersRef.current.push({
+            peerID: userID,
+            peer,
+          });
+          peers.push({
+            peerID: userID,
+            peer,
+          });
+        }
+      });
+      setPeers(peers);
+    });
+
+    socketRef.current.on("all full users", (allUsersInfo) => {
+      const rem = {};
+      allUsersInfo.forEach(user => {
+        const key = Object.keys(user)[0];
+        rem[key] = {...user[key]};
+      });
+      setAllUsersInfo(rem);
+    })
+
+    // 8- in server.js
+    // 9- push newly created user in Peers list
+    socketRef.current.on("user joined", (payload) => {
+      console.log("==",payload)
+      const peer = addPeer(payload.signal, payload.callerID, stream);
+      peersRef.current.push({
+        peerID: payload.callerID,
+        peer,
+      });
+      const peerObj = {
+        peer,
+        peerID: payload.callerID,
+      };
+      const peerCheck = peers.filter(user => user.peerID === payload.callerID);
+      if(peerCheck.length === 0)
+        setPeers((users) => [...users, peerObj]);
+    });
+
+    socketRef.current.on("user left", (id) => {
+      const peerObj = peersRef.current.find((p) => p.peerID === id);
+      if (peerObj) {
+        peerObj.peer.destroy();
+      }
+      const peers = peersRef.current.filter((p) => p.peerID !== id);
+      peersRef.current = peers;
+      setPeers(peers);
+      // delete allUsersInfo[id];
+      // setAllUsersInfo(allUsersInfo);        
+      // // reset available users to be called
+      // getAllFollowing(callData?.currentUser?.uid).then((val) => {
+      //   setFollowingUsers({userIdList : val.filter(id => id !== callData.otherUser.uid )});
+      // });
+    });
+
+    socketRef.current.on("receiving returned signal", (payload) => {
+      const item = peersRef.current.find((p) => p.peerID === payload.id);
+      item.peer.signal(payload.signal);
+    });
+
+    socketRef.current.on("change", (payload) => {
+      setUserUpdate(payload);
+    });
+  }
+
   const endCall = () => {
     if(socketRef) {
       if (userVideo.current.srcObject) {
@@ -330,21 +358,35 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
 
   useEffect(() => {
     if(currentRoomID && currentRoomID.roomID) {
-      setTimeout(() => {
-        // setVideo(false);
+      // if(videoSettingOn) 
         createStream();
-      }, 3000);
+      // else  {
+      //   setTimeout(() => {
+      //     listenSocketEvents();
+      //   }, 3000);
+      // } 
     }
   }, [currentRoomID]);
+
+  useEffect(() => {
+    if(inRoomData > 1 && showCallDialog) {
+      setShowCallDialog(false);
+    } 
+    else if(callData?.currentUser?.uid === callStarter && showCallDialog === undefined) {
+      setShowCallDialog(true);
+    }
+  }, [inRoomData]);
 
   return (
     <div className='position-relative' style={{height: '100vh'}}>
         {currentRoomID && <h3>Room ID - {currentRoomID.roomID}</h3>}
         Whose room ? {callStarter}
-        {callStarter && inRoomData?.length === 1 && (!allUsersInfo) && <div className='w-100 h-100 d-flex justify-content-center flex-column align-items-center'> 
+        {callStarter && inRoomData?.length === 1 && showCallDialog && 
+          <div className='w-100 h-100 d-flex justify-content-center flex-column align-items-center'> 
             <Avatar sx={{width: 100, height: 100}}  alt={callData.otherUser.displayName} src={callData.otherUser.imgUrl}/>
             <h6 className='mt-2'>calling... {callData.otherUser.displayName}</h6>
-        </div>}
+          </div>
+        }
 
         {/* all call attendee */}
         
@@ -356,6 +398,12 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream})
             <div>
                 <div className='users-vid'>
                   <StyledVideo muted ref={userVideo} autoPlay playsInline />
+                  {!videoFlag && <div>
+                    <div className='border position-absolute'>
+                          <Avatar sx={{width: 100, height: 100}}  alt={callData.currentUser.displayName} src={callData.currentUser.imgUrl}/>
+                          <h6 className='mt-2'>{callData.currentUser.displayName}</h6>
+                        </div>
+                    </div>}
                   <Controls>
                       <ImgComponent
                       src={videoFlag ? webcam : webcamoff}

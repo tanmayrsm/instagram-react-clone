@@ -8,7 +8,7 @@ import { Button } from '@material-ui/core';
 import { Avatar } from '@mui/material';
 import './Call.css';
 import CallWindow from './CallWindow';
-import {callUser, joinCall} from '../Utils';
+import {callUser, joinCall, triggerOtherUser} from '../Utils';
 
 
 // callTo, callFrom, currentUser, otherUser, callType, roomId (if u r first to activate the call...it wil be null)
@@ -16,6 +16,8 @@ function PreCall({data}) {
     const [callType, setCallType] = useState(data.callType);
     const [callStarted, setCallStarted] = useState(false);    
     const [currVidStream, setStream] = useState();
+    const [triggerCallUser, setTriggerCall] = useState(false);
+    const [roomID, setRoomID] = useState(undefined);
 
     const vidRef = useRef();
     useEffect(() => {
@@ -35,14 +37,32 @@ function PreCall({data}) {
         }
     }, [callType]);
 
+    useEffect(() => {
+        if(callStarted && triggerCallUser) {
+            triggerOtherUser({...data, roomID, callType});
+        }
+    }, [callStarted, triggerCallUser]);
+
     const callTheUser = () => {
         setCallStarted(true);
-        callUser({...data, callType});
+        setRoomID(callUser({...data, callType}));
+        if(currVidStream) {
+            currVidStream.getTracks().forEach(track => {
+                if(track)
+                    track.stop();
+            });
+        }
     }
 
     const joinTheCall = () => {
         setCallStarted(true);
         joinCall(data);
+        if(currVidStream) {
+            currVidStream.getTracks().forEach(track => {
+                if(track)
+                    track.stop();
+            });
+        }
     }
 
   return (
@@ -87,7 +107,7 @@ function PreCall({data}) {
             </Grid>
             : 
             <>
-                <CallWindow callData={data} micOn={true} vidOn={callType === "VIDEO"} callStarter={data.roomOwner} currentUserVidStream={currVidStream}/>
+                <CallWindow callData={data} micOn={true} vidOn={callType === "VIDEO" && currVidStream} callStarter={data.roomOwner} currentUserVidStream={currVidStream} setTriggerCall={setTriggerCall}/>
             </>
         }
         </>
