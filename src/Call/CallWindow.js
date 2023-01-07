@@ -21,6 +21,7 @@ import micunmute from "../assets/micunmute.svg";
 import webcam from "../assets/webcam.svg";
 import webcamoff from "../assets/webcamoff.svg";
 import { useDispatch } from "react-redux";
+import { SERVER_URL } from '../consts';
 
 const Container = styled.div`
   height: 100vh;
@@ -136,7 +137,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   const selfVideoRef = useRef();
   
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:5000");
+    socketRef.current = io.connect(SERVER_URL);
     getRoomInfo(callStarter, setInRoomData, setCurrRoomID);
   }, []);
 
