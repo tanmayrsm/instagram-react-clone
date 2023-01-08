@@ -9,7 +9,7 @@ import './Call.css';
 import { Avatar } from '@mui/material';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { getRoomInfo, getAllFollowing, addUserToCall, removeFromCall } from '../Utils';
+import { getRoomInfo, getAllFollowing, addUserToCall, removeFromCall, getUser, addMissedCall } from '../Utils';
 import {getModalStyle, useStyles} from '../stylesUtil.js';
 import { Modal } from '@material-ui/core';
 import UserLists from '../UserLists/UserLists';
@@ -21,7 +21,7 @@ import micunmute from "../assets/micunmute.svg";
 import webcam from "../assets/webcam.svg";
 import webcamoff from "../assets/webcamoff.svg";
 import { useDispatch } from "react-redux";
-import { SERVER_URL } from '../consts';
+import { SERVER_URL, MISSED_CALL_TIME_INTERVAL } from '../consts';
 
 const Container = styled.div`
   height: 100vh;
@@ -98,16 +98,20 @@ const Video = (props) => {
   
 
 function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, setTriggerCall}) {
-  const [callStarted, setCallStarted] = useState(callStarter);
+  const [roomActive, setRoomActive] = useState(false);
   const [testBool, setTestBool] = useState(true);
   const [videoSettingOn, setVideoSettingOn] = useState(vidOn);
   const [currVidStream, setStream] = useState();
   const [inRoomData, setInRoomData] = useState();
+  const [rejectedList, setRejectedList] = useState();
+  const [userRejectedList, setUserRejectedList] = useState([]);
   const [currentRoomID, setCurrRoomID] = useState();
   const [followingUsers, setFollowingUsers] = useState();   // you can only add people whom you follow
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [allUsersInfo, setAllUsersInfo] = useState(null);
   const [showCallDialog, setShowCallDialog] = useState(undefined);
+  const [wasCallDeclined, setCallDeclined] = useState(false);
+  const [missedCall, setMissedCall] = useState(false);
   const classes = useStyles();
 
   const [micSettingOn, setMicSettingOn] = useState(micOn);
@@ -138,7 +142,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   
   useEffect(() => {
     socketRef.current = io.connect(SERVER_URL);
-    getRoomInfo(callStarter, setInRoomData, setCurrRoomID);
+    getRoomInfo(callStarter, setInRoomData, setCurrRoomID, setRejectedList);
     if(callData?.currentUser?.uid === callStarter && showCallDialog === undefined) {
       setShowCallDialog(true);
     }
@@ -156,26 +160,6 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
       });
     }
   }, [allUsersInfo]);
-
-  const setVideo = (onOrOff) => {
-    setVideoSettingOn(onOrOff);
-    if(!onOrOff && currVidStream) {
-        currVidStream.getTracks().forEach(track => {
-            if(track)
-                track.stop();
-        });
-        setStream(undefined);
-    }
-    if(onOrOff && !currVidStream) {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then((currentStream) => {
-            setStream(currentStream);
-            if(selfVideoRef.current) {
-                selfVideoRef.current.srcObject = currentStream;
-            }
-        });
-    }
-  }
 
   const addUser = (user) => {
     addUserToCall(callStarter, currentRoomID.roomID, callData.currentUser.uid, user);
@@ -246,6 +230,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   const listenSocketEvents = (stream) => {
     // 2- set currentUsers video stream in <video> 
     userVideo.current.srcObject = stream;
+    setStream(stream);
     if(!videoSettingOn) {
         stream.getTracks().forEach(function (track) {
           if (track.kind === "video" && track.enabled) {
@@ -348,6 +333,11 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
         });
         userVideo.current.srcObject = null;
       }
+      if(currVidStream && currVidStream.getTracks()) {
+        currVidStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
       removeFromCall(callData.currentUser.uid, callStarter, allUsersInfo);
       
       socketRef.current.emit("disconnect socket");
@@ -357,21 +347,43 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
 
   useEffect(() => {
     if(currentRoomID && currentRoomID.roomID) {
-      // if(videoSettingOn) 
         createStream();
-      // else  {
-      //   setTimeout(() => {
-      //     listenSocketEvents();
-      //   }, 3000);
-      // } 
     }
   }, [currentRoomID]);
 
   useEffect(() => {
-    if(inRoomData > 1 && showCallDialog) {
+    if(inRoomData && (inRoomData.length > 1 && showCallDialog)) {
       setShowCallDialog(false);
+      setRoomActive(true);
     }
+    if(roomActive && showCallDialog)
+      setShowCallDialog(false);
   }, [inRoomData]);
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      if(!roomActive) {
+        // other user havent picked call since 10 secs
+        // end call
+        // and add missed call on both ends
+        setMissedCall(true);
+        addMissedCall(callData.currentUser.uid, callData.otherUser.uid);
+      }
+    }, MISSED_CALL_TIME_INTERVAL)
+  }, [])
+
+  useEffect(() => {
+    if(rejectedList && rejectedList.length > 0) {
+      console.log("rejected the call ::", rejectedList);
+      rejectedList.filter(id => id !== callData.currentUser.uid).map(id => getUser(id).then(res => {
+        setUserRejectedList(user => [...user, res]);
+        if(res.uid === callData.otherUser.uid)
+          setCallDeclined(true);
+      }));
+    }
+  }, [rejectedList]);
+
 
   return (
     <div className='position-relative' style={{height: '100vh'}}>
@@ -380,7 +392,9 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
         {callStarter && inRoomData?.length === 1 && showCallDialog && 
           <div className='w-100 h-100 d-flex justify-content-center flex-column align-items-center'> 
             <Avatar sx={{width: 100, height: 100}}  alt={callData.otherUser.displayName} src={callData.otherUser.imgUrl}/>
-            <h6 className='mt-2'>calling... {callData.otherUser.displayName}</h6>
+            {!wasCallDeclined ? 
+              (missedCall ? <h6>{callData.otherUser.displayName} couldn't receive the call</h6> : <h6 className='mt-2'>calling... {callData.otherUser.displayName}</h6>) : 
+              <h4>Call declined</h4>}
           </div>
         }
 
@@ -388,6 +402,9 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
         
           <>
             {inRoomData?.length > 1 &&  inRoomData.map(attendee => (<div>attendee - {attendee}</div>))}
+
+            Rejected call - 
+            {userRejectedList?.length &&  userRejectedList.map(attendee => (<div>rejector - {attendee.displayName}</div>))}
             
             {
             // currentRoomID && 
@@ -509,20 +526,6 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
         {/* self video controls */}
         <div className='position-absolute w-100 button-container'>
             <div className='d-flex justify-content-center align-items-center'>
-                {/* <div className='p-2'>
-                    {
-                        videoSettingOn ? 
-                            <VideocamIcon role="button" onClick={() => setVideo(false)}/>: 
-                            <VideocamOffIcon role="button" onClick={() => setVideo(true)}/>
-                    }
-                </div>
-                <div className='p-2'>
-                    {
-                        micOn ? 
-                            <MicIcon role="button"/> :
-                            <MicOffIcon role="button"/>
-                    }
-                </div> */}
                 <div className='p-2'>
                     <CallEndIcon onClick={() => endCall()} role="button"/>
                 </div>

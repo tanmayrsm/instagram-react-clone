@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getUser, messageUser, deleteMessageFromDB, updateReaction } from '../../Utils';
+import { getUser, messageUser, deleteMessageFromDB, updateReaction, getTimeAgo } from '../../Utils';
 import { Avatar, Button, Popover } from '@mui/material';
 import { onValue, ref, set, update, child, push } from "firebase/database";
 import {realtime_db} from '../../firebase-config';
@@ -139,7 +139,7 @@ function MessageRoom({currentUser, otherUser}) {
     const body = {
       id : id,
       msgId: messageKeys[key],
-      msg : allMessages[key].text || (allMessages[key].media?.type.includes('image') ? 'Photo' :'Video'),
+      msg : allMessages[key].text || allMessages[key].call?.text || (allMessages[key].media?.type.includes('image') ? 'Photo' :'Video'),
       media : (allMessages[key].media?.type ? allMessages[key].media.url : null )
     }
     setRepliedTo(body);
@@ -197,6 +197,15 @@ function MessageRoom({currentUser, otherUser}) {
                         }
                       <div className='position-relative'>
                         {data.text && <div className='titleUserName other'>{data.text}</div>}
+                        {data.call?.text && 
+                          <>
+                            <h6 className='titleUserName other'>
+                              {data.call.text}
+                              <br/>
+                              {getTimeAgo(data.timestamp)}
+                            </h6>
+                          </>
+                        }
                         {data.media && data.media.type === 'image/jpeg' && <img className='content-msg-img' alt='img' src={data.media.url || ''}/>}
                         {data.media && data.media.type === 'video/mp4' && <video controls className='content-msg-video' alt='video' src={data.media.url || ''}/>}
                         {/* message emoji reactions */}
@@ -236,6 +245,15 @@ function MessageRoom({currentUser, otherUser}) {
                           }
                         <div className='position-relative'>
                           {data.text && <div className='titleUserName'>{data.text}</div>}
+                          {data.call?.text && 
+                            <>
+                              <h6 className='titleUserName other'>
+                                {data.call.text}
+                                <br/>
+                                {getTimeAgo(data.timestamp)}
+                              </h6>
+                            </>
+                          }
                           {data.media && (data.media.type === 'image/jpeg' || data.media.type === 'image/webp') && <img className='content-msg-img' alt='img' src={data.media.url || ''}/>}
                           {data.media && data.media.type === 'video/mp4' && <video controls className='content-msg-video' alt='video' src={data.media.url || ''}/>}
                           {/* message emoji reactions */}

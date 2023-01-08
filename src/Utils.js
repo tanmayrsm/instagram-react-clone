@@ -308,7 +308,8 @@ export function callUser(data) {
                 inCallList : [data.currentUser.uid], 
                 roomOwner : data.currentUser.uid,
                 callType: data.callType,
-                callingTo: [data.otherUser.uid]
+                rejectedList: [data.currentUser.uid],
+                callingTo: [data.otherUser.uid],
             }); 
                 // if he does not picks after 90 secs...
                 // add missed-call msg in his chat with u
@@ -378,11 +379,13 @@ export function listenInComingCall(currentUser, setInComingCallData) {
                     );
                 })
             }
+        } else {
+            setInComingCallData(undefined);
         }
     });
 }
 
-export function getRoomInfo(roomOwner, setRoomData, setRoom) {
+export function getRoomInfo(roomOwner, setRoomData, setRoom, setRejectedList) {
     const query = ref(realtime_db, "call/from/" + roomOwner + "/inCallList");
     onValue(query, (snapshot) => {
         if(snapshot.val()) {
@@ -396,6 +399,14 @@ export function getRoomInfo(roomOwner, setRoomData, setRoom) {
             setRoom(snapshot.val());
         }
     });
+
+    const queryForRejectedList = ref(realtime_db, "call/from/" + roomOwner + "/rejectedList");
+    onValue(queryForRejectedList, (snapshot) => {
+        if(snapshot.val()) {
+            setRejectedList(snapshot.val());
+        }
+    });
+    
 }
 
 export function addUserToCall(callOwnerId, roomID, currentUserId,  otherUser) {
@@ -427,6 +438,20 @@ export function removeFromCall(currentUserId, roomOwnerId, noOfPeopleInCall) {
     get(query).then(snapshot => {
         if(snapshot.val()) {
             remove(query);
+            // add message of call in your message list
+            if(currentUserId !== roomOwnerId){
+                const timeSt = Date.now();
+                const body = {
+                  call: {
+                    text: "Call Ended"
+                  },
+                  timestamp: timeSt,
+                  media: null,
+                  whoWrote: currentUserId
+                };
+                // add currentUsers msg in database
+                messageUser(currentUserId, roomOwnerId, body);
+              }
         }
     });
 
@@ -449,4 +474,64 @@ export function removeFromCall(currentUserId, roomOwnerId, noOfPeopleInCall) {
         }
 });
     
+}
+
+export function rejectCall(callerId, currentUserId) {
+    // remove -to call if it exists
+    const query = ref(realtime_db, "call/to/" + currentUserId);
+    get(query).then(snapshot => {
+        if(snapshot.val()) {
+            remove(query);
+            const query2 = ref(realtime_db, "call/from/" + callerId);
+            // add this user in rejected callers list
+            get(query2).then(snapshot => {
+                    let prevRejectedList = snapshot.val().rejectedList;
+                    update(query2, 
+                        {
+                            ...snapshot.val(), 
+                            rejectedList: [...prevRejectedList, currentUserId]
+                        }
+                    );
+            });
+            // add message of call in your message list
+            if(currentUserId !== callerId){
+                const timeSt = Date.now();
+                const body = {
+                  call: {
+                    text: "Call Declined"
+                  },
+                  timestamp: timeSt,
+                  media: null,
+                  whoWrote: currentUserId
+                };
+                // add currentUsers msg in database
+                messageUser(currentUserId, callerId, body);
+              }
+        }
+    });
+
+}
+
+export function addMissedCall(currentUserId, otherUserId) {
+    const query = ref(realtime_db, "call/to/" + otherUserId);
+    get(query).then(snapshot => {
+        if(snapshot.val()) {
+            remove(query);
+            // add message of call in your message list
+            if(otherUserId !== currentUserId){
+                const timeSt = Date.now();
+                const body = {
+                  call: {
+                    text: "Call not received"
+                  },
+                  timestamp: timeSt,
+                  media: null,
+                  whoWrote: currentUserId
+                };
+                // add currentUsers msg in database
+                messageUser(currentUserId, otherUserId, body);
+              }
+        }
+    });
+
 }

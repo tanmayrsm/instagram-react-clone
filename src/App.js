@@ -21,7 +21,7 @@ import SearchUser from './SearchUser/SearchUser';
 import Messaging from './Messaging/Messaging';
 import { useDispatch, useSelector } from 'react-redux';
 import CreateStory from './CreateStory/CreateStory';
-import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, listenInComingCall, setUserStatus } from './Utils';
+import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, listenInComingCall, setUserStatus, rejectCall } from './Utils';
 import AvatarStory from './ViewStory/AvatarStory';
 import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
@@ -276,6 +276,8 @@ function App() {
 
   const cancelCall = () => {
     setInComingCallData(undefined);
+    if(incomingCall && user)
+      rejectCall(incomingCall.otherUser?.uid, user.uid);
     // also delete from db, and inform 'from' user
   }
 
@@ -371,8 +373,7 @@ function App() {
         
       </div> : <PreCall data={outgoingCall || incomingCall}  />}
       {incomingCall && !preCall && 
-        <Modal open={!!incomingCall}
-          onClose={() => setShowCreatePost(false)}>
+        <Modal open={!!incomingCall}>
           <div style={modalStyle} className={classes2.paper}>
             <div className='d-flex align-items-center flex-column justify-content-center'>
               <Avatar sx={{width: 100, height: 100}}  alt={incomingCall.otherUser.displayName} src={incomingCall.otherUser.imgUrl}/>
