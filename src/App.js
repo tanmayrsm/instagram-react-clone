@@ -35,7 +35,8 @@ import PreCall from './Call/PreCall';
 import { Avatar } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
-import './assets/main.css';
+
+
 
 function getModalStyle() {
   const top = 50;
