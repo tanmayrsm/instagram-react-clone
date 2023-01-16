@@ -23,6 +23,12 @@ module.exports = {
     },
 
     extend: {
+      maxHeight: {
+        '128': '35em',
+      },
+      width: {
+        '128': '35rem',
+      },
       colors: {
         'light' : {
           'btn-clr' : '#38bdf8'
