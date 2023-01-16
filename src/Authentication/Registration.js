@@ -3,7 +3,7 @@ import React from 'react';
 import { useState } from 'react';
 import './Authentication.css';
 
-function Registration({signUp, openSignIn}) {
+function Registration({signUp, openSignIn, error}) {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
   const signUpImg = 'https://static.independent.co.uk/s3fs-public/thumbnails/image/2020/08/05/11/instagram-reels.png?width=1200';
 
@@ -24,10 +24,20 @@ function Registration({signUp, openSignIn}) {
           <Grid item xs={12} md={12} sm={12} lg={3} xl={4} className="border border-gray-400 px-4 py-5 rounded bg-white xl:relative lg:relative md:absolute sm:absolute absolute md:w-128">
             <form className='app-form'>
                 <img className='img-header m-3' alt='logo' src={instaLogo}/>
+                {/* username */}
                 <Input type='text' inputProps={{style: {fontSize: 15}}}  className='pt-2 text-sm' placeholder='username' value={username} onChange={(e) => setUsername(e.target.value)}/>
+                
+                {/* email */}
                 <Input type='email' inputProps={{style: {fontSize: 15}}}  className='pt-2' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)}/>
+                
+                {/* password */}
                 <Input type='password' inputProps={{style: {fontSize: 15}}}  className='pt-2' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
-                <button type='submit' className='mt-3 p-2 bg-light-btn-clr text-white rounded font-semibold text-sm' onClick={() => signUp(email, password, username)}>Sign Up</button>
+                
+                {/* sign up button */}
+                <button type='button'  disabled={!(email.length > 0 && password.length > 0 && username.length > 0)} className={((email.length > 0 && password.length > 0 && username.length > 0) ? 'bg-light-btn-clr': 'bg-blue-200 cursor-not-allowed') +  ' mt-3 p-2 text-white rounded font-semibold text-sm'} onClick={() => signUp(email, password, username)}>Sign Up</button>
+
+                {/* error text */}
+                {error && <span className='text-red-600 text-center text-xs mt-2'>{error}</span>}
             </form>
             <div className='text-center mt-2 text-sm'>Already have an account ? <span role='button' className='other-option-text' onClick={() => openSignIn()}>Sign In</span></div>
           </Grid>

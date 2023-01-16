@@ -1,3 +1,14 @@
 .drawer-container .MuiDrawer-paperAnchorLeft{
     margin-top: 4.8em;
 }
+.bottom-drawer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.bottom-drawer .MuiDrawer-paper {
+    width: 100vw !important;
+}
+.bottom-drawer ul {
+    display: flex;
+}

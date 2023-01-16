@@ -24,8 +24,12 @@
   flex-direction: column;
 }
 .app-posts {
-  max-height: 33em;
+  max-height: 85vh;
   overflow-y: scroll;
+}
+.mobile-screen .app-posts {
+  max-height: 80vh;
+  margin-bottom: 2em;
 }
 .img-header {
   width: 8em;

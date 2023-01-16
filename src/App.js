@@ -35,6 +35,7 @@ import PreCall from './Call/PreCall';
 import { Avatar } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
+import {Provider} from 'react-redux';
 
 
 
@@ -78,6 +79,7 @@ function App() {
   
   const currView = useSelector((state) => state.view);
   const metaData = useSelector((state) => state.metaData);
+  const currScreenSize = useSelector((state) => state.metaData && state.metaData.width);
   
   // modal styles
   const classes2 = useStyles2();
@@ -98,7 +100,8 @@ function App() {
   const [allFollowing, setAllFollowing] = useState([]);
 
   // sign In vars
-  const [openSignIn, setOpenSignIn] = useState(false);
+  const [openSignIn, setOpenSignIn] = useState(undefined);
+  const [errorText, setError] = useState(undefined);
 
   // current view
   // const [currentView, setCurrentView] = useState("POSTS");
@@ -143,6 +146,8 @@ function App() {
     const unSubs = onAuthStateChanged(auth, (authUser) => {
       if(authUser) {
         // user has logged in
+        setOpenSignIn(false);
+
         if(db.collection('user').doc(authUser.uid) != null && user === null) {
           setUserStatus(authUser.uid, true);
 
@@ -195,7 +200,7 @@ function App() {
 
   //sign up logic
   const signUp = (email, password, username) => {
-    
+    setError(undefined);
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password) // email and password are from this.state
     .then((userCredential) => {
@@ -209,17 +214,17 @@ function App() {
           username: username,
           uid: authUser.uid
         });
+        
+      setOpen(false);
       return updateProfile(userCredential.user, {
         displayName: username
       })
       // ...
     })
     .catch((error) => {
-      const errorMessage = error.message;
-      alert(errorMessage);
-      // ..
+      const errorMessage = error.code === "auth/email-already-in-use" ? "User already exists, please try login" : error.message;    
+      setError(errorMessage);
     });
-    setOpen(false);
   }
 
   // sign out logic
@@ -230,19 +235,24 @@ function App() {
       setOpenSignIn(true);
     }).catch(err => {
       console.error(err);
+      setError("Error while sign up, please use valid credentials");
     });
   }
 
   // sign In logic
   const signIn = (email, password) => {
-    
+    setError(undefined);
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password) // email and password are from this.state
+    .then(data => {
+      setOpenSignIn(false);
+    })
     .catch((error) => {
       console.log(error);
+      setError("Invalid credentials");
+      // alert("Invalid credentials", error);
     });
 
-    setOpenSignIn(false);
   }
 
   // change view
@@ -270,11 +280,20 @@ function App() {
   }, [currView]);
 
   useEffect(() => {
+
+  }, [currScreenSize]);
+
+  useEffect(() => {
     if(incomingCall) {
       // setting incoming call metadata
       setOutGoingCallData(undefined);
     }
   }, [incomingCall]);
+
+  useEffect(() => {
+    if(open || openSignIn)
+      setError(undefined);
+  }, [open, openSignIn])
 
   const cancelCall = () => {
     setInComingCallData(undefined);
@@ -284,115 +303,111 @@ function App() {
   }
 
   return (
-    <>
-      {!preCall  ? <div className="app">
-        {/* app header */}
-        {!openSignIn && !open && <div className='app-header'>
-          <img src={instaLogo} alt='logo' className='img-header'></img>
-          {
-            user ? 
-            <Button onClick={() => signOutApp()}>Logout</Button> : 
-            <div className='app-login-container'>
-              <Button onClick={() => setOpen(true)}>Sign Up</Button>
-              <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-            </div>
-          }
-        </div>  }
-
-        {/* Sign up page */}
-        {open && <Registration signUp={signUp} openSignIn={() => {setOpen(false); setOpenSignIn(true)}} />}
-
-        {/* sign In page */}
-        {openSignIn && <Login signIn={signIn} openSignUp={() => {setOpen(true); setOpenSignIn(false)}} />}
-        
-        {!openSignIn && !open && <div className='main-app'>
-          <Box sx={{ display: 'flex' }}>
-          <Drawerr/>
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
-              <div className='app-posts'>
-                {/* all stories */}
-                {
-                  user && user.uid && allFollowing && allFollowing.length && 
-                    <div className='d-flex all-user-stories'> 
-                      {allFollowing.map(userInfo => (
-                        <div>
-                          <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
-                        </div>))} 
-                    </div>
-                }
-                {
-                  posts && posts.length && posts.map(({id, post}) => (
-                    <Posts key={id} 
-                      postId={id} 
-                      currentUser={user}
-                      username={post.username} 
-                      media={post.media}
-                      caption={post.caption}
-                      userWhoPosted={post.uid}
-                      timestamp={post.timestamp}
-                      likes={post.likes}
-                      tags={post.tags}
-                      saved={post.saved}/>
-                  ))
-                }
-                {
-                  user?.displayName ? 
-                    "" :
-                    <h4>Please login to uplaod posts!!</h4>
-                }
+      <>
+        {!preCall  ? <div className={(currScreenSize < 767 ? 'mobile-screen' : '') + " app"}>
+          {/* app header */}
+          {openSignIn === false && !open && <div className='app-header'>
+            <img src={instaLogo} alt='logo' className='img-header'></img>
+            {
+              user ? 
+              <Button onClick={() => signOutApp()}>Logout</Button> : 
+              <div className='app-login-container'>
+                <Button onClick={() => setOpen(true)}>Sign Up</Button>
+                <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
               </div>
             }
-            {/* profile view */}
-            {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
-            {/* search user */}
-            {(currView === "CREATEPOST" || currView === "STORY" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
-            {/* message user */}
-            {(currView === "CREATEPOST" || currView === "STORY" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
-            {/* create Post modal*/}
-            {showCreatePost && user?.displayName && <Modal open={showCreatePost}
-              onClose={() => setShowCreatePost(false)}>
-                <div style={modalStyle} className={classes2.paper}>
-                  <CreatePost user={user}/>
+          </div>  }
+
+          {/* Sign up page */}
+          {open && <Registration signUp={signUp}  error={errorText} openSignIn={() => {setOpen(false); setOpenSignIn(true)}} />}
+
+          {/* sign In page */}
+          {openSignIn && <Login signIn={signIn} error={errorText} openSignUp={() => {setOpen(true); setOpenSignIn(false)}} />}
+          
+          {openSignIn === false && !open && <div className='main-app'>
+            <Box sx={{ display: 'flex' }}>
+            <Drawerr/>
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+              {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
+              <>
+                  {/* all stories */}
+                  {
+                    user && user.uid && allFollowing && allFollowing.length && 
+                      <div className='d-flex all-user-stories'> 
+                        {allFollowing.map(userInfo => (
+                          <div>
+                            <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
+                          </div>))} 
+                      </div>
+                  }
+                <div className='app-posts'>
+                  {
+                    posts && posts.length && posts.map(({id, post}) => (
+                      <Posts key={id} 
+                        postId={id} 
+                        currentUser={user}
+                        username={post.username} 
+                        media={post.media}
+                        caption={post.caption}
+                        userWhoPosted={post.uid}
+                        timestamp={post.timestamp}
+                        likes={post.likes}
+                        tags={post.tags}
+                        saved={post.saved}/>
+                    ))
+                  }
                 </div>
-              </Modal>}
-            {/* create story modal*/}
-            {showCreateStory && user?.displayName && <Modal open={showCreateStory}
-              onClose={() => setShowCreateStory(false)}>
-                <div style={modalStyle} className={classes3.paper}>
-                  <CreateStory user={user} close={() => setShowCreateStory(false)}/>
-                </div>
-              </Modal>}
-            {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") &&
-            <> 
-              {/* <Call2/><Sidebar/><Notifications/> */}
-              <GroupCall />
-            </> }
-            
-          </Box>
-              </Box>
-        </div>}
-        
-      </div> : <PreCall data={outgoingCall || incomingCall}  />}
-      {incomingCall && !preCall && 
-        <Modal open={!!incomingCall}>
-          <div style={modalStyle} className={classes2.paper}>
-            <div className='d-flex align-items-center flex-column justify-content-center'>
-              <Avatar sx={{width: 100, height: 100}}  alt={incomingCall.otherUser.displayName} src={incomingCall.otherUser.imgUrl}/>
-              <h4 className="p-2">{incomingCall.otherUser.displayName}</h4>
-              <span>incoming {incomingCall.callType === "VOICE" ? 'audio' :'video'} call...</span>
-              <div className='d-flex align-items-center justify-content-center'>
-                <div className='p-2'>
-                  <CallIcon role="button" onClick={() => setPreCall(true)} />
-                </div>
-                <div className='p-2'>
-                  <CloseIcon role="button" onClick={() => cancelCall()} />
+                </>
+              }
+              {/* profile view */}
+              {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
+              {/* search user */}
+              {(currView === "CREATEPOST" || currView === "STORY" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
+              {/* message user */}
+              {(currView === "CREATEPOST" || currView === "STORY" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
+              {/* create Post modal*/}
+              {showCreatePost && user?.displayName && <Modal open={showCreatePost}
+                onClose={() => setShowCreatePost(false)}>
+                  <div style={modalStyle} className={classes2.paper}>
+                    <CreatePost user={user}/>
+                  </div>
+                </Modal>}
+              {/* create story modal*/}
+              {showCreateStory && user?.displayName && <Modal open={showCreateStory}
+                onClose={() => setShowCreateStory(false)}>
+                  <div style={modalStyle} className={classes3.paper}>
+                    <CreateStory user={user} close={() => setShowCreateStory(false)}/>
+                  </div>
+                </Modal>}
+              {(currView === "CREATEPOST" || currView === "STORY" || currView === "TEST_VIDEO") &&
+              <> 
+                <GroupCall />
+              </> }
+              
+            </Box>
+                </Box>
+          </div>}
+          
+        </div> : <PreCall data={outgoingCall || incomingCall}  />}
+        {incomingCall && !preCall && 
+          <Modal open={!!incomingCall}>
+            <div style={modalStyle} className={classes2.paper}>
+              <div className='d-flex align-items-center flex-column justify-content-center'>
+                <Avatar sx={{width: 100, height: 100}}  alt={incomingCall.otherUser.displayName} src={incomingCall.otherUser.imgUrl}/>
+                <h4 className="p-2">{incomingCall.otherUser.displayName}</h4>
+                <span>incoming {incomingCall.callType === "VOICE" ? 'audio' :'video'} call...</span>
+                <div className='d-flex align-items-center justify-content-center'>
+                  <div className='p-2'>
+                    <CallIcon role="button" onClick={() => setPreCall(true)} />
+                  </div>
+                  <div className='p-2'>
+                    <CloseIcon role="button" onClick={() => cancelCall()} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Modal>}
-    </>
+          </Modal>}
+      </>
   );
 }
 

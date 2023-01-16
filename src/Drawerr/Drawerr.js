@@ -21,7 +21,7 @@ import SearchUser from "../SearchUser/SearchUser";
 import CreatePost from "../CreatePost/CreatePost";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TelegramIcon from '@mui/icons-material/Telegram';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Call from "../Call/Call";
 
 const drawerWidth = 240;
@@ -77,9 +77,31 @@ const Drawer = styled(MuiDrawer, {
 export default function Drawerr() {
   const theme = useTheme();
   const refe = React.useRef();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(undefined);
   const dispatcher = useDispatch();
   const [file, setFile] = React.useState(null);
+  const [isMobile, setIsMobile] = React.useState(undefined);
+  const currView = useSelector((state) => state.view);
+  const metaData = useSelector((state) => state.metaData);
+  
+  
+
+  React.useEffect(() => {
+    let openDrawer = window.innerWidth >= 768;
+    setOpen(openDrawer);
+    setIsMobile(!openDrawer);
+    dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
+
+    window.addEventListener("resize", () => {
+      let openDrawer = window.innerWidth >= 768;
+      setOpen(openDrawer);
+      setIsMobile(!openDrawer);
+      // console.log("Drawer val ::", openDrawer);
+      
+      dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
+
+    });
+  }, []);
 
   const handleDrawer = () => {
     setOpen(!open);
@@ -120,17 +142,18 @@ export default function Drawerr() {
   }
 
   return (
-    <div className="drawer-container">
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawer}>
-            
-              {!open ? <ChevronRightIcon /> :
-              <ChevronLeftIcon /> }
-            
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
+    <div className={(isMobile ? 'bottom-drawer' :'') + " drawer-container"}>
+      <Drawer variant="permanent" open={open} anchor={isMobile ? "bottom" : "left"}>
+        { isMobile ? null : 
+          <>
+            <DrawerHeader>
+              <IconButton onClick={handleDrawer}>
+                {!open ? <ChevronRightIcon /> :
+                <ChevronLeftIcon /> }           
+              </IconButton>
+            </DrawerHeader>
+            <Divider />
+          </>}
         <List>
           {["Home", "Profile", "Search", "Create", "Messaging", "Story", "Call"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
