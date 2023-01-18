@@ -12,3 +12,9 @@
 .bottom-drawer ul {
     display: flex;
 }
+.bottom-drawer .MuiListItemText-root {
+    display: none;
+}
+.bottom-drawer .MuiButtonBase-root {
+    padding-inline: 1em;
+}

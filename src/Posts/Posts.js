@@ -167,11 +167,11 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       {
           media && media.length > 0 &&
             
-              <Carousel sx={{width: '25em', height: '20em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
+              <Carousel sx={{width: '25em', height: '25em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
                   {media.map((file_, index_) => (
-                      <div className='post-content' key={index_}>
-                          {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img src={file_.url} alt='post-img'/>}
-                          {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
+                      <div className='h-100 w-100' key={index_}>
+                          {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img className='post-media h-100 w-100' src={file_.url} alt='post-img'/>}
+                          {file_.fileType === 'video/mp4' && <video alt='post-video' className='post-media h-100 w-100' src={file_.url} controls/>}
                       </div>
                   ))}
               </Carousel>

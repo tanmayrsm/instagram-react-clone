@@ -27,9 +27,15 @@
   max-height: 85vh;
   overflow-y: scroll;
 }
+.mobile-screen main {
+  max-height: 85vh;
+}
 .mobile-screen .app-posts {
-  max-height: 80vh;
+  max-height: 100%;
   margin-bottom: 2em;
+}
+.mobile-screen .MuiBox-root {
+  padding:0;
 }
 .img-header {
   width: 8em;
@@ -45,8 +51,22 @@
   margin-right: 0 !important;
 }
 .all-user-stories .story-container-avatar {
-  padding-left: .5em;
-  padding-right: .5em;
+  padding-left: .7em;
+  padding-right: .7em;
+}
+.mobile-screen .all-user-stories p {
+  margin-bottom: 0 !important;
+}
+.all-user-stories p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 3em;
+  text-align: center;
+}
+.mobile-screen .all-user-stories {
+  padding-top: .5em;
+  padding-bottom: .5em;
 }
 .justify-content-space-between {
   justify-content: space-between;

@@ -329,18 +329,17 @@ function App() {
             <Drawerr/>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
-              <>
+                <div className='app-posts'>
                   {/* all stories */}
                   {
                     user && user.uid && allFollowing && allFollowing.length && 
                       <div className='d-flex all-user-stories'> 
                         {allFollowing.map(userInfo => (
                           <div>
-                            <AvatarStory user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
+                            <AvatarStory size={50} user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
                           </div>))} 
                       </div>
                   }
-                <div className='app-posts'>
                   {
                     posts && posts.length && posts.map(({id, post}) => (
                       <Posts key={id} 
@@ -357,7 +356,6 @@ function App() {
                     ))
                   }
                 </div>
-                </>
               }
               {/* profile view */}
               {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}

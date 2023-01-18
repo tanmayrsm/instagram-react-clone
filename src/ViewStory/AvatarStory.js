@@ -17,7 +17,7 @@ import zIndex from '@mui/material/styles/zIndex';
 // function SeeMore() {
 //     return <div>Okay</div>;
 //   }
-function AvatarStory({user, currentUserId, dontShowAvatar, showName}) {
+function AvatarStory({user, currentUserId, dontShowAvatar, showName, size}) {
     const [showStory, setShowStory] = useState(false);
     const [allUserStories, setAllUserStories] = useState(null);
     const [expandStory, setExpandStory] = useState(false);
@@ -115,7 +115,7 @@ function AvatarStory({user, currentUserId, dontShowAvatar, showName}) {
                     <div className='d-flex flex-column align-items-center justify-content-center'>
                         <div className={allStoriesSeen ? 'unbordered-div post-avatar' : 'bordered-div post-avatar'}>
                             <div className='space-div-border'>
-                                <Avatar alt={user.displayName} src={user?.imgUrl}/>
+                                <Avatar sx={{width: size, height: size}} alt={user.displayName} src={user?.imgUrl}/>
                             </div>
                         </div>
                         {showName && <p>{user.displayName}</p>}
