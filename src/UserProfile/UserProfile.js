@@ -20,6 +20,7 @@ import UserLists from '../UserLists/UserLists';
 import {getModalStyle, useStyles} from '../stylesUtil.js';
 import { useDispatch } from 'react-redux';
 import AvatarStory from '../ViewStory/AvatarStory';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ItemImage = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -208,6 +209,7 @@ function UserProfile({user, currentUserId}) {
             onClose={() => {setShowFollowers(false); setShowFollowing(false)}}
           >
             <div style={getModalStyle()} className={classes.paper}>
+            <div className='xs:block lg:hidden xl:hidden md:hidden mb-3'><ArrowBackIcon onClick={() => {setShowFollowers(false); setShowFollowing(false)}} /></div>
               <UserLists userIdList={usersIdList}/>
             </div>
           </Modal> 

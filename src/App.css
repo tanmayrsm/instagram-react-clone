@@ -27,6 +27,14 @@
   max-height: 85vh;
   overflow-y: scroll;
 }
+.app-posts .post{
+   border: 1px solid lightgrey;
+}
+.mobile-screen .app-posts .post {
+  border-bottom-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
 .mobile-screen main {
   max-height: 85vh;
 }
@@ -70,4 +78,13 @@
 }
 .justify-content-space-between {
   justify-content: space-between;
+}
+p {
+  font-size: .8em;
+}
+h2 {
+  font-size: 1em;
+}
+input:focus-visible {
+  outline: none !important;
 }

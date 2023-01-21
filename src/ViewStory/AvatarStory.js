@@ -12,6 +12,7 @@ import {addUserToSeenListOfStory} from '../Utils';
 import UserLists from '../UserLists/UserLists';
 import {getModalStyle, useStyles} from '../stylesUtil.js';
 import zIndex from '@mui/material/styles/zIndex';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 
 // function SeeMore() {
@@ -148,6 +149,7 @@ function AvatarStory({user, currentUserId, dontShowAvatar, showName, size}) {
                                     style={{zIndex: 23000}}
                                     >
                                         <div style={getModalStyle()} className={classes.paper}>
+                                            <div className='xs:block lg:hidden xl:hidden md:hidden mb-3'><ArrowBackIcon onClick={() => setShowSeenList(false)} /></div>
                                             <UserLists userIdList={userIdLists}/>
                                         </div>
                                     </Modal> 

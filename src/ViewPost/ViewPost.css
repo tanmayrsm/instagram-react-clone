@@ -2,6 +2,7 @@
     max-height: 14em;
     padding: .3em;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 .view-post-header {
     display: flex;
@@ -9,4 +10,7 @@
 }
 .view-replies {
     margin-left: 1.5em;
+}
+p {
+    margin-bottom: 0 !important;
 }

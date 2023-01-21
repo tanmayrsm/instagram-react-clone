@@ -22,6 +22,7 @@ import webcam from "../assets/webcam.svg";
 import webcamoff from "../assets/webcamoff.svg";
 import { useDispatch } from "react-redux";
 import { SERVER_URL, MISSED_CALL_TIME_INTERVAL } from '../consts';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Container = styled.div`
   height: 100vh;
@@ -542,6 +543,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
             onClose={() => setShowAddUserModal(false)}
           >
             <div style={getModalStyle()} className={classes.paper}>
+              <div className='xs:block lg:hidden xl:hidden md:hidden mb-3'><ArrowBackIcon onClick={() => setShowAddUserModal(false)} /></div>
               <UserLists userIdList={followingUsers} iconList={[{name: 'call', func : addUser}]}/>
             </div>
           </Modal> 

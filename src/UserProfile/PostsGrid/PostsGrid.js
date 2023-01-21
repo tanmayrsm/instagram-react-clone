@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@mui/material';
 import ViewPost from '../../ViewPost/ViewPost';
 import { getUser } from '../../Utils';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function getModalStyle() {
   const top = 50;
@@ -108,6 +109,7 @@ function PostsGrid({user, currentUserId, saved}) {
       <Modal open={!!activePost}
       onClose={() => setActivePost(null)}>
       <div style={modalStyle} className={classes.paper}>
+        <div className='xs:block lg:hidden xl:hidden md:hidden mb-3'><ArrowBackIcon onClick={() => setActivePost(null)} /></div>
         <ViewPost 
           postId={activePost.postId} 
           userUidWhoPosted={activePost.uid}

@@ -16,6 +16,7 @@ import { Modal } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import ViewPost from '../ViewPost/ViewPost';
 import AvatarStory from '../ViewStory/AvatarStory';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function getModalStyle() {
   const top = 50;
@@ -159,7 +160,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
   }
 
   return (
-    <div className='post'>
+    <div className='post rounded-lg xs:rounded-none'>
         <div className='post-header'>
           {postUserDetails && currentUser && <AvatarStory user={postUserDetails} currentUserId={currentUser.uid}/>}
             <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
@@ -193,11 +194,12 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       <div className='fw-bold post_text'>{likes && likes.length} likes</div>
       <h6 className='post_text'><strong>{postUserDetails?.displayName || username}</strong>: {caption}</h6>
 
-      {comments && comments.length && <div role="button" className='post_text' onClick={() => setViewDetailedPost(true)}>View all {comments && comments.length} comments</div>}
+      {comments && comments.length && <div role="button" className='post_text text-gray-500' onClick={() => setViewDetailedPost(true)}>View all {comments && comments.length} comments</div>}
       {/* list of comments */}
       <Modal open={viewDetailedPost}
         onClose={() => setViewDetailedPost(false)}>
         <div style={modalStyle} className={classes.paper}>
+          <div className='xs:block lg:hidden xl:hidden md:hidden p-2'><ArrowBackIcon onClick={() => setViewDetailedPost(false)} /></div>
           <ViewPost 
             postId={postId} 
             currentUser={currentUser}
@@ -220,8 +222,8 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       {/* add comment */}
       {
         currentUser && <form className='post-comment'>
-          <input type='text' className='post-comment-text' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
-          <Button onClick={addComment} className='post-comment-btn'>Post</Button>
+          <input type='text' className='bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-t-none rounded-lg focus:ring-blue-500 xs:rounded-none focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
+          {comment && comment.length > 0 ? <button onClick={addComment} className='font-semibold text-blue-400 px-2'>Post</button> : null}
         </form>
       }
       
