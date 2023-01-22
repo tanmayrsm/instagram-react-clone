@@ -235,17 +235,32 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
                     <DeleteIcon role="button" onClick={() => deleteCurrentPost()} />
                   </div>}
                 </div>
-                <hr/>
+                <hr className='my-2'/>
               </div>
               {/* post caption */}
-              <div className='d-flex xs:p-2 items-center'>
+              <div className='d-flex items-center flex-col'>
                   {/* <span className='xs:hidden'>
                     <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
                   </span> */}
-                  <p className='post_text'><strong className='xs:hidden'>{postUserDetails?.displayName || username} - </strong> {caption}</p>
+                  <p className='w-100 mb-2 xs:px-1'><strong className='xs:hidden'>{postUserDetails?.displayName || username} - </strong> {caption}</p>
+                  {/* TODO - put post timestamp <p className='w-100 mb-2'>{timestamp}</p> */}
+                  {/* like, comment, save post icons in mobile*/}
+                  <div className='xl:hidden lg:hidden md:hidden w-100'>
+                    <div className='d-flex post_text w-100 icon-container xs:p-2 justify-between'>
+                      <div className='fw-bold'>{likes && likes.length} likes</div>
+                      <div className='d-flex justify-content-end'>
+                        <div>
+                          {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
+                          {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
+                        </div>
+                      </div>
+                      
+                    </div>
+                    <p className='bg-gray-300 p-2 mt-1'>Comments -</p>
+                  </div>
               </div>
               {/* comments list */}
-              <div className='view-comments'>
+              <div className='view-comments xl:pb-1 lg:pb-1 md:pb-1'>
               {
                     comments && comments.length > 0 && comments.map(({userDisplayName, userDp, text, timestamp, uid, likes, replies}, index) => (
                       <div className='xs:p-2 pb-2' key={commentKeys[index]}>
@@ -299,26 +314,24 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
               }
               </div>
               {/* like, comment, save post icons */}
-              <div className='d-flex align-items-center post_text justify-content-between icon-container xs:p-2'>
-                <div className='d-flex justify-content-between'>
-                  <div>
-                    {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
-                  </div>
-                  <div>
-                    <MapsUgcOutlinedIcon/>
-                  </div>
-                </div>
-                <div>
-                {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
-                </div>
+              <div className='xs:hidden sm:hidden'>
+              <div className='d-flex post_text w-100 icon-container xs:p-2 justify-between'>
+                      <div className='fw-bold'>{likes && likes.length} likes</div>
+                      <div className='d-flex justify-content-end'>
+                        <div>
+                          {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
+                          {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
+                        </div>
+                      </div>
+                      
+                    </div>
               </div>
-              <div className='fw-bold post_text'>{likes && likes.length} likes</div>
               
               {/* add comment */}
               {
-                currentUser && <form className='post-comment'>
-                  <input type='text' className='post-comment-text' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
-                  <Button onClick={addComment} className='post-comment-btn'>Post</Button>
+                currentUser && <form className='post-comment relative mb-1'>
+                  <input type='text' className='bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-t-none rounded-lg focus:ring-blue-500 xs:rounded-none focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
+                  {comment && comment.length > 0 ?<button onClick={addComment} className='font-semibold text-blue-400 px-2'>Post</button> : null }
                 </form>
               }
             </div>

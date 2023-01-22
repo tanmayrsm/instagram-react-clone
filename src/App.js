@@ -79,7 +79,7 @@ function App() {
   
   const currView = useSelector((state) => state.view);
   const metaData = useSelector((state) => state.metaData);
-  const currScreenSize = useSelector((state) => state.metaData && state.metaData.width);
+  const currScreenSize = window && window.innerWidth;
   
   // modal styles
   const classes2 = useStyles2();
@@ -118,6 +118,9 @@ function App() {
         post:doc.data()
       })));
     });
+    window.addEventListener('resize', (event) => {
+      this.currScreenSize = window && window.innerWidth;
+    }, true);
   }, []);
 
   const updateUserDetails = () => {
@@ -279,9 +282,6 @@ function App() {
     console.log("View change ?", currView);
   }, [currView]);
 
-  useEffect(() => {
-
-  }, [currScreenSize]);
 
   useEffect(() => {
     if(incomingCall) {
@@ -333,7 +333,7 @@ function App() {
                   {/* all stories */}
                   {
                     user && user.uid && allFollowing && allFollowing.length && 
-                      <div className='d-flex all-user-stories'> 
+                      <div className='d-flex all-user-stories xl:pb-1 lg:pb-1 md:pb-1'> 
                         {allFollowing.map(userInfo => (
                           <div>
                             <AvatarStory size={50} user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>

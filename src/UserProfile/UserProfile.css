@@ -2,12 +2,6 @@
     width: 6em !important;
     height: 6em !important;
 }
-.user-header {
-    display: flex;
-    /* justify-content: space-between; */
-    align-items: center;
-    /* padding: .1em;    */
-}
 
 .text-space {
     margin-left: 1em;

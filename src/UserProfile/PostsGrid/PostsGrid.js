@@ -90,9 +90,9 @@ function PostsGrid({user, currentUserId, saved}) {
 
 
   return (
-    <div>
+    <div className='mt-1'>
       <ImageList cols={5}>
-      {viewablePostsData && viewablePostsData.length && viewablePostsData.map((item) => (
+      {viewablePostsData && viewablePostsData.length ? viewablePostsData.map((item) => (
         <ImageListItem role="button" key={item.postId} className='post-img' onClick={() => setActivePost(item)}>
           <img
             src={item.imgUrl}
@@ -100,11 +100,11 @@ function PostsGrid({user, currentUserId, saved}) {
             loading="lazy"
           />
         </ImageListItem>
-      ))}
-      {
-        ((viewablePostsData.length) === 0) ? <p>No posts yet!</p> :''
-      }
+      )) : null}
     </ImageList>
+      {
+        ((viewablePostsData.length) === 0) ? <p className='text-center mt-2'>No posts yet!</p> :''
+      }
     {activePost && 
       <Modal open={!!activePost}
       onClose={() => setActivePost(null)}>

@@ -183,9 +183,6 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
           <div>
             {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
           </div>
-          <div>
-            <MapsUgcOutlinedIcon/>
-          </div>
         </div>
         <div>
         {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}

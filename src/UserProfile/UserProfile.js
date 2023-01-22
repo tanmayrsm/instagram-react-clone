@@ -22,27 +22,6 @@ import { useDispatch } from 'react-redux';
 import AvatarStory from '../ViewStory/AvatarStory';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const ItemImage = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '10em',
-  
-  color: theme.palette.text.secondary,
-}));
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'left',
-  color: theme.palette.text.secondary,
-}));
-
 function UserProfile({user, currentUserId}) {
   const [setEditPageOpen, openEditProfilePage] = useState(false);
   const [noOfPosts, setNoOfPosts] = useState(0);
@@ -144,52 +123,53 @@ function UserProfile({user, currentUserId}) {
       {!setEditPageOpen && 
       <div className='d-flex flex-column justify-content-center align-items-center'>
         <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <ItemImage>
-              <div className='user-profile-avatar'>
+          <Grid xs={4} sm={4} md={4} lg={4} xl={4}>
+              <div className='user-profile-avatar xs:m-7 xs:w-full'>
                 <AvatarStory user={user} currentUserId={currentUserId} />
               </div>
-            </ItemImage>
           </Grid>
-          <Grid item xs={8}>
-            <Item>
-              <span className='user-header'>
-                <strong className='text-space'>{user.username}</strong>
+          <Grid xs={8} sm={8} md={8} lg={8} xl={8}>
+            <div className='xs:my-7 xs:flex xs:items-center xs:h-full flex-col justify-start'>
+              <span className='flex items-center xs:items-start xs:flex-col xs:w-52'>
+                <strong className='xl:mx-4 lg:mx-4 md:mx-4 font-semibold'>{user.username}</strong>
                 {currentUserId && currentUserId === user.uid && <div>
-                  <Button  className='text-space' onClick={() => openEditProfile()}>Edit profile</Button>
+                  <button className='bg-gray-200 text-sm hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded' onClick={() => openEditProfile()}>Edit profile</button>
                   <IconButton  className='text-space'>
                     <LogoutIcon />
                   </IconButton>
                 </div>}
                 {
                   currentUserId && currentUserId !== user.uid && 
-                  <div>
-                    {!doIFollow && <Button  className='text-space' onClick={() => followUserID(user)}>Follow</Button>}
-                    {doIFollow && <Button  className='text-space' onClick={() => unfollowUserID(user)}>UnFollow</Button>}
-                    <Button onClick={() => setMessageView()}>Message</Button>
+                  <div className='flex'>
+                    {!doIFollow && <button className='bg-blue-400 text-sm md:mx-1 hover:bg-blue-500 text-white font-semibold py-2 md:px-4 rounded' onClick={() => followUserID(user)}>Follow</button>}
+                    {doIFollow && <button className='bg-gray-200 text-sm md:mx-1 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded' onClick={() => unfollowUserID(user)}>Following</button>}
+                    {doIFollow && <button className='bg-gray-200 text-sm hover:bg-gray-300 mx-1 text-gray-800 font-semibold py-2 px-4 rounded' onClick={() => setMessageView()}>Message</button>}
                   </div>
                 }
               </span>
-              <span className='user-header my-3'>
-                <span className='text-space'>{noOfPosts} Posts</span>
-                <span className='text-space' onClick={() => setShowFollowers(true)}>{noOfFollowers} Followers</span>
-                <span className='text-space' onClick={() => setShowFollowing(true)}>{noOfFollowing} Following</span>
+              <span className='xs:hidden sm:hidden xl:flex lg:flex md:flex items-center my-3'>
+                <span className='text-space'><strong>{noOfPosts}</strong> Posts</span>
+                <span className='text-space' role={noOfFollowers > 0 ? 'button' : null} onClick={() => setShowFollowers(true)}><strong>{noOfFollowers}</strong> Followers</span>
+                <span className='text-space' role={noOfFollowing > 0 ? 'button' : null} onClick={() => setShowFollowing(true)}><strong>{noOfFollowing}</strong> Following</span>
               </span>
-              <div>
-                <strong className='text-space'>
+              <span className='flex justify-start flex-col w-100'>
+                <p className='ml-5 xs:mx-8 font-semibold'>
                   {user.displayName}
-                </strong>
-                <p className='text-space'>
+                </p>
+                <p className='ml-5 xs:mx-8'>
                   {user.bio}
                 </p>
-              </div>
-
-            </Item>
+              </span>
+            </div>
           </Grid>
         </Grid>
         <div className='w-100'>
+          <span className='xl:hidden lg:hidden md:hidden xs:flex sm:flex items-center w-100 justify-between my-3'>
+                <span className='text-space'><strong>{noOfPosts}</strong> Posts</span>
+                <span className='text-space' role={noOfFollowers > 0 ? 'button' : null} onClick={() => setShowFollowers(true)}><strong>{noOfFollowers}</strong> Followers</span>
+                <span className='text-space' role={noOfFollowing > 0 ? 'button' : null} onClick={() => setShowFollowing(true)}><strong>{noOfFollowing}</strong> Following</span>
+          </span>
           <Grid>
-            <Item>
               <Tabs
                 value={tabValue}
                 onChange={(e, no) => setTabValue(no)}
@@ -198,9 +178,8 @@ function UserProfile({user, currentUserId}) {
                 <Tab icon={<GridOnIcon />} iconPosition="start" label="Posts" />
                 <Tab icon={<BookmarkBorderIcon />} iconPosition="start" label="Saved" />
               </Tabs>
-                {tabValue === 0 && <PostsGrid user={user} currentUserId={currentUserId}/>}
-                {tabValue === 1 && <PostsGrid saved={true} user={user} currentUserId={currentUserId}/>}
-            </Item>
+                {tabValue === 0 ? <PostsGrid user={user} currentUserId={currentUserId}/> : null}
+                {tabValue === 1 ? <PostsGrid saved={true} user={user} currentUserId={currentUserId}/>: null}
           </Grid>
         </div>
         {usersIdList && usersIdList.userIdList && 
