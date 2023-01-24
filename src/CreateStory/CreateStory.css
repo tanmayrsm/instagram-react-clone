@@ -16,8 +16,8 @@
 }
 .cancel-content {
     position: absolute;
-    top: 0em;
-    left: 0em;
+    top: .5em;
+    left: 1em;
     cursor: pointer;
     display: flex;
     justify-content: space-between;

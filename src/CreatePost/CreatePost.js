@@ -169,23 +169,22 @@ function CreatePost({user, postId, close}) {
 
     return (
         <div className='create-post'>
-            <Grid container spacing={2}>
-                <Grid item xs={7}>
+            <Grid container>
+                <Grid item xs={7} className="bg-gray-200">
                     {progress > 0 && <progress className='imgUpload-progress' value={progress} max="100"></progress>}
                     {
                         progress >= 100 && <p>Done!</p>
                     }
-                    {!postId && <div className={'imgUpload' + currFile && currFile?.length > 0 ? 'add-file' : 'empty-file  h-100'} onClick={() =>  refe.current.click()}>
+                    {!postId && <div style={{'z-index': '4'}} className={'imgUpload' + currFile && currFile?.length > 0 ? 'add-file' : 'empty-file  h-100'} onClick={() =>  refe.current.click()}>
                         {
                             currFile === null && 
-                            <div className='h-100 d-flex flex-column justify-content-center align-items-center'>
-                                <AddPhotoAlternateOutlinedIcon width={'6em'} height={'4em'}/>
-                                <span className='mt-1'>Add file</span>
+                            <div className='h-100 d-flex flex-column justify-content-center align-items-center cursor-pointer'>
+                                <AddPhotoAlternateOutlinedIcon style={{transform: 'scale(5)'}}/>
                             </div>
                         }
                         {
                             currFile?.length > 0 && 
-                            <div>
+                            <div className='add-file-icon'>
                                 <AddCircleOutlineOutlinedIcon />
                             </div>
                         }
@@ -194,10 +193,10 @@ function CreatePost({user, postId, close}) {
                     {
                         !postId && currFile && files && showCarousel &&
                         <div className='content h-100'>
-                            {files.length > 0 && <Carousel sx={{width: '25em', height: '20em'}} className={'d-flex flex-column align-items-center justify-content-center mt-4 overflow-visible carousel-container' + (files.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(files.length === 1)}>
+                            {files.length > 0 && <Carousel sx={{width: '100%', height: '100%'}} className={'d-flex flex-column align-items-center justify-content-center overflow-visible carousel-container' + (files.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(files.length === 1)}>
                                 {files.map((file_, index_) => (
                                     <div className='h-100 w-100' key={index_}>
-                                        {(file_.type === 'image/jpeg' || file_.type === 'image/webp') && <img src={currFile[index_]} alt='post-img'/>}
+                                        {(file_.type === 'image/jpeg' || file_.type === 'image/webp'|| file_.type === 'image/png') && <img src={currFile[index_]} alt='post-img'/>}
                                         {file_.type === 'video/mp4' && <video alt='post-video' className={'vid-' + index_} controls/>}
                                         <div className='cancel-content' onClick={() => removeFile(index_)}>
                                             <CancelOutlinedIcon/>
@@ -212,7 +211,7 @@ function CreatePost({user, postId, close}) {
                         <Carousel sx={{width: '25em', height: '20em'}} className={'d-flex flex-column align-items-center justify-content-center mt-4 overflow-visible carousel-container' + (postData.media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(postData.media.length === 1)}>
                             {postData.media.map((file_, index_) => (
                                 <div className='h-100 w-100' key={index_}>
-                                    {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img src={file_.url} alt='post-img'/>}
+                                    {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp' || file_.fileType === 'image/png') && <img src={file_.url} alt='post-img'/>}
                                     {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
                                 </div>
                             ))}
@@ -221,16 +220,16 @@ function CreatePost({user, postId, close}) {
                     }
                 </Grid>
                 <Grid item xs={5}>
-                    <div className='d-flex align-items-center mt-4'>
+                    <div className='pt-3 pl-3 d-flex align-items-center'>
                         <Avatar alt={user.displayName} src={user.imgUrl}
                         sx={{ width: 25, height: 25 }}/>
                         <span className='m-1'>{user.username}</span>
                     </div>
-                    <div className='mt-3 w-100'>
+                    <div className='mt-2 px-3 w-100'>
                         {!postId && <TextField
                             id="outlined-multiline-static"
                             multiline
-                            rows={8}
+                            rows={12}
                             onChange={(event) => setCaption(event.target.value)} 
                             placeholder='Enter your caption...'
                         />}
@@ -238,16 +237,16 @@ function CreatePost({user, postId, close}) {
                             postData && <TextField
                                 id="outlined-multiline-static"
                                 multiline
-                                rows={8}
+                                rows={12}
                                 onChange={(event) => setNewCaption(event.target.value)} 
                                 value={newCaption}
                             />
                         }
+                        <div className='flex justify-end py-3'>
+                            {!postId && <button  disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 cursor-pointer') + ' text-sm md:mx-1 text-white font-semibold py-2 px-4 rounded'} onClick={handlePost}>Upload</button>}
+                            {postData && <button disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white cursor-pointer') + ' text-white text-sm md:mx-1 font-semibold py-2 px-4 rounded'} onClick={updateCurrentPost}>Update</button>}
+                        </div>
                     </div>
-                </Grid>
-                <Grid item xs={12}>
-                    {!postId && <Button onClick={handlePost}>Upload</Button>}
-                    {postData && <Button onClick={updateCurrentPost}>Update</Button>}
                 </Grid>
             </Grid>
         </div>

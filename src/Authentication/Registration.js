@@ -23,7 +23,7 @@ function Registration({signUp, openSignIn, error}) {
           </Grid>
           <Grid item xs={12} md={12} sm={12} lg={3} xl={4} className="border border-gray-400 px-4 py-5 rounded bg-white xl:relative lg:relative md:absolute sm:absolute absolute md:w-128">
             <form className='app-form'>
-                <img className='img-header m-3' alt='logo' src={instaLogo}/>
+                <img className='img-header mb-3' alt='logo' src={instaLogo}/>
                 {/* username */}
                 <Input type='text' inputProps={{style: {fontSize: 15}}}  className='pt-2 text-sm' placeholder='username' value={username} onChange={(e) => setUsername(e.target.value)}/>
                 

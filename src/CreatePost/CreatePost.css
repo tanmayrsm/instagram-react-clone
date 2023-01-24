@@ -35,8 +35,8 @@
 }
 .cancel-content {
     position: absolute;
-    top: -2em;
-    left: 0em;
+    top: .5em;
+    left: 1em;
     cursor: pointer;
 }
 .add-file {
@@ -47,4 +47,11 @@
 }
 .carousel-container.no-buttons .MuiIconButton-root {
     display: none;
+}
+.add-file-icon svg, .cancel-content svg {
+    background-color: black;
+    border-radius: 1em;
+}
+.add-file-icon path, .cancel-content path {
+    fill: white;
 }

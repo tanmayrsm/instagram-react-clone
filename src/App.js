@@ -73,6 +73,15 @@ const useStyles3 = makeStyles((theme) => ({
   },
 }));
 
+const useStyles4 = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 800,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5]
+  },
+}));
 
 function App() {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
@@ -84,6 +93,7 @@ function App() {
   // modal styles
   const classes2 = useStyles2();
   const classes3 = useStyles3();
+  const classes4 = useStyles4();
 
   const [modalStyle] = useState(getModalStyle);
   // modal set close/open
@@ -366,7 +376,7 @@ function App() {
               {/* create Post modal*/}
               {showCreatePost && user?.displayName && <Modal open={showCreatePost}
                 onClose={() => setShowCreatePost(false)}>
-                  <div style={modalStyle} className={classes2.paper}>
+                  <div style={modalStyle} className={classes4.paper}>
                     <CreatePost user={user}/>
                   </div>
                 </Modal>}

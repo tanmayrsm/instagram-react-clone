@@ -88,3 +88,14 @@ h2 {
 input:focus-visible {
   outline: none !important;
 }
+
+.carousel-container>div:nth-last-child(2), .carousel-container>div:nth-last-child(3) {
+  height: 50%;
+  top: unset;
+  margin: auto;
+}
+.carousel-container>div:nth-last-child(1) {
+  position: absolute;
+  bottom: 1em;
+  z-index: 1;
+}
