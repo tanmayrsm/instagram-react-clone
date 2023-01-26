@@ -25,6 +25,9 @@ module.exports = {
     extend: {
       maxHeight: {
         '128': '35em',
+        '35vh': '35vh',
+        '40vh': '40vh',
+        '45vh': '45vh'
       },
       width: {
         '128': '35rem',

@@ -16,7 +16,17 @@ import CreatePost from '../CreatePost/CreatePost';
 import { getModalStyle, useStyles } from '../stylesUtil';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { makeStyles } from '@material-ui/core/styles';
 
+const useStyles4 = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 800,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5]
+  },
+}));
 
 function ViewPost({postId, userUidWhoPosted, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, close}) {
   const [comments, setComments] = useState([]);
@@ -36,7 +46,7 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
     });
   }, [userUidWhoPosted])
 
-  const classes = useStyles();
+  const classes = useStyles4();
 
   const [modalStyle] = useState(getModalStyle());
 

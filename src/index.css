@@ -26,6 +26,7 @@ code {
     height: 100%;
     padding: 0;
     width: 100%;
+    overflow: scroll;
   }
   .view-comments {
     max-height: 100%;

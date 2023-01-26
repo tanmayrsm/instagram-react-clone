@@ -10,7 +10,8 @@ import { doc, getDoc } from "firebase/firestore";
 import InstagramEmbed from 'react-instagram-embed';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Input, Modal } from '@material-ui/core';
+import { Button, Input } from '@material-ui/core';
+import { Modal } from '@mui/material';
 import MiniDrawer from './Drawerr/Drawerr';
 import Drawerr from './Drawerr/Drawerr';
 
@@ -26,6 +27,8 @@ import AvatarStory from './ViewStory/AvatarStory';
 import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
 import Call2 from './Call/Call2';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 
 import {ContextProvider} from './Context/SocketContext';
 import Sidebar from './Call/Sidebar';
@@ -377,6 +380,7 @@ function App() {
               {showCreatePost && user?.displayName && <Modal open={showCreatePost}
                 onClose={() => setShowCreatePost(false)}>
                   <div style={modalStyle} className={classes4.paper}>
+                    <div className='xs:block lg:hidden xl:hidden md:hidden p-2'><ArrowBackIcon onClick={() => setShowCreatePost(false)} /></div>
                     <CreatePost user={user}/>
                   </div>
                 </Modal>}
@@ -384,6 +388,7 @@ function App() {
               {showCreateStory && user?.displayName && <Modal open={showCreateStory}
                 onClose={() => setShowCreateStory(false)}>
                   <div style={modalStyle} className={classes3.paper}>
+                    <div className='xs:block lg:hidden xl:hidden md:hidden p-2'><ArrowBackIcon onClick={() => setShowCreateStory(false)} /></div>
                     <CreateStory user={user} close={() => setShowCreateStory(false)}/>
                   </div>
                 </Modal>}

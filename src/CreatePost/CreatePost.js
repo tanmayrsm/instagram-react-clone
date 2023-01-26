@@ -170,12 +170,13 @@ function CreatePost({user, postId, close}) {
     return (
         <div className='create-post'>
             <Grid container>
-                <Grid item xs={7} className="bg-gray-200">
+                <Grid item xs={12} sm={7} md={7} lg={7} xl={7} className="bg-gray-200 relative xs:max-h-40vh xs:h-96 xs:min-h-35vh">
                     {progress > 0 && <progress className='imgUpload-progress' value={progress} max="100"></progress>}
                     {
                         progress >= 100 && <p>Done!</p>
                     }
-                    {!postId && <div style={{'z-index': '4'}} className={'imgUpload' + currFile && currFile?.length > 0 ? 'add-file' : 'empty-file  h-100'} onClick={() =>  refe.current.click()}>
+                    {/* (currFile && currFile?.length > 0 ? 'add-file' : 'empty-file') + ' xs:h-96 sm:h-96 md:h-full xl:h-full lg:h-full w-full' */}
+                    {!postId && <div style={{'z-index': '4'}} className={(currFile && currFile?.length > 0 ? 'add-file' : 'empty-file h-100')} onClick={() =>  refe.current.click()}>
                         {
                             currFile === null && 
                             <div className='h-100 d-flex flex-column justify-content-center align-items-center cursor-pointer'>
@@ -219,7 +220,7 @@ function CreatePost({user, postId, close}) {
                     </div>
                     }
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
                     <div className='pt-3 pl-3 d-flex align-items-center'>
                         <Avatar alt={user.displayName} src={user.imgUrl}
                         sx={{ width: 25, height: 25 }}/>
