@@ -30,8 +30,8 @@
     min-width: 1em;
     margin-left: 0.3em;
     background: gainsboro;
-    border-radius: 1em;
-    padding: .5em;
+    border-radius: 2em;
+    padding: .8em;
 }
 .titleUserName.other {
     background: white !important;

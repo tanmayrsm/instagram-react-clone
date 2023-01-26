@@ -188,8 +188,8 @@ function MessageRoom({currentUser, otherUser, children}) {
                         <div className={(allMessages.length - 1 === index || (allMessages[index + 1] &&  allMessages[index + 1].whoWrote && allMessages[index + 1].whoWrote === currentUser.uid)) ? 'd-flex flex-column' :'d-flex flex-column shift-left'}>
                         {data.repliedTo && 
                           <div className='reply-left'>
-                            <div className='replied-to-text'>Replied to {data.repliedTo.id === currentUser.uid ? 'You' : 'themself'}</div>
-                            {data.repliedTo.msg !== "Photo" && data.repliedTo.msg !== "Video" ? <div>{data.repliedTo.msg}</div> : 
+                            <p className='replied-to-text'>Replied to {data.repliedTo.id === currentUser.uid ? 'You' : 'themself'}</p>
+                            {data.repliedTo.msg !== "Photo" && data.repliedTo.msg !== "Video" ? <p>{data.repliedTo.msg}</p> : 
                               (<div>
                                 {(data.repliedTo.msg === "Photo" || data.repliedTo.msg === "Video") && <img className='content-msg-img' alt='img' src={data.repliedTo.media || ''}/>}
                               </div>)
@@ -197,14 +197,14 @@ function MessageRoom({currentUser, otherUser, children}) {
                           </div>
                         }
                       <div className='position-relative'>
-                        {data.text && <div className='titleUserName other'>{data.text}</div>}
+                        {data.text && <p className='titleUserName other'>{data.text}</p>}
                         {data.call?.text && 
                           <>
-                            <h6 className='titleUserName other'>
-                              {data.call.text}
+                            <p className='titleUserName other'>
+                              <strong>{data.call.text}</strong>
                               <br/>
                               {getTimeAgo(data.timestamp)}
-                            </h6>
+                            </p>
                           </>
                         }
                         {data.media && data.media.type === 'image/jpeg' && <img className='content-msg-img' alt='img' src={data.media.url || ''}/>}
@@ -236,8 +236,8 @@ function MessageRoom({currentUser, otherUser, children}) {
                       <div className='d-flex flex-column'>
                         {data.repliedTo && 
                             <div className='reply-right'>
-                              <div className='replied-to-text'>{data.repliedTo.id !== currentUser.uid ? 'You replied' : 'You replied to yourself'}</div>
-                              {data.repliedTo.msg !== "Photo" && data.repliedTo.msg !== "Video" ? <div>{data.repliedTo.msg}</div> : 
+                              <p className='replied-to-text'>{data.repliedTo.id !== currentUser.uid ? 'You replied' : 'You replied to yourself'}</p>
+                              {data.repliedTo.msg !== "Photo" && data.repliedTo.msg !== "Video" ? <p>{data.repliedTo.msg}</p> : 
                                 (<div>
                                   {(data.repliedTo.msg === "Photo" || data.repliedTo.msg === "Video") && <img className='content-msg-img' alt='img' src={data.repliedTo.media || ''}/>}
                                 </div>)
@@ -245,14 +245,14 @@ function MessageRoom({currentUser, otherUser, children}) {
                             </div>
                           }
                         <div className='position-relative'>
-                          {data.text && <div className='titleUserName'>{data.text}</div>}
+                          {data.text && <p className='titleUserName'>{data.text}</p>}
                           {data.call?.text && 
                             <>
-                              <h6 className='titleUserName other'>
-                                {data.call.text}
+                              <p className='titleUserName other'>
+                                <strong>{data.call.text}</strong>
                                 <br/>
                                 {getTimeAgo(data.timestamp)}
-                              </h6>
+                              </p>
                             </>
                           }
                           {data.media && (data.media.type === 'image/jpeg' || data.media.type === 'image/webp') && <img className='content-msg-img' alt='img' src={data.media.url || ''}/>}
