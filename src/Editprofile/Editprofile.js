@@ -83,7 +83,7 @@ function Editprofile({user}) {
 
     return (
         <div className='edit-profile-container d-flex p-2 bg-white'>
-        <div className='col-3'> 
+        {/* <div className='col-3'> 
             <ul>
                 <li>
                     Edit profile
@@ -93,9 +93,9 @@ function Editprofile({user}) {
                 </li>
                 
             </ul>
-        </div>
-        <div className='divider'></div>
-        <div className='col-9 edit-profile-form'>
+        </div> */}
+        {/* <div className='divider'></div> */}
+        <div className='col-12 edit-profile-form'>
             <span className='d-flex my-2'>
                 <Avatar className='edit-profile-avatar' alt={user.displayName} src={userImg}/>
                 <div className='px-3'>
@@ -105,7 +105,7 @@ function Editprofile({user}) {
                     <input ref={refe} type="file" style={{display: 'none'}} onChange={handleFileChange}/>
                 </div>
             </span>
-            <FormControl>
+            <FormControl className='xs:w-full sm:w-80 md:w-80 xl:w-80 lg:w-80'>
                 <TextField defaultValue={userDisplayName} required
                     id="outlined-required"
                     className='input-textfield'
@@ -125,7 +125,7 @@ function Editprofile({user}) {
                     label="Bio"
                     onChange={(event) => setBio(event.target.value)}></TextField>
                 <br/>
-                <Button onClick={() => saveDetails()}> Save </Button>
+                <button className='font-semibold text-blue-400 px-2' onClick={() => saveDetails()}>Save</button>
             </FormControl>
         </div>
         </div>
