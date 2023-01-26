@@ -19,6 +19,9 @@
   top: 0;
   z-index: 1;
 }
+.mobile-screen .app-header {
+  height: 6vh !important;
+}
 .app-form {
   display: flex;
   flex-direction: column;

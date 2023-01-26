@@ -23,8 +23,8 @@ import { LinkPreview } from '@dhaiwat10/react-link-preview';  // will need expre
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
 
-function MessageRoom({currentUser, otherUser}) {
-  const [otherUserInfo, setOtherUserInfo] = useState(null);
+function MessageRoom({currentUser, otherUser, children}) {
+  const [otherUserInfo, setOtherUserInfo] = useState(otherUser == null ? null : otherUser);
   const[messageInput, setMessageInput] = useState('');
   const [allMessages, setAllMessages] = useState(null);
   const [reset, setReset] = useState('');
@@ -151,13 +151,14 @@ function MessageRoom({currentUser, otherUser}) {
   }
 
   return (
-    <div className='message-room'>
+    <div className='message-room md:border-1 xl:border-1 lg:border-1 border-gray-300'>
       {
-        otherUserInfo !== null && 
+        otherUserInfo ?
         <div className='d-flex flex-column main-container h-100'>
           <div className='otheruser-header d-flex align-items-center'>
             <div className='d-flex align-items-center'>
-              <div className='position-relative'>
+              <div className='position-relative flex'>
+                {children}
                 <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
               </div>
                 <div>
@@ -174,7 +175,7 @@ function MessageRoom({currentUser, otherUser}) {
             </div>
           </div>
           {/* msg list */}
-          <div className='message-scroll-container h-100 p-4'>
+          <div className='message-scroll-container h-100 pt-4 px-2'>
             {
               allMessages && allMessages.length > 0 && allMessages.map((data, index) => (
                 <div className='pb-4'>
@@ -293,7 +294,7 @@ function MessageRoom({currentUser, otherUser}) {
               <Button onClick={(e) => sendMessage(e)} disabled={messageInput === ''} className='post-message-btn'>Send</Button>
             </div>
             </form>
-        </div>
+        </div> : null
       }
       {/* empty state */}
       {otherUserInfo === null && 

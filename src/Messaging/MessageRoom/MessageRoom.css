@@ -1,11 +1,17 @@
 .message-room {
-    height: 30em;
-    border: 1px solid lightgrey;
+    /* border: 1px solid lightgrey; */
     background-color: white;
+    height: 30em;
 }
+.mobile-screen .message-room {
+    height: 94vh !important;
+    z-index: 2000;  /* over bottom navbar */
+    position: relative;
+  }
+  
 .otheruser-header {
     height: 3em;   
-    padding: 1.5em;
+    padding: .8em;
     border-bottom: 1px solid lightgrey;
     justify-content: space-between;
 }
@@ -14,6 +20,7 @@
 }
 .message-scroll-container {
     overflow-y: scroll;
+    overflow-x: hidden;
     display: block;
 }
 .user-message {

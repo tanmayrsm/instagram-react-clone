@@ -4,6 +4,9 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}", "./src/*.{js,jsx,ts,tsx}"
   ],
   theme: {
+    borderWidth : {
+      '1': '1px'
+    },
     screens: {
       'xs': {'min': '100px', 'max': '575px'},
       'sm': {'min': '576px', 'max': '767px'},

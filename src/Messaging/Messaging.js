@@ -7,6 +7,7 @@ import { useState } from 'react';
 import {getUser, setUserStatus} from '../Utils';
 import MessageFragment from './MessageFragment/MessageFragment';
 import './Messaging.css';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Messaging({currentUser, otherUserId}) {
   const [otherUser, setOtherUser] = useState(null);
@@ -53,10 +54,10 @@ function Messaging({currentUser, otherUserId}) {
 
   return (
     <div className=''>
-      <Grid container spacing={2}>
-          <Grid item xs={4}>
+      <Grid container>
+          <Grid item xs={12} sm={4} md={4} lg={4} xl={4} className={(activatedChatWith ? 'xs:hidden' : '')  + ' sm:pr-2 md:pr-2 xl:pr-2 lg:pr-2'}>
             {/* list of all people whom to message */}
-            <div className='msg-list-container bg-white p-2'>
+            <div className='bg-white p-2 md:border-1 xl:border-1 lg:border-1 border-gray-300'>
               <div className='msg-user d-flex align-items-center justify-content-center'>
                 <span>
                   {currentUser.username}
@@ -69,9 +70,11 @@ function Messaging({currentUser, otherUserId}) {
               )}
             </div>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={12} sm={8} md={8} lg={8} xl={8} className={(!activatedChatWith ? 'xs:hidden' : '')}>
             {/* message form container */}
-            <MessageRoom currentUser={currentUser} otherUser={activatedChatWith} />
+            <MessageRoom currentUser={currentUser} otherUser={activatedChatWith}> 
+              <div className='xs:block lg:hidden xl:hidden md:hidden pr-2 pt-2'><ArrowBackIcon onClick={() => setActivatedChatWith(undefined)} /></div>        
+            </MessageRoom>
           </Grid>
       </Grid>
     </div>
