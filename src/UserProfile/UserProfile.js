@@ -153,10 +153,10 @@ function UserProfile({user, currentUserId}) {
                 <span className='text-space' role={noOfFollowing > 0 ? 'button' : null} onClick={() => setShowFollowing(true)}><strong>{noOfFollowing}</strong> Following</span>
               </span>
               <span className='flex justify-start flex-col w-100'>
-                <p className='ml-5 xs:mx-8 font-semibold'>
+                <p className='xs:ml-8 sm:ml-8 md:ml-4 xl:ml-4 lg:ml-4 xs:mx-8 font-semibold'>
                   {user.displayName}
                 </p>
-                <p className='ml-5 xs:mx-8'>
+                <p className='xs:ml-8 sm:ml-8 md:ml-4 xl:ml-4 lg:ml-4 xs:mx-8'>
                   {user.bio}
                 </p>
               </span>

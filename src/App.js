@@ -91,7 +91,7 @@ function App() {
   
   const currView = useSelector((state) => state.view);
   const metaData = useSelector((state) => state.metaData);
-  const currScreenSize = window && window.innerWidth;
+  const [currScreenSize, setScrSize] = useState(window && window.innerWidth);
   
   // modal styles
   const classes2 = useStyles2();
@@ -132,7 +132,7 @@ function App() {
       })));
     });
     window.addEventListener('resize', (event) => {
-      this.currScreenSize = window && window.innerWidth;
+      setScrSize(event && event.target && event.target.innerWidth);
     }, true);
   }, []);
 

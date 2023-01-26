@@ -13,7 +13,10 @@ TimeAgo.addDefaultLocale(en)
 const timeAgo = new TimeAgo('en-US')
 
 export function getTimeAgo(ts) {
-    return timeAgo.format(ts, 'twitter');
+    if(ts) {
+        return timeAgo.format(ts, 'twitter');
+    }
+    return ts;
 }
 
 export function getUser(uid) {

@@ -90,7 +90,7 @@ export default function Drawerr() {
     let openDrawer = window.innerWidth >= 768;
     setOpen(openDrawer);
     setIsMobile(!openDrawer);
-    dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
+    // dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
 
     window.addEventListener("resize", () => {
       let openDrawer = window.innerWidth >= 768;
@@ -98,7 +98,7 @@ export default function Drawerr() {
       setIsMobile(!openDrawer);
       // console.log("Drawer val ::", openDrawer);
       
-      dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
+      // dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
 
     });
   }, []);
