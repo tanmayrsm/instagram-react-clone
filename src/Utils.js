@@ -538,3 +538,12 @@ export function addMissedCall(currentUserId, otherUserId) {
     });
 
 }
+
+export async function getPosts(afterPostId) {
+    if(afterPostId) {
+        const paginatedQuery = db.collection('posts').orderBy('timestamp', 'desc').startAfter(afterPostId).limit(2)
+        return await paginatedQuery.get(); 
+    }
+    const query = db.collection('posts').orderBy('timestamp', 'desc').limit(2);
+    return await query.get(); 
+}

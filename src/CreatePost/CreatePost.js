@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { getPost, updatePost } from '../Utils';
+import gifLogo from '../../src/assets/load.gif';
+import { useDispatch, useSelector } from "react-redux";
 
 function CreatePost({user, postId, close}) {
     const [files, setFiles] = useState(null);
@@ -22,6 +24,9 @@ function CreatePost({user, postId, close}) {
     const [currFile, setCurrFile] = useState(null);
     const [showCarousel, setShowCarousel] = useState(false);
     const [fileUrls, setFileUrls] = useState([]);
+    const [gif, setGif] = useState(false);
+    const dispatcher = useDispatch();
+  
 
     // edit post fields
     // all carousel items
@@ -81,6 +86,7 @@ function CreatePost({user, postId, close}) {
     }, [files, currFile]);
 
     const handlePost = async () => {
+        setGif(true);
         // upload all files to fb storage
         await Promise.all(
             files.map((file_) => {
@@ -153,7 +159,10 @@ function CreatePost({user, postId, close}) {
             setFiles(null);
             setCurrFile(null);
             setFileUrls([]);
-        }).catch(err => console.err("Err ::", err));
+            dispatcher({type : "POSTS"});
+            close();
+            setGif(false);
+        }).catch(err => {console.err("Err ::", err); setGif(false)});
     }
 
     const removeFile = (index) => {
@@ -164,14 +173,15 @@ function CreatePost({user, postId, close}) {
     }
 
     const updateCurrentPost = () => {
-        updatePost(postId, newCaption).then(() => close());
+        setGif(true);
+        updatePost(postId, newCaption).then(() => {setGif(false); dispatcher({type : "POSTS"}); close()});
     }
 
     return (
         <div className='create-post'>
             <Grid container>
                 <Grid item xs={12} sm={7} md={7} lg={7} xl={7} className="bg-gray-200 relative xs:max-h-40vh xs:h-96 xs:min-h-35vh">
-                    {progress > 0 && <progress className='imgUpload-progress' value={progress} max="100"></progress>}
+                    {progress > 0 && <progress className='imgUpload-progress absolute' value={progress} max="100"></progress>}
                     {
                         progress >= 100 && <p>Done!</p>
                     }
@@ -244,8 +254,8 @@ function CreatePost({user, postId, close}) {
                             />
                         }
                         <div className='flex justify-end py-3'>
-                            {!postId && <button  disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 cursor-pointer') + ' text-sm md:mx-1 text-white font-semibold py-2 px-4 rounded'} onClick={handlePost}>Upload</button>}
-                            {postData && <button disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white cursor-pointer') + ' text-white text-sm md:mx-1 font-semibold py-2 px-4 rounded'} onClick={updateCurrentPost}>Update</button>}
+                            {!postId && <button  disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 cursor-pointer') + ' text-sm md:mx-1 text-white font-semibold py-2 px-4 rounded'} onClick={() => handlePost()}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Upload'}</button>}
+                            {postData && <button disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white cursor-pointer') + ' text-white text-sm md:mx-1 font-semibold py-2 px-4 rounded'} onClick={() => updateCurrentPost()}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Update'}</button>}
                         </div>
                     </div>
                 </Grid>

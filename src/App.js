@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './App.css';
 import Posts from './Posts/Posts';
 import CreatePost from './CreatePost/CreatePost';
@@ -22,7 +22,7 @@ import SearchUser from './SearchUser/SearchUser';
 import Messaging from './Messaging/Messaging';
 import { useDispatch, useSelector } from 'react-redux';
 import CreateStory from './CreateStory/CreateStory';
-import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, listenInComingCall, setUserStatus, rejectCall } from './Utils';
+import { checkIfStoryExists, establishUserConnection, getAllFollowing, getUser, listenInComingCall, setUserStatus, rejectCall, getPosts } from './Utils';
 import AvatarStory from './ViewStory/AvatarStory';
 import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
@@ -103,6 +103,7 @@ function App() {
   const [open, setOpen] = useState(false);
   
   const [posts, setPosts] = useState([]);
+  
 
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateStory, setShowCreateStory] = useState(false);
@@ -118,24 +119,47 @@ function App() {
 
   // current view
   // const [currentView, setCurrentView] = useState("POSTS");
+  const listInnerRef = useRef();
+  const [lastPostKey, setLastPostKey] = useState(0);
 
   // current user
   const [user, setUser] = useState(null);
 
   // run code on change of dependency (the second param)
   useEffect(() => {
-    db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      // set posts array from firebase db
-      setPosts(snapshot.docs.map(doc => ({
-        id: doc.id,
-        post:doc.data()
-      })));
-    });
+    // fetch posts for first time
+    fetchPosts(0);
+
     window.addEventListener('resize', (event) => {
       if(event && event.target && event.target.innerWidth)
         setScrSize(event.target.innerWidth);
     }, true);
   }, []);
+
+  const fetchPosts = async (afterPostId) => {
+    // giff - true
+    if(afterPostId) {
+      const posts = await getPosts(afterPostId);
+      // fetch newer paginated posts array from firebase db
+      if(lastPostKey.id !== posts.docs.slice(-1)[0])
+        setLastPostKey(posts.docs.slice(-1)[0]);
+      else  setLastPostKey(undefined);  //it means all ids are fetched
+      setPosts((prev) => ([ ...prev, ...posts.docs.map(doc => ({
+        id: doc.id,
+        post:doc.data()
+      }))]));
+      // giff = false
+    } else if(afterPostId === 0) {  // first time post fetch
+      const posts = await getPosts(); 
+      // set posts array from firebase db
+      setLastPostKey(posts.docs.slice(-1)[0]);
+      setPosts(posts.docs.map(doc => ({
+        id: doc.id,
+        post:doc.data()
+      })));
+      // giff = false  
+    }
+  }
 
   const updateUserDetails = () => {
     if(user !== null && db.collection('user').doc(user.uid) != null) {
@@ -316,6 +340,17 @@ function App() {
     // also delete from db, and inform 'from' user
   }
 
+  const onScroll = () => {
+    if (listInnerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
+      if (scrollTop + clientHeight === scrollHeight) {
+        // TO SOMETHING HERE
+        console.log('Reached bottom')
+        fetchPosts(lastPostKey);
+      }
+    }
+  };
+
   return (
       <>
         {!preCall  ? <div className={(currScreenSize < 767 ? 'mobile-screen' : '') + " app"}>
@@ -343,7 +378,7 @@ function App() {
             <Drawerr/>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
-                <div className='app-posts'>
+                <div className='app-posts' onScroll={() => onScroll()} ref={listInnerRef}>
                   {/* all stories */}
                   {
                     user && user.uid && allFollowing && allFollowing.length && 
@@ -382,7 +417,7 @@ function App() {
                 onClose={() => setShowCreatePost(false)}>
                   <div style={modalStyle} className={classes4.paper}>
                     <div className='xs:block lg:hidden xl:hidden md:hidden p-2'><ArrowBackIcon onClick={() => setShowCreatePost(false)} /></div>
-                    <CreatePost user={user}/>
+                    <CreatePost user={user} close={() => setShowCreatePost(false)} />
                   </div>
                 </Modal>}
               {/* create story modal*/}

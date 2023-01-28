@@ -171,7 +171,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
               <Carousel sx={{width: '25em', height: '25em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
                   {media.map((file_, index_) => (
                       <div className='h-100 w-100' key={index_}>
-                          {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img className='post-media h-100 w-100' src={file_.url} alt='post-img'/>}
+                          {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp' || file_.fileType === 'image/png') && <img className='post-media h-100 w-100' src={file_.url} alt='post-img'/>}
                           {file_.fileType === 'video/mp4' && <video alt='post-video' className='post-media h-100 w-100' src={file_.url} controls/>}
                       </div>
                   ))}
@@ -188,10 +188,10 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
         {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
         </div>
       </div>
-      <div className='fw-bold post_text'>{likes && likes.length} likes</div>
+      {likes && likes.length ? <div className='fw-bold post_text'>{likes && likes.length} likes</div> : null}
       <h6 className='post_text'><strong>{postUserDetails?.displayName || username}</strong>: {caption}</h6>
 
-      {comments && comments.length && <div role="button" className='post_text text-gray-500' onClick={() => setViewDetailedPost(true)}>View all {comments && comments.length} comments</div>}
+      {comments && comments.length ? <div role="button" className='post_text text-gray-500' onClick={() => setViewDetailedPost(true)}>View all {comments && comments.length} comments</div>: null}
       {/* list of comments */}
       <Modal open={viewDetailedPost}
         onClose={() => setViewDetailedPost(false)}>
