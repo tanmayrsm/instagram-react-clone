@@ -23,3 +23,6 @@
 .border {
     background-color: aliceblue;
 }
+.mobile-screen .left-window {
+    height: 60vh !important;
+}

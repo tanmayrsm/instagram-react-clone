@@ -35,3 +35,12 @@
     bottom: 1em;
     margin-left: -1em;
 }
+.mobile-screen .view-story > div > div {
+    width: 100vw !important;
+    height: 100vh !important;
+}
+.mobile-screen .close-btn {
+    top: 1em !important;
+    right: 1em !important;
+    z-index: 1000;
+}

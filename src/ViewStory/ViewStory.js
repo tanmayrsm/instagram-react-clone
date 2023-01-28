@@ -7,7 +7,7 @@ function ViewStory(props) {
     <div className='view-story'>
       <div className='position-relative'>
         {props.children}
-        <CloseIcon role="button" style={{color: 'white', top: 0, right: '-2em', marginLeft: '1em', position: 'absolute'}}  onClick={() => props.close()}/>
+        <CloseIcon role="button" className='close-btn' style={{color: 'white', top: 0, right: '-2em', marginLeft: '1em', position: 'absolute'}}  onClick={() => props.close()}/>
       </div>
     </div>
   )

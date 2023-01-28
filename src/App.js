@@ -64,18 +64,6 @@ const useStyles2 = makeStyles((theme) => ({
   },
 }));
 
-const useStyles3 = makeStyles((theme) => ({
-  paper: {
-    position: 'absolute',
-    width: 400,
-    height: 600,
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-}));
-
 const useStyles4 = makeStyles((theme) => ({
   paper: {
     position: 'absolute',
@@ -86,6 +74,18 @@ const useStyles4 = makeStyles((theme) => ({
   },
 }));
 
+const useStyles5 = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 400,
+    height: 600,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5]
+  },
+}));
+
+
 function App() {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
   
@@ -95,7 +95,7 @@ function App() {
   
   // modal styles
   const classes2 = useStyles2();
-  const classes3 = useStyles3();
+  const classes3 = useStyles5();
   const classes4 = useStyles4();
 
   const [modalStyle] = useState(getModalStyle);
@@ -132,7 +132,8 @@ function App() {
       })));
     });
     window.addEventListener('resize', (event) => {
-      setScrSize(event && event.target && event.target.innerWidth);
+      if(event && event.target && event.target.innerWidth)
+        setScrSize(event.target.innerWidth);
     }, true);
   }, []);
 
@@ -401,7 +402,7 @@ function App() {
                 </Box>
           </div>}
           
-        </div> : <PreCall data={outgoingCall || incomingCall}  />}
+        </div> : <div  className={(currScreenSize < 767 ? 'mobile-screen' : '')}><PreCall closeCall={() => setPreCall(false)} data={outgoingCall || incomingCall}  /></div>}
         {incomingCall && !preCall && 
           <Modal open={!!incomingCall}>
             <div style={modalStyle} className={classes2.paper}>

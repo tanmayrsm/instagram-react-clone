@@ -1,13 +1,20 @@
-import { Button, Grid, Input } from '@mui/material';
+import { Grid, Input } from '@mui/material';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Authentication.css';
+import gifLogo from '../../src/assets/load.gif';
 
 function Login({signIn, openSignUp, error}) {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
   const signInImg = 'https://imageio.forbes.com/specials-images/imageserve/5fac4edfacc6b52b3dbbdfb5/instagram-reels/960x0.jpg?format=jpg&width=960';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [gif, setGif] = useState(false);
+
+  useEffect(() => {
+    if(error)
+      setGif(false);
+  }, [error]);
 
   return (
     <div className='xl:p-10 lg:p-10 sm:p-0 md:p-0 xs:p-0 h-100 bg-gray-100'>
@@ -29,10 +36,10 @@ function Login({signIn, openSignUp, error}) {
                 <Input inputProps={{style: {fontSize: 15}}} type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)} required/>
 
                 {/* signIn button */}
-                <button type='button'  disabled={!(email.length > 0 && password.length > 0)} className={((email.length > 0 && password.length > 0) ? 'bg-light-btn-clr': 'bg-blue-200 cursor-not-allowed') +  ' mt-3 p-2 text-white rounded font-semibold text-sm'}  onClick={() => signIn(email, password)}>Sign In</button>
+                <button type='button'  disabled={!(email.length > 0 && password.length > 0)} className={((email.length > 0 && password.length > 0) ? 'bg-light-btn-clr': 'bg-blue-200 cursor-not-allowed') +  ' mt-3 p-2 text-white rounded font-semibold text-sm flex justify-center'}  onClick={() => {signIn(email, password); setGif(true)}}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Sign In'}</button>
                 
                 {/* error text */}
-                {error && <span className='text-red-600 text-center text-xs mt-2'>{error}</span>}
+                <span className={(error ? 'visible' : 'invisible') + ' text-red-600 text-center text-xs mt-2'}>{error}</span>
               </form>
             <div className='text-center mt-2 text-sm'>Don't have an account ? <span role='button' className='other-option-text' onClick={() => openSignUp()}>Sign up</span></div>
           </Grid>

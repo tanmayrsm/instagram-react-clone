@@ -81,13 +81,17 @@ function CreateStory({user, close}) {
                 {
                     file && 
                     <div className='h-100 w-100 content'>
-                        {(file.type === 'image/jpeg' || file.type === 'image/webp') && <img src={currBlobURL} alt='post-img'/>}
+                        {(file.type === 'image/jpeg' || file.type === 'image/webp' || file.type === 'image/png') && <img src={currBlobURL} alt='post-img'/>}
                         {file.type === 'video/mp4' && <video alt='post-video' src={currBlobURL} controls/>}
-                        <div className='cancel-content w-100'>
-                            <CancelOutlinedIcon  onClick={() => close()}/>
-                            <div className='w-100 d-flex btn'>
-                                <EmojiKeyboard placeholder='Your thoughts...' setInputText={setMessageInput}/>
-                                <div className='send-story-btn' role='button'><SendIcon  onClick={(e) => addUserStory(e)}/></div>
+                        <div className='story-misc-container w-100'>
+                            <div className='cancel-content'>
+                                <CancelOutlinedIcon onClick={() => close()}/>
+                            </div>
+                            <div className='absolute bottom-1 w-96 left-1'>
+                                <div className='w-100 flex'>
+                                    <EmojiKeyboard placeholder='Your thoughts...' setInputText={setMessageInput}/>
+                                    <div className='send-story-btn' role='button'><SendIcon color="primary" onClick={(e) => addUserStory(e)}/></div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -9,15 +9,17 @@ import { Avatar } from '@mui/material';
 import './Call.css';
 import CallWindow from './CallWindow';
 import {callUser, joinCall, triggerOtherUser} from '../Utils';
-
+import { useDispatch, useSelector } from "react-redux";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // callTo, callFrom, currentUser, otherUser, callType, roomId (if u r first to activate the call...it wil be null)
-function PreCall({data}) {
+function PreCall({data, closeCall}) {
     const [callType, setCallType] = useState(data.callType);
     const [callStarted, setCallStarted] = useState(false);    
     const [currVidStream, setStream] = useState();
     const [triggerCallUser, setTriggerCall] = useState(false);
     const [roomID, setRoomID] = useState(undefined);
+    const dispatcher = useDispatch();
 
     const vidRef = useRef();
     useEffect(() => {
@@ -64,13 +66,21 @@ function PreCall({data}) {
             });
         }
     }
+    const goBack = () => {
+        dispatcher({type : "MESSAGING", metaData : {uid: data.otherUser.uid}});
+        closeCall();
+    }
 
   return (
     <>
         {!callStarted ? 
-    <Grid container className='p-5 pre-call-main-container'>
-             
-                <Grid xs={7} className='p-1 h-100'>
+    <Grid container className='xl:p-5 lg:p-5 md:p-5 sm:p-5 pre-call-main-container'>
+                <Grid xs={12}>
+                    <div className='px-2 pt-1 pb-0'>
+                        <ArrowBackIcon role="button" onClick={() => goBack()}>Go back</ArrowBackIcon>
+                    </div>
+                </Grid>
+                <Grid xs={12} sm={7} md={7} lg={7} xl={7} className='px-1 h-100 left-window'>
                     <div className='h-100 bg-primary m-3' style={{position : 'relative'}}>
                         <div className='h-100 d-flex flex-column align-items-center justify-content-center'>
                             { callType === "VOICE" ? 
@@ -89,7 +99,7 @@ function PreCall({data}) {
                         </div>
                     </div>
                 </Grid>
-                <Grid xs={5} className='p-1' spacing={10}>
+                <Grid xs={12} sm={5} md={5} lg={5} xl={5} className='p-1'>
                     <div className='d-flex flex-column align-items-center justify-content-center h-100 bg-secondary m-3'>
                         <Avatar alt={data.otherUser.displayName} src={data.otherUser.imgUrl}
                                 sx={{ width: 100, height: 100 }}/>

@@ -72,6 +72,8 @@ function MessageRoom({currentUser, otherUser, children}) {
       };
       // add currentUsers msg in database
       messageUser(currentUser.uid, otherUser, body);
+      setMessageInput('');
+      refe.current.reset();
     }
     setReset(false);
     setRepliedTo(null);
@@ -291,7 +293,7 @@ function MessageRoom({currentUser, otherUser, children}) {
                         <CollectionsOutlinedIcon />
                         <input ref={refe} multiple type="file" style={{display: 'none'}} onChange={(e) => handleChange(e)}/>
                     </div>}
-              <Button onClick={(e) => sendMessage(e)} disabled={messageInput === ''} className='post-message-btn'>Send</Button>
+              <button onClick={(e) => sendMessage(e)} disabled={!(messageInput && messageInput.length > 0)} className={(messageInput && messageInput.length > 0 ? 'text-blue-400': 'text-gray-500') +  ' font-semibold px-2'}>Send</button>
             </div>
             </form>
         </div> : null

@@ -178,7 +178,7 @@ export default function Drawerr() {
                   {index === 4 && <TelegramIcon/>}
                   {index === 5 && 
                     <div>
-                      <HistoryToggleOffIcon onClick={() =>  refe.current.click()}/>
+                      <HistoryToggleOffIcon/>
                     </div>
                   }
                   {index === 6 && 

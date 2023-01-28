@@ -2,7 +2,7 @@ import { Avatar, Modal } from '@mui/material';
 import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
-import {doIFollowUser} from '../Utils';
+import {doIFollowUser, getTimeAgo} from '../Utils';
 import './ViewStory.css';
 import { onValue, ref } from "firebase/database";
 import {realtime_db} from '../firebase-config';
@@ -62,7 +62,7 @@ function AvatarStory({user, currentUserId, dontShowAvatar, showName, size}) {
                             type: storyData.media?.type.split("/")[0],
                             header: {
                               heading: user.uid === currentUserId ? 'Your story' : user.displayName,
-                              subheading: storyData.timestamp + '',
+                              subheading: getTimeAgo(storyData.timestamp) + ' ago',
                               profileImage: user.imgUrl
                             },
                             seen : storyData.seen
@@ -119,7 +119,7 @@ function AvatarStory({user, currentUserId, dontShowAvatar, showName, size}) {
                                 <Avatar sx={{width: size, height: size}} alt={user.displayName} src={user?.imgUrl}/>
                             </div>
                         </div>
-                        {showName && <p>{user.displayName}</p>}
+                        {showName && <p className='username'>{user.displayName}</p>}
                     </div>
                     }
                 </div>

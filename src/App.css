@@ -65,10 +65,10 @@
   padding-left: .7em;
   padding-right: .7em;
 }
-.mobile-screen .all-user-stories p {
+.mobile-screen .all-user-stories .username {
   margin-bottom: 0 !important;
 }
-.all-user-stories p {
+.all-user-stories .username {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -101,4 +101,8 @@ input:focus-visible {
   position: absolute;
   bottom: 1em;
   z-index: 1;
+}
+.giffAuth {
+  width: 1em;
+  height: 1.3em;
 }

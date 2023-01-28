@@ -1,7 +1,8 @@
 import { Button, Grid, Input } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import './Authentication.css';
+import gifLogo from '../../src/assets/load.gif';
 
 function Registration({signUp, openSignIn, error}) {
   const instaLogo = 'https://www.logo.wine/a/logo/Instagram/Instagram-Wordmark-Black-Logo.wine.svg';
@@ -10,7 +11,12 @@ function Registration({signUp, openSignIn, error}) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [gif, setGif] = useState(false);
 
+  useEffect(() => {
+    if(error)
+      setGif(false);
+  }, [error]);
 
   return (
     <div className='xl:p-10 lg:p-10 sm:p-0 md:p-0 xs:p-0 h-100 bg-gray-100'>
@@ -34,10 +40,10 @@ function Registration({signUp, openSignIn, error}) {
                 <Input type='password' inputProps={{style: {fontSize: 15}}}  className='pt-2' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
                 
                 {/* sign up button */}
-                <button type='button'  disabled={!(email.length > 0 && password.length > 0 && username.length > 0)} className={((email.length > 0 && password.length > 0 && username.length > 0) ? 'bg-light-btn-clr': 'bg-blue-200 cursor-not-allowed') +  ' mt-3 p-2 text-white rounded font-semibold text-sm'} onClick={() => signUp(email, password, username)}>Sign Up</button>
+                <button type='button'  disabled={!(email.length > 0 && password.length > 0 && username.length > 0)} className={((email.length > 0 && password.length > 0 && username.length > 0) ? 'bg-light-btn-clr': 'bg-blue-200 cursor-not-allowed') +  ' mt-3 p-2 text-white rounded font-semibold text-sm flex justify-center'} onClick={() => {signUp(email, password, username); setGif(true)}}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Sign Up'}</button>
 
                 {/* error text */}
-                {error && <span className='text-red-600 text-center text-xs mt-2'>{error}</span>}
+                <span className={(error ? 'visible' : 'invisible') + ' text-red-600 text-center text-xs mt-2'}>{error}</span>
             </form>
             <div className='text-center mt-2 text-sm'>Already have an account ? <span role='button' className='other-option-text' onClick={() => openSignIn()}>Sign In</span></div>
           </Grid>
