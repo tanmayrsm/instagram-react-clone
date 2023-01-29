@@ -441,7 +441,7 @@ function App() {
         {incomingCall && !preCall && 
           <Modal open={!!incomingCall}>
             <div style={modalStyle} className={classes2.paper}>
-              <div className='d-flex align-items-center flex-column justify-content-center'>
+              <div className='h-100 d-flex align-items-center flex-column justify-content-center'>
                 <Avatar sx={{width: 100, height: 100}}  alt={incomingCall.otherUser.displayName} src={incomingCall.otherUser.imgUrl}/>
                 <h4 className="p-2">{incomingCall.otherUser.displayName}</h4>
                 <span>incoming {incomingCall.callType === "VOICE" ? 'audio' :'video'} call...</span>

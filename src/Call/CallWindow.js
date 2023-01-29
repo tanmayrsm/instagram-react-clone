@@ -72,6 +72,17 @@ const StyledVideo = styled.video`
   overflow: hidden;
   margin: 1px;
   border: 5px solid gray;
+  max-height: 100%
+`;
+
+const StyledVideoForOther = styled.video`
+  width: 100%;
+  position: static;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1px;
+  max-height: 85vh;
+  height: 80vh
 `;
 
 const Video = (props) => {
@@ -89,12 +100,8 @@ const Video = (props) => {
     }, [props]);
   
     return (
-      <>
-        {/* Name : {userInfo && userInfo.displayName} */}
-        <br/>
-        <StyledVideo playsInline autoPlay ref={ref} />    
-      </>
-      )
+      <StyledVideoForOther playsInline autoPlay ref={ref} />    
+    )
 };
   
 
@@ -387,9 +394,9 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
 
 
   return (
-    <div className='position-relative' style={{height: '100vh'}}>
-        {currentRoomID && <h3>Room ID - {currentRoomID.roomID}</h3>}
-        Whose room ? {callStarter}
+    <div className='position-relative' style={{height: '90vh'}}>
+        {/* {currentRoomID && <h3>Room ID - {currentRoomID.roomID}</h3>}
+        Whose room ? {callStarter} */}
         {callStarter && inRoomData?.length === 1 && showCallDialog && 
           <div className='w-100 h-100 d-flex justify-content-center flex-column align-items-center'> 
             <Avatar sx={{width: 100, height: 100}}  alt={callData.otherUser.displayName} src={callData.otherUser.imgUrl}/>
@@ -402,84 +409,87 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
         {/* all call attendee */}
         
           <>
-            {inRoomData?.length > 1 &&  inRoomData.map(attendee => (<div>attendee - {attendee}</div>))}
+            {/* {inRoomData?.length > 1 &&  inRoomData.map(attendee => (<div>attendee - {attendee}</div>))} */}
 
-            Rejected call - 
-            {userRejectedList?.length &&  userRejectedList.map(attendee => (<div>rejector - {attendee.displayName}</div>))}
+            {/* Rejected call - 
+            {userRejectedList?.length &&  userRejectedList.map(attendee => (<div>rejector - {attendee.displayName}</div>))} */}
             
             {
             // currentRoomID && 
             <div>
                 <div className='users-vid'>
-                  <StyledVideo muted ref={userVideo} autoPlay playsInline />
-                  {!videoFlag && <div>
-                    <div className='border position-absolute'>
-                          <Avatar sx={{width: 100, height: 100}}  alt={callData.currentUser.displayName} src={callData.currentUser.imgUrl}/>
-                          <h6 className='mt-2'>{callData.currentUser.displayName}</h6>
-                        </div>
-                    </div>}
-                  <Controls>
-                      <ImgComponent
-                      src={videoFlag ? webcam : webcamoff}
-                      onClick={() => {
-                          if (userVideo.current.srcObject) {
-                          userVideo.current.srcObject.getTracks().forEach(function (track) {
-                              if (track.kind === "video") {
-                              if (track.enabled) {
-                                  socketRef.current.emit("change", [...userUpdate,{
-                                  id: socketRef.current.id,
-                                  videoFlag: false,
-                                  audioFlag,
-                                  }]);
-                                  track.enabled = false;
-                                  setVideoFlag(false);
-                                  console.log("Video off for  ::", socketRef.current.id, allUsersInfo);
-                                  
-                              } else {
-                                  socketRef.current.emit("change", [...userUpdate,{
-                                  id: socketRef.current.id,
-                                  videoFlag: true,
-                                  audioFlag,
-                                  }]);
-                                  track.enabled = true;
-                                  setVideoFlag(true);
-                                  
-                              }
-                              }
-                          });
-                          }
-                      }}
-                      />
-                      &nbsp;&nbsp;&nbsp;
-                      <ImgComponent
-                      src={audioFlag ? micunmute : micmute}
-                      onClick={() => {
-                          if (userVideo.current.srcObject) {
-                          userVideo.current.srcObject.getTracks().forEach(function (track) {
-                              if (track.kind === "audio") {
-                              if (track.enabled) {
-                                  socketRef.current.emit("change",[...userUpdate, {
-                                  id: socketRef.current.id,
-                                  videoFlag,
-                                  audioFlag: false,
-                                  }]);
-                                  track.enabled = false;
-                                  setAudioFlag(false);
-                              } else {
-                                  socketRef.current.emit("change",[...userUpdate, {
-                                  id: socketRef.current.id,
-                                  videoFlag,
-                                  audioFlag: true,
-                                  }]);
-                                  track.enabled = true;
-                                  setAudioFlag(true);
-                              }
-                              }
-                          });
-                          }
-                      }}
-                      />
-                  </Controls>
+                  <div className='relative max-h-64 xl:h-52 lg:h-52 md:h-52'>
+                    <StyledVideo muted ref={userVideo} autoPlay playsInline />
+                    {!videoFlag ? 
+                      <div className='p-1 absolute m-auto left-0 right-0 top-0 bottom-0' style={{width: '6.4rem', height: '8em'}}>
+                        <Avatar sx={{width: 80, height: 80}}  alt={callData.currentUser.displayName} src={callData.currentUser.imgUrl}/>
+                        <p className='mt-2 text-center text-white'>{callData.currentUser.displayName}</p>
+                      </div> : null}
+                    <Controls className='bg-transparent'>
+                      <div className='flex p-1'>
+                        <ImgComponent
+                        src={videoFlag ? webcam : webcamoff}
+                        onClick={() => {
+                            if (userVideo.current.srcObject) {
+                            userVideo.current.srcObject.getTracks().forEach(function (track) {
+                                if (track.kind === "video") {
+                                if (track.enabled) {
+                                    socketRef.current.emit("change", [...userUpdate,{
+                                    id: socketRef.current.id,
+                                    videoFlag: false,
+                                    audioFlag,
+                                    }]);
+                                    track.enabled = false;
+                                    setVideoFlag(false);
+                                    console.log("Video off for  ::", socketRef.current.id, allUsersInfo);
+                                    
+                                } else {
+                                    socketRef.current.emit("change", [...userUpdate,{
+                                    id: socketRef.current.id,
+                                    videoFlag: true,
+                                    audioFlag,
+                                    }]);
+                                    track.enabled = true;
+                                    setVideoFlag(true);
+                                    
+                                }
+                                }
+                            });
+                            }
+                        }}
+                        />
+                        &nbsp;&nbsp;&nbsp;
+                        <ImgComponent
+                        src={audioFlag ? micunmute : micmute}
+                        onClick={() => {
+                            if (userVideo.current.srcObject) {
+                            userVideo.current.srcObject.getTracks().forEach(function (track) {
+                                if (track.kind === "audio") {
+                                if (track.enabled) {
+                                    socketRef.current.emit("change",[...userUpdate, {
+                                    id: socketRef.current.id,
+                                    videoFlag,
+                                    audioFlag: false,
+                                    }]);
+                                    track.enabled = false;
+                                    setAudioFlag(false);
+                                } else {
+                                    socketRef.current.emit("change",[...userUpdate, {
+                                    id: socketRef.current.id,
+                                    videoFlag,
+                                    audioFlag: true,
+                                    }]);
+                                    track.enabled = true;
+                                    setAudioFlag(true);
+                                }
+                                }
+                            });
+                            }
+                        }}
+                        />
+                      </div>
+                    </Controls>
+                  </div>
                 </div>
                 <br/>
                 {peers.map((peer, index) => {
@@ -494,20 +504,19 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
                     });
                     }
                     return (
-                    <div key={peer.peerID}>
-                      id : {peer.peerID}
+                    <div key={peer.peerID} className="relative">
                       <br/>
                       {/* naav : {allUsersInfo && peer && allUsersInfo[peer.peerID]?.displayName} */}
                       
                         <>
                           <Video othStream={otherStreans} peer={peer.peer} id={peer.peerID} />
-                          <p>{allUsersInfo && peer && allUsersInfo[peer.peerID]?.displayName}</p>
+                          <p className='text-center'>{allUsersInfo && peer && allUsersInfo[peer.peerID]?.displayName}</p>
                         </>
                         
                         {!videoFlagTemp && allUsersInfo && peer && allUsersInfo[peer.peerID] && 
-                        <div className='border position-absolute'>
+                        <div className='p-1 absolute m-auto left-0 right-0 top-0 bottom-0' style={{width: '6.4rem', height: '8em'}}>
                           <Avatar sx={{width: 100, height: 100}}  alt={allUsersInfo[peer.peerID].displayName} src={allUsersInfo[peer.peerID].imgUrl}/>
-                          <h6 className='mt-2'>{allUsersInfo[peer.peerID].displayName}</h6>
+                          <p className='text-center text-white'>{allUsersInfo[peer.peerID].displayName}</p>
         
                         </div>}
                         <ControlSmall>
@@ -525,7 +534,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
 
         
         {/* self video controls */}
-        <div className='position-absolute w-100 button-container'>
+        <div className='fixed button-container'>
             <div className='d-flex justify-content-center align-items-center'>
                 <div className='p-2'>
                     <CallEndIcon onClick={() => endCall()} role="button"/>

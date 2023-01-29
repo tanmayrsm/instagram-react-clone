@@ -14,7 +14,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // callTo, callFrom, currentUser, otherUser, callType, roomId (if u r first to activate the call...it wil be null)
 function PreCall({data, closeCall}) {
-    const [callType, setCallType] = useState(data.callType);
+    const [callType, setCallType] = useState(data && data.callType);
     const [callStarted, setCallStarted] = useState(false);    
     const [currVidStream, setStream] = useState();
     const [triggerCallUser, setTriggerCall] = useState(false);
@@ -117,7 +117,7 @@ function PreCall({data, closeCall}) {
             </Grid>
             : 
             <>
-                <CallWindow callData={data} micOn={true} vidOn={callType === "VIDEO" && currVidStream} callStarter={data.roomOwner} currentUserVidStream={currVidStream} setTriggerCall={setTriggerCall}/>
+                <CallWindow callData={data} micOn={true} vidOn={callType === "VIDEO" && currVidStream} callStarter={data && data.roomOwner} currentUserVidStream={currVidStream} setTriggerCall={setTriggerCall}/>
             </>
         }
         </>

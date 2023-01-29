@@ -72,7 +72,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 3em;
+  width: 5em;
   text-align: center;
 }
 .mobile-screen .all-user-stories {

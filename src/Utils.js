@@ -114,12 +114,14 @@ export function unFollowUser(currentUserid, otherUserId) {
 
 export function doIFollowUser(currentUserid, otherUserId) {
     const getDocById = async () => {
-        const docRef = doc(db, 'followers', otherUserId);
-        const docSnap = await getDoc(docRef);
-        if(docSnap.exists()) {
-            return !!docSnap.data()[currentUserid];
-        } else {
-            return false;
+        if(otherUserId && currentUserid) {
+            const docRef = doc(db, 'followers', otherUserId);
+            const docSnap = await getDoc(docRef);
+            if(docSnap.exists()) {
+                return !!docSnap.data()[currentUserid];
+            } else {
+                return false;
+            }
         }
     }
     return getDocById();

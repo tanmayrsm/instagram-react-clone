@@ -72,7 +72,7 @@ function Messaging({currentUser, otherUserId}) {
           </Grid>
           <Grid item xs={12} sm={8} md={8} lg={8} xl={8} className={(!activatedChatWith ? 'xs:hidden' : '')}>
             {/* message form container */}
-            <MessageRoom currentUser={currentUser} otherUser={activatedChatWith}> 
+            <MessageRoom currentUser={currentUser} otherUser={activatedChatWith} key={activatedChatWith}> 
               <div className='xs:block lg:hidden xl:hidden md:hidden pr-2 pt-2'><ArrowBackIcon onClick={() => setActivatedChatWith(undefined)} /></div>        
             </MessageRoom>
           </Grid>

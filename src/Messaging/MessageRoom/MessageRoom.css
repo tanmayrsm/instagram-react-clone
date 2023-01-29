@@ -21,7 +21,8 @@
 .message-scroll-container {
     overflow-y: scroll;
     overflow-x: hidden;
-    display: block;
+    display: flex;
+    flex-direction: column-reverse;
 }
 .user-message {
     min-width: 10em;

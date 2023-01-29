@@ -10,19 +10,25 @@
     height: 9em;
     object-fit: cover;
     margin: 1em;
-    border: 1px solid black;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     flex-direction: column;
+    z-index: 3;
 }
 
 .button-container {
     bottom: 1em;
+    z-index: 1;
+    width: 5em;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
 }
-.border {
-    background-color: aliceblue;
-}
+/* .border { */
+    /* background-color: aliceblue; */
+/* } */
 .mobile-screen .left-window {
     height: 60vh !important;
 }

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getUser, messageUser, deleteMessageFromDB, updateReaction, getTimeAgo } from '../../Utils';
 import { Avatar, Button, Popover } from '@mui/material';
-import { onValue, ref, set, update, child, push } from "firebase/database";
+import { onValue, ref, set, update, child, push, orderByChild, query, orderByKey, limitToFirst, orderByValue, limitToLast, endBefore } from "firebase/database";
 import {realtime_db} from '../../firebase-config';
 import CollectionsOutlinedIcon from '@mui/icons-material/CollectionsOutlined';
 import { useRef } from 'react';
@@ -31,33 +31,51 @@ function MessageRoom({currentUser, otherUser, children}) {
   const [messageKeys, setMessageKeys] = useState([]);
   const [repliedTo, setRepliedTo] = useState(null);
   const [callAttr, setCallAttr] = useState(null);
+  const [lastMessageKey, setLastMessageKey] = useState(0);
 
   const currView = useSelector((state) => state.view);
   const metaData = useSelector((state) => state.metaData);
   const dispatcher = useDispatch();
-  
+  const listInnerRef = useRef();
 
   const refe = useRef();
 
   useEffect(() => {
     if(otherUser) {
-      getUser(otherUser).then(data => setOtherUserInfo(data));
-
+      getUser(otherUser).then(data => {setOtherUserInfo(data)});
+      // setAllMessages(null);
+      // setMessageKeys(null);
+      // setLastMessageKey(0);
       // retreive all msgs with 'otherUser'
-      const query = ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser);
-      return onValue(query, (snapshot) => {
-        const data = snapshot.val();
-        if (snapshot.exists() && data) {
-          setMessageKeys(Object.keys(data));
-          const promises = Object.values(data)
-                            .sort((obj1, obj2) => obj1.timestamp - obj2.timestamp);
-          setAllMessages(promises);
-        } 
-      });
+      fetchMessages();
     }
   }, [otherUser]);
-  
 
+  const fetchMessages = () => {
+    if(currentUser && otherUser && lastMessageKey === 0) {
+      const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), limitToLast(10) );
+      return onValue(queries, (snapshot) => {
+        const data = snapshot.val();
+        if (snapshot.exists() && data) {
+          setMessageKeys(Object.keys(data).reverse());
+          const promises = Object.values(data);
+          setAllMessages(promises.reverse());
+        } 
+      });
+    } 
+    else if(currentUser && otherUser && lastMessageKey) {
+      const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), orderByKey(), endBefore(lastMessageKey), limitToLast(10) );
+      return onValue(queries, (snapshot) => {
+        const data = snapshot.val();
+        if (snapshot.exists() && data) {
+          setMessageKeys((prev) => [...prev, ...Object.keys(data).reverse()]);
+          const promises = Object.values(data);
+          setAllMessages((prev) => [...prev, ...promises.reverse()]);
+        } 
+      }, {onlyOnce: true});
+    }
+  }
+  
   const sendMessage = (e) => {
     setReset(true);
     e.preventDefault();
@@ -73,9 +91,9 @@ function MessageRoom({currentUser, otherUser, children}) {
       // add currentUsers msg in database
       messageUser(currentUser.uid, otherUser, body);
       setMessageInput('');
-      refe.current.reset();
+      // refe.current.reset();
     }
-    setReset(false);
+    setReset(true);
     setRepliedTo(null);
   }
 
@@ -152,10 +170,30 @@ function MessageRoom({currentUser, otherUser, children}) {
     dispatcher({type: "CALL", metaData: {callTo : otherUser, currentUser: currentUser, otherUser: otherUserInfo, callType : callType, roomOwner: currentUser.uid} });
   }
 
+  const onScroll = () => {
+    if (listInnerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
+      if (scrollHeight + scrollTop - clientHeight < 2) {
+        console.log('Reached top');
+        fetchMessages();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if(messageKeys && messageKeys.length > 0) {
+      if(lastMessageKey === messageKeys.slice(-1)[0]) {
+        setLastMessageKey(undefined);
+      } else {
+        setLastMessageKey(messageKeys.slice(-1)[0]);
+      }
+    }
+  }, [messageKeys])
+
   return (
     <div className='message-room md:border-1 xl:border-1 lg:border-1 border-gray-300'>
       {
-        otherUserInfo ?
+        otherUserInfo && otherUserInfo.username ?
         <div className='d-flex flex-column main-container h-100'>
           <div className='otheruser-header d-flex align-items-center'>
             <div className='d-flex align-items-center'>
@@ -177,12 +215,12 @@ function MessageRoom({currentUser, otherUser, children}) {
             </div>
           </div>
           {/* msg list */}
-          <div className='message-scroll-container h-100 pt-4 px-2'>
+          <div className='message-scroll-container h-100 pt-4 px-2' onScroll={() => onScroll()} ref={listInnerRef}>
             {
-              allMessages && allMessages.length > 0 && allMessages.map((data, index) => (
-                <div className='pb-4'>
+              allMessages && allMessages.length > 0 ? allMessages.map((data, index) => (
+                <div className='pb-4' key={index}>
                   {
-                    data.whoWrote === otherUserInfo.uid && 
+                    data.whoWrote === otherUserInfo.uid ? 
                     <div className='d-flex flex-start align-items-center user-message other'>
                         {(allMessages.length - 1 === index || (allMessages[index + 1] &&  allMessages[index + 1].whoWrote && allMessages[index + 1].whoWrote === currentUser.uid)) && 
                             <Avatar className='search-avatar' alt={otherUserInfo.username || 'UNKNOWN USER'} src={otherUserInfo.imgUrl || 'dnsj.com'}/>
@@ -225,10 +263,10 @@ function MessageRoom({currentUser, otherUser, children}) {
                         <EmojiKeyboard className='mx-1' setInputText={setMessageInput} customEmoji={reactedEmoji} msgKey={index}/>
                         <ReplyAllOutlinedIcon role="button" className='mx-1' onClick={() => replyToMsg(index)}  />
                       </div>
-                    </div>
+                    </div> : null
                   }
                   {
-                    data.whoWrote === currentUser.uid && 
+                    data.whoWrote === currentUser.uid ? 
                     <div className='d-flex flex-end  align-items-center justify-content-end user-message'>
                       <div className='msg-extra-btn d-flex align-items-center'>
                         <DeleteOutlinedIcon role="button" onClick={() => deleteMessage(messageKeys[index])} className='mx-1'  />
@@ -269,10 +307,10 @@ function MessageRoom({currentUser, otherUser, children}) {
                           }
                         </div>
                       </div>
-                    </div>
+                    </div> : null
                   }
                 </div>     
-              ))
+              )) : null
             }
           </div>
           {/* msg input */}
