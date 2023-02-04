@@ -57,7 +57,7 @@ function Messaging({currentUser, otherUserId}) {
       <Grid container>
           <Grid item xs={12} sm={4} md={4} lg={4} xl={4} className={(activatedChatWith ? 'xs:hidden' : '')  + ' sm:pr-2 md:pr-2 xl:pr-2 lg:pr-2'}>
             {/* list of all people whom to message */}
-            <div className='bg-white p-2 md:border-1 xl:border-1 lg:border-1 border-gray-300'>
+            <div className='bg-white h-100 p-2 md:border-1 xl:border-1 lg:border-1 border-gray-300'>
               <div className='msg-user d-flex align-items-center justify-content-center'>
                 <span>
                   {currentUser.username}

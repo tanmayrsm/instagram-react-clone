@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getUser, messageUser, deleteMessageFromDB, updateReaction, getTimeAgo } from '../../Utils';
 import { Avatar, Button, Popover } from '@mui/material';
-import { onValue, ref, set, update, child, push, orderByChild, query, orderByKey, limitToFirst, orderByValue, limitToLast, endBefore } from "firebase/database";
+import { onValue, ref, set, update, child, push, orderByChild, query, orderByKey, limitToFirst, orderByValue, limitToLast, endBefore,off } from "firebase/database";
 import {realtime_db} from '../../firebase-config';
 import CollectionsOutlinedIcon from '@mui/icons-material/CollectionsOutlined';
 import { useRef } from 'react';
@@ -18,66 +18,81 @@ import EmojiKeyboard from '../../EmojiKeyboard/EmojiKeyboard';
 import ReplyAllOutlinedIcon from '@mui/icons-material/ReplyAllOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import { Close } from '@mui/icons-material';
+import { Close, Unsubscribe } from '@mui/icons-material';
 import { LinkPreview } from '@dhaiwat10/react-link-preview';  // will need express server to do get http reuqest and overcome cors
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
+import uSS from 'react-usestateref';
 
 function MessageRoom({currentUser, otherUser, children}) {
   const [otherUserInfo, setOtherUserInfo] = useState(otherUser == null ? null : otherUser);
   const[messageInput, setMessageInput] = useState('');
-  const [allMessages, setAllMessages] = useState(null);
-  const [reset, setReset] = useState('');
-  const [messageKeys, setMessageKeys] = useState([]);
+  const [allMessages, setAllMessages, allMessagesRef] = uSS([]);
+  const [reset, setReset] = useState(false);
+  const [messageKeys, setMessageKeys, messageKeysRef] = uSS([]);
   const [repliedTo, setRepliedTo] = useState(null);
   const [callAttr, setCallAttr] = useState(null);
   const [lastMessageKey, setLastMessageKey] = useState(0);
+  
 
-  const currView = useSelector((state) => state.view);
-  const metaData = useSelector((state) => state.metaData);
   const dispatcher = useDispatch();
   const listInnerRef = useRef();
+  let newQuery = useRef();
 
   const refe = useRef();
 
   useEffect(() => {
     if(otherUser) {
       getUser(otherUser).then(data => {setOtherUserInfo(data)});
-      // setAllMessages(null);
-      // setMessageKeys(null);
-      // setLastMessageKey(0);
-      // retreive all msgs with 'otherUser'
       fetchMessages();
     }
   }, [otherUser]);
 
   const fetchMessages = () => {
+    const initQuery = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), limitToLast(10) );
     if(currentUser && otherUser && lastMessageKey === 0) {
-      const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), limitToLast(10) );
-      return onValue(queries, (snapshot) => {
+      return onValue(initQuery, (snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists() && data) {
           setMessageKeys(Object.keys(data).reverse());
           const promises = Object.values(data);
           setAllMessages(promises.reverse());
-        } 
+          }
       });
     } 
     else if(currentUser && otherUser && lastMessageKey) {
+      off(initQuery); // unsubscrive from initQuery Listeneter
       const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), orderByKey(), endBefore(lastMessageKey), limitToLast(10) );
       return onValue(queries, (snapshot) => {
         const data = snapshot.val();
+        if(newQuery && newQuery.current) {
+          off(newQuery.current);
+        }
         if (snapshot.exists() && data) {
           setMessageKeys((prev) => [...prev, ...Object.keys(data).reverse()]);
           const promises = Object.values(data);
           setAllMessages((prev) => [...prev, ...promises.reverse()]);
+          newQuery.current = subscribeLatestMsg();
         } 
       }, {onlyOnce: true});
     }
   }
+
+  const subscribeLatestMsg = () => {
+    const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), limitToLast(allMessagesRef?.current?.length + 10) );
+    onValue(queries, (snapshot) => {
+      const data = snapshot.val();
+      if (snapshot.exists() && data) {
+        setMessageKeys(Object.keys(data).reverse());
+        const promises = Object.values(data);
+        setAllMessages(promises.reverse());
+        }
+    });
+    return queries;
+  }
   
   const sendMessage = (e) => {
-    setReset(true);
+    setReset(!reset);
     e.preventDefault();
     if(otherUser && messageInput){
       const timeSt = Date.now();
@@ -93,7 +108,6 @@ function MessageRoom({currentUser, otherUser, children}) {
       setMessageInput('');
       // refe.current.reset();
     }
-    setReset(true);
     setRepliedTo(null);
   }
 
@@ -188,7 +202,22 @@ function MessageRoom({currentUser, otherUser, children}) {
         setLastMessageKey(messageKeys.slice(-1)[0]);
       }
     }
-  }, [messageKeys])
+  }, [messageKeys]);
+
+  // useEffect(() => {
+  //   console.log("new msgs ::", allMessages);
+  //   if(allMessages && allMessages.length) {
+  //     const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), limitToLast(allMessages.length) );
+  //       return onValue(queries, (snapshot) => {
+  //         const data = snapshot.val();
+  //         if (snapshot.exists() && data) {
+  //           setMessageKeys((prev) => ([...prev, ...Object.keys(data).reverse()]));
+  //           const promises = Object.values(data);
+  //           setAllMessages((prev) => ([...prev, ...promises.reverse()]));
+  //         } 
+  //       });
+  //   }
+  // }, []);
 
   return (
     <div className='message-room md:border-1 xl:border-1 lg:border-1 border-gray-300'>

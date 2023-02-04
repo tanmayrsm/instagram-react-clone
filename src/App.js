@@ -343,7 +343,7 @@ function App() {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight + 10 >= scrollHeight) {  // 10 is an offset to prevent exact values check
         // TO SOMETHING HERE
         console.log('Reached bottom')
         fetchPosts(lastPostKey);
@@ -378,19 +378,19 @@ function App() {
             <Drawerr/>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
-                <div className='app-posts' onScroll={() => onScroll()} ref={listInnerRef}>
+                <div className='app-posts flex flex-col items-center w-100' onScroll={() => onScroll()} ref={listInnerRef}>
                   {/* all stories */}
                   {
-                    user && user.uid && allFollowing && allFollowing.length && 
-                      <div className='d-flex all-user-stories xl:pb-1 lg:pb-1 md:pb-1'> 
+                    user && user.uid && allFollowing && allFollowing.length ? 
+                      <div className='d-flex w-full overflow-x-auto all-user-stories xl:pb-1 lg:pb-1 md:pb-1' style={{'max-width' :'500px'}}> 
                         {allFollowing.map(userInfo => (
                           <div>
                             <AvatarStory size={50} user={userInfo} currentUserId={user.uid} dontShowAvatar={true} showName={true}/>
                           </div>))} 
-                      </div>
+                      </div> : null
                   }
                   {
-                    posts && posts.length && posts.map(({id, post}) => (
+                    posts && posts.length ? posts.map(({id, post}) => (
                       <Posts key={id} 
                         postId={id} 
                         currentUser={user}
@@ -402,7 +402,7 @@ function App() {
                         likes={post.likes}
                         tags={post.tags}
                         saved={post.saved}/>
-                    ))
+                    )) : null
                   }
                 </div>
               }

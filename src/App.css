@@ -32,6 +32,7 @@
 }
 .app-posts .post{
    border: 1px solid lightgrey;
+   width: 100%;
 }
 .mobile-screen .app-posts .post {
   border-bottom-width: 0px;
@@ -60,6 +61,9 @@
 }
 .all-user-stories .post-avatar {
   margin-right: 0 !important;
+}
+.all-user-stories {
+  min-height: 5.5em;
 }
 .all-user-stories .story-container-avatar {
   padding-left: .7em;

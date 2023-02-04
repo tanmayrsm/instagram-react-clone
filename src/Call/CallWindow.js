@@ -23,11 +23,7 @@ import webcamoff from "../assets/webcamoff.svg";
 import { useDispatch } from "react-redux";
 import { SERVER_URL, MISSED_CALL_TIME_INTERVAL } from '../consts';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
-const Container = styled.div`
-  height: 100vh;
-  width: 20%;
-`;
+import uSS from 'react-usestateref';
 
 const Controls = styled.div`
   margin: 3px;
@@ -51,7 +47,7 @@ const ControlSmall = styled.div`
   z-index: 1;
   border-radius: 6px;
   display: flex;
-  justify-content: center;
+  justify-content: left;
 `;
 
 const ImgComponent = styled.img`
@@ -106,9 +102,8 @@ const Video = (props) => {
   
 
 function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, setTriggerCall}) {
-  const [roomActive, setRoomActive] = useState(false);
+  const [roomActive, setRoomActive, roomActiveRef] = uSS(false);
   const [testBool, setTestBool] = useState(true);
-  const [videoSettingOn, setVideoSettingOn] = useState(vidOn);
   const [currVidStream, setStream] = useState();
   const [inRoomData, setInRoomData] = useState();
   const [rejectedList, setRejectedList] = useState();
@@ -127,7 +122,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   // socket variables
   const [peers, setPeers] = useState([]);
   const [audioFlag, setAudioFlag] = useState(true);
-  const [videoFlag, setVideoFlag] = useState(videoSettingOn);
+  const [videoFlag, setVideoFlag] = useState(vidOn);
   const [userUpdate, setUserUpdate] = useState([]);
   const [otherStreans, setOtherStreams] = useState();
 //   const [roomID, setRoomId] = useState();
@@ -146,9 +141,10 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
     width: window.innerWidth / 2,
   };
   
-  const selfVideoRef = useRef();
+  const roomActivatedReff = useRef();
   
   useEffect(() => {
+    roomActivatedReff.current = roomActive;
     socketRef.current = io.connect(SERVER_URL);
     getRoomInfo(callStarter, setInRoomData, setCurrRoomID, setRejectedList);
     if(callData?.currentUser?.uid === callStarter && showCallDialog === undefined) {
@@ -239,7 +235,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
     // 2- set currentUsers video stream in <video> 
     userVideo.current.srcObject = stream;
     setStream(stream);
-    if(!videoSettingOn) {
+    if(!vidOn) {
         stream.getTracks().forEach(function (track) {
           if (track.kind === "video" && track.enabled) {
                 track.enabled = false;
@@ -360,7 +356,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
   }, [currentRoomID]);
 
   useEffect(() => {
-    if(inRoomData && (inRoomData.length > 1 && showCallDialog)) {
+    if(inRoomData && inRoomData.length > 1) {
       setShowCallDialog(false);
       setRoomActive(true);
     }
@@ -371,7 +367,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
 
   useEffect(() => {
     setTimeout(() => {
-      if(!roomActive) {
+      if(!roomActiveRef.current) {
         // other user havent picked call since 10 secs
         // end call
         // and add missed call on both ends
@@ -394,15 +390,15 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
 
 
   return (
-    <div className='position-relative' style={{height: '90vh'}}>
+    <div className='position-relative bg-black' style={{height: '90vh'}}>
         {/* {currentRoomID && <h3>Room ID - {currentRoomID.roomID}</h3>}
         Whose room ? {callStarter} */}
         {callStarter && inRoomData?.length === 1 && showCallDialog && 
           <div className='w-100 h-100 d-flex justify-content-center flex-column align-items-center'> 
-            <Avatar sx={{width: 100, height: 100}}  alt={callData.otherUser.displayName} src={callData.otherUser.imgUrl}/>
+            <Avatar sx={{width: 100, height: 100}}  alt={callData?.otherUser?.displayName} src={callData.otherUser.imgUrl}/>
             {!wasCallDeclined ? 
-              (missedCall ? <h6>{callData.otherUser.displayName} couldn't receive the call</h6> : <h6 className='mt-2'>calling... {callData.otherUser.displayName}</h6>) : 
-              <h4>Call declined</h4>}
+              (missedCall ? <h6 className='text-white'>{callData.otherUser.displayName} couldn't receive the call</h6> : <h6 className='mt-2'>calling... {callData.otherUser.displayName}</h6>) : 
+              <h4 className='text-white'>Call declined</h4>}
           </div>
         }
 
@@ -510,7 +506,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
                       
                         <>
                           <Video othStream={otherStreans} peer={peer.peer} id={peer.peerID} />
-                          <p className='text-center'>{allUsersInfo && peer && allUsersInfo[peer.peerID]?.displayName}</p>
+                          <p className='text-left text-white bg-black px-1'>{allUsersInfo && peer && allUsersInfo[peer.peerID]?.displayName}</p>
                         </>
                         
                         {!videoFlagTemp && allUsersInfo && peer && allUsersInfo[peer.peerID] && 
@@ -536,10 +532,10 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
         {/* self video controls */}
         <div className='fixed button-container'>
             <div className='d-flex justify-content-center align-items-center'>
-                <div className='p-2'>
+                <div className='p-2 bg-red-500 text-white rounded-l'>
                     <CallEndIcon onClick={() => endCall()} role="button"/>
                 </div>
-                <div className='p-2'>
+                <div className='p-2 bg-gray-300 rounded-r'>
                     <PersonAddAltIcon role="button" onClick={() => setShowAddUserModal(!showAddUserModal)} />
                 </div>
             </div>
