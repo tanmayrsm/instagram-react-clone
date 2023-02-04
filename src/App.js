@@ -58,7 +58,7 @@ const useStyles2 = makeStyles((theme) => ({
     position: 'absolute',
     width: 800,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+     
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
@@ -69,7 +69,7 @@ const useStyles4 = makeStyles((theme) => ({
     position: 'absolute',
     width: 800,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+     
     boxShadow: theme.shadows[5]
   },
 }));
@@ -80,7 +80,7 @@ const useStyles5 = makeStyles((theme) => ({
     width: 400,
     height: 600,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+     
     boxShadow: theme.shadows[5]
   },
 }));
@@ -407,11 +407,11 @@ function App() {
                 </div>
               }
               {/* profile view */}
-              {user && (currView === "CREATEPOST" || currView === "STORY" || currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
+              {user && (currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
               {/* search user */}
-              {(currView === "CREATEPOST" || currView === "STORY" || currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
+              {(currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
               {/* message user */}
-              {(currView === "CREATEPOST" || currView === "STORY" || currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
+              {(currView === "MESSAGING") && <Messaging currentUser={user} otherUserId={metaData?.uid}/>}
               {/* create Post modal*/}
               {showCreatePost && user?.displayName && <Modal open={showCreatePost}
                 onClose={() => setShowCreatePost(false)}>

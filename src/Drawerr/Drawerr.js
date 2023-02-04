@@ -155,7 +155,7 @@ export default function Drawerr() {
             <Divider />
           </>}
         <List>
-          {["Home", "Profile", "Search", "Create", "Messaging", "Story", "Call"].map((text, index) => (
+          {["Home", "Profile", "Search", "Create", "Messaging", "Story"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{

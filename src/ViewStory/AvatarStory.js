@@ -62,7 +62,7 @@ function AvatarStory({user, currentUserId, dontShowAvatar, showName, size}) {
                             type: storyData.media?.type.split("/")[0],
                             header: {
                               heading: user.uid === currentUserId ? 'Your story' : user.displayName,
-                              subheading: getTimeAgo(storyData.timestamp) + ' ago',
+                              subheading: getTimeAgo(storyData.timestamp),
                               profileImage: user.imgUrl
                             },
                             seen : storyData.seen

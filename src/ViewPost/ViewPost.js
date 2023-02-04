@@ -23,7 +23,7 @@ const useStyles4 = makeStyles((theme) => ({
     position: 'absolute',
     width: 800,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+     
     boxShadow: theme.shadows[5]
   },
 }));
@@ -221,10 +221,10 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
                     <DeleteIcon role="button" onClick={() => deleteCurrentPost()} />
                   </div>}
                 </div>
-                <Carousel sx={{width: '25em', height: '20em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container xs:h-auto lg:h-full xl:h-full md:h-full sm:h-auto' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
+                <Carousel sx={{width: '25em', height: window && window.innerWidth < 767 ? '20em' : '86vh'}} className={'xl:h-full lg:h-full md:h-full w-100 d-flex justify-content-center align-items-center flex-column view-post-cc carousel-container xs:h-auto   sm:h-auto bg-black' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
                     {media.map((file_, index_) => (
-                        <div className='post-content' key={index_}>
-                            {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp') && <img src={file_.url} alt='post-img'/>}
+                        <div className='post-content xl:h-full lg:h-full md:h-full' key={index_}>
+                            {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp' || file_.fileType === 'image/png') && <img className='image' src={file_.url} alt='post-img'/>}
                             {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
                         </div>
                     ))}
@@ -232,8 +232,8 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
               </> : null
         }
           </Grid>
-          <Grid item xs={12} sm={12} md={7} lg={7} xl={7}>
-            <div className='xl:px-2 lg::px-2 md::px-2'>
+          <Grid item xs={12} sm={12} md={7} lg={7} xl={7} className="xl:relative lg:relative md:relative">
+            <div className='xl:px-2 lg::px-2 md::px-2 py-2'>
               <div className='xs:hidden sm:hidden'>
                 <div className='view-post-header align-items-center'>
                   <div className='d-flex align-items-center'>
@@ -247,81 +247,83 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
                 </div>
                 <hr className='my-2'/>
               </div>
-              {/* post caption */}
-              <div className='d-flex items-center flex-col'>
-                  {/* <span className='xs:hidden'>
-                    <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
-                  </span> */}
-                  <p className='w-100 mb-2 xs:px-1'><strong className='xs:hidden'>{postUserDetails?.displayName || username} - </strong> {caption}</p>
-                  {/* TODO - put post timestamp <p className='w-100 mb-2'>{timestamp}</p> */}
-                  {/* like, comment, save post icons in mobile*/}
-                  <div className='xl:hidden lg:hidden md:hidden w-100'>
-                    <div className='d-flex post_text w-100 icon-container xs:p-2 justify-between'>
-                      <div className='fw-bold'>{likes && likes.length} likes</div>
-                      <div className='d-flex justify-content-end'>
-                        <div>
-                          {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
-                          {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
-                        </div>
-                      </div>
-                      
-                    </div>
-                    <p className='bg-gray-300 p-2 mt-1'>Comments -</p>
-                  </div>
-              </div>
-              {/* comments list */}
-              <div className='view-comments xl:pb-1 lg:pb-1 md:pb-1'>
-              {
-                    comments && comments.length > 0 && comments.map(({userDisplayName, userDp, text, timestamp, uid, likes, replies}, index) => (
-                      <div className='xs:p-2 pb-2' key={commentKeys[index]}>
-                        <div key={timestamp} className="d-flex align-items-center mb-2">
-                          <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
-                          <div className='flex flex-col w-100'>
-                            {/* comment text */}
-                            <p className='mr-2 w-100 mb-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</p>
-                            {timestamp && <div className='d-flex'>
-                            {/* time */}
-                            <p>{getTimeAgo(timestamp)}</p>
-                            {/* no of likes */}
-                            {likes && Object.values(likes).filter(val => !!val).length > 0 && <p style={{'marginLeft': '1em'}}> {Object.values(likes).filter(val => !!val).length} likes</p>}
-                            {/* reply to comment */}
-                            <p role="button" style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userDisplayName); setReplyTo({id : uid, idx: index})}}>Reply</p>
-                            {/* delete comment */}
-                            {uid === currentUser.uid && <p role="button" style={{'marginLeft': '1em'}} onClick={() => deleteComment(commentKeys[index])}>Delete</p>}
-                          </div>}
+              <div className='max-h-96 overflow-y-auto'>
+                {/* post caption */}
+                <div className='d-flex items-center flex-col'>
+                    {/* <span className='xs:hidden'>
+                      <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
+                    </span> */}
+                    <p className='w-100 mb-2 xs:px-1 xs:py-2'><strong className='xs:hidden'>{postUserDetails?.displayName || username} - </strong> {caption}</p>
+                    {/* TODO - put post timestamp <p className='w-100 mb-2'>{timestamp}</p> */}
+                    {/* like, comment, save post icons in mobile*/}
+                    <div className='xl:hidden lg:hidden md:hidden w-100'>
+                      <div className='d-flex post_text w-100 icon-container xs:p-2 justify-between'>
+                        <div className='fw-bold'>{likes && likes.length} likes</div>
+                        <div className='d-flex justify-content-end'>
+                          <div>
+                            {!liked ? <FavoriteBorderOutlinedIcon onClick={() => toggleLike(true)}/> : <FavoriteOutlinedIcon  onClick={() => toggleLike(false)}/>}
+                            {!postSaved ? <BookmarkBorderOutlinedIcon onClick={() => toggleSaved(true)}/> : <BookmarkOutlinedIcon  onClick={() => toggleSaved(false)}/>}
                           </div>
-                          <div role="button">{likes && likes[currentUser.uid] ? <FavoriteOutlinedIcon onClick={() => unLikeComment(index)}/> : <FavoriteBorderOutlinedIcon onClick={() => likeComment(index)}/>}</div>
                         </div>
                         
-                        {/* comment replies */}
-                        { replies && replies.length > 0 && viewAllReplies && viewAllReplies[index] !== undefined ? 
-                          <div role="button" className='view-replies'>
-                            {viewAllReplies[index] === 'closed' ? 
-                              <p className='text-gray-500 pb-1' onClick={() => toggleReply(index)}>View all replies</p> : 
-                              <div>
-                                <p className='text-gray-400 py-2' onClick={() => toggleReply(index)}>Hide all replies</p>
-                                {userWhoReplies && replies.map((data, replyIndex) => 
-                                  <div>
-                                    <div className='d-flex ml-3 align-items-center w-100 mb-2'>
-                                        <Avatar className='post-avatar' alt={(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'} src={(userWhoReplies[data.key].imgUrl) || 'dnsj.com'}/>
-                                        <div className='flex flex-col'>
-                                          <p className='mr-2 w-100 mb-2'><strong>{(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'}</strong> {data.value}</p>
-                                             
-                                          <div className='d-flex'>
-                                            <p>{getTimeAgo(data.timestamp)}</p>
-                                            <p style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userWhoReplies[data.key].displayName); setReplyTo({id : uid, idx: index})}}>Reply</p>
-                                            {userWhoReplies[data.key].uid === currentUser.uid && <p onClick={() => deleteNestedComment(commentKeys[index], index, replyIndex)} role="button" style={{'marginLeft': '1em'}}>Delete</p>}
-                                          </div>
-                                        </div>
-                                    </div>
-                                  </div>
-                              )}
-                              </div>
-                            }
-                          </div> : ''}
                       </div>
-                    ))
-              }
+                      <p className='bg-gray-300 p-2 mt-1'>Comments -</p>
+                    </div>
+                </div>
+                {/* comments list */}
+                <div className='view-comments xl:pb-1 lg:pb-1 md:pb-1'>
+                {
+                      comments && comments.length > 0 ? comments.map(({userDisplayName, userDp, text, timestamp, uid, likes, replies}, index) => (
+                        <div className='xs:p-2 pb-2' key={commentKeys[index]}>
+                          <div key={timestamp} className="d-flex align-items-center mb-2">
+                            <Avatar className='post-avatar' alt={userDisplayName || 'UNKNOWN USER'} src={userDp || 'dnsj.com'}/>
+                            <div className='flex flex-col w-100'>
+                              {/* comment text */}
+                              <p className='mr-2 w-100 mb-2'><strong>{userDisplayName || 'UNKNOWN USER'}</strong> {text}</p>
+                              {timestamp && <div className='d-flex'>
+                              {/* time */}
+                              <p>{getTimeAgo(timestamp)}</p>
+                              {/* no of likes */}
+                              {likes && Object.values(likes).filter(val => !!val).length > 0 && <p style={{'marginLeft': '1em'}}> {Object.values(likes).filter(val => !!val).length} likes</p>}
+                              {/* reply to comment */}
+                              <p role="button" style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userDisplayName); setReplyTo({id : uid, idx: index})}}>Reply</p>
+                              {/* delete comment */}
+                              {uid === currentUser.uid && <p role="button" style={{'marginLeft': '1em'}} onClick={() => deleteComment(commentKeys[index])}>Delete</p>}
+                            </div>}
+                            </div>
+                            <div role="button">{likes && likes[currentUser.uid] ? <FavoriteOutlinedIcon onClick={() => unLikeComment(index)}/> : <FavoriteBorderOutlinedIcon onClick={() => likeComment(index)}/>}</div>
+                          </div>
+                          
+                          {/* comment replies */}
+                          { replies && replies.length > 0 && viewAllReplies && viewAllReplies[index] !== undefined ? 
+                            <div role="button" className='view-replies'>
+                              {viewAllReplies[index] === 'closed' ? 
+                                <p className='text-gray-500 pb-1' onClick={() => toggleReply(index)}>View all replies</p> : 
+                                <div>
+                                  <p className='text-gray-400 py-2' onClick={() => toggleReply(index)}>Hide all replies</p>
+                                  {userWhoReplies && replies.map((data, replyIndex) => 
+                                    <div>
+                                      <div className='d-flex ml-3 align-items-center w-100 mb-2'>
+                                          <Avatar className='post-avatar' alt={(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'} src={(userWhoReplies[data.key].imgUrl) || 'dnsj.com'}/>
+                                          <div className='flex flex-col'>
+                                            <p className='mr-2 w-100 mb-2'><strong>{(userWhoReplies[data.key] && userWhoReplies[data.key].displayName) || 'UNKNOWN USER'}</strong> {data.value}</p>
+                                              
+                                            <div className='d-flex'>
+                                              <p>{getTimeAgo(data.timestamp)}</p>
+                                              <p style={{'marginLeft': '1em'}} onClick={() => {setComment('@' + userWhoReplies[data.key].displayName); setReplyTo({id : uid, idx: index})}}>Reply</p>
+                                              {userWhoReplies[data.key].uid === currentUser.uid && <p onClick={() => deleteNestedComment(commentKeys[index], index, replyIndex)} role="button" style={{'marginLeft': '1em'}}>Delete</p>}
+                                            </div>
+                                          </div>
+                                      </div>
+                                    </div>
+                                )}
+                                </div>
+                              }
+                            </div> : ''}
+                        </div>
+                      )) : null
+                }
+                </div>
               </div>
               {/* like, comment, save post icons */}
               <div className='xs:hidden sm:hidden'>
@@ -339,7 +341,7 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
               
               {/* add comment */}
               {
-                currentUser && <form className='post-comment relative mb-1'>
+                currentUser && <form className='post-comment absolute bottom-2 w-full xs:px-3 xl:pr-3 lg:pr-3 md:pr-3 xl:w-full lg:w-full md:w-full'>
                   <input type='text' className='bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-t-none rounded-lg focus:ring-blue-500 xs:rounded-none focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Enter comment...' value={comment} onChange={(event) => setComment(event.target.value)} />
                   {comment && comment.length > 0 ?<button onClick={addComment} className='font-semibold text-blue-400 px-2'>Post</button> : null }
                 </form>
@@ -349,7 +351,7 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
           <Modal open={editPost}
               onClose={() => setEditPost(false)}>
                 <div style={modalStyle} className={classes.paper}>
-                  
+                <div className='xs:block lg:hidden xl:hidden md:hidden my-2 mx-1'><ArrowBackIcon onClick={() => setEditPost(false)} /></div>
                   {editPost && <CreatePost user={currentUser} postId={postId} close={() => setEditPost(false)} />}
                 </div>
           </Modal>

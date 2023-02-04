@@ -63,11 +63,11 @@ function Messaging({currentUser, otherUserId}) {
                   {currentUser.username}
                 </span>
               </div>
-              {sortedUserList && sortedUserList.length && sortedUserList.map((val, index) => 
+              {sortedUserList && sortedUserList.length ? sortedUserList.map((val, index) => 
                 (<div className='message-fragment' key={val[0]} onClick={() => setActivatedChatWith(val[0])}>
                   <MessageFragment userKey={val[0]} message={val[1]} time={val[2]} />
                 </div>)
-              )}
+              ): <p className='w-full text-center pt-3'>No messages yet!</p>}
             </div>
           </Grid>
           <Grid item xs={12} sm={8} md={8} lg={8} xl={8} className={(!activatedChatWith ? 'xs:hidden' : '')}>

@@ -208,7 +208,7 @@ function CreatePost({user, postId, close}) {
                                 {files.map((file_, index_) => (
                                     <div className='h-100 w-100' key={index_}>
                                         {(file_.type === 'image/jpeg' || file_.type === 'image/webp'|| file_.type === 'image/png') && <img src={currFile[index_]} alt='post-img'/>}
-                                        {file_.type === 'video/mp4' && <video alt='post-video' className={'vid-' + index_} controls/>}
+                                        {file_.type === 'video/mp4' && <video alt='post-video' className={('vid-' + index_) + ' h-100 m-auto'} controls/>}
                                         <div className='cancel-content' onClick={() => removeFile(index_)}>
                                             <CancelOutlinedIcon/>
                                         </div>
@@ -223,7 +223,7 @@ function CreatePost({user, postId, close}) {
                             {postData.media.map((file_, index_) => (
                                 <div className='h-100 w-100' key={index_}>
                                     {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp' || file_.fileType === 'image/png') && <img src={file_.url} alt='post-img'/>}
-                                    {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
+                                    {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls className='h-100 m-auto'/>}
                                 </div>
                             ))}
                         </Carousel>
@@ -255,7 +255,7 @@ function CreatePost({user, postId, close}) {
                         }
                         <div className='flex justify-end py-3'>
                             {!postId && <button  disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 cursor-pointer') + ' text-sm md:mx-1 text-white font-semibold py-2 px-4 rounded'} onClick={() => handlePost()}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Upload'}</button>}
-                            {postData && <button disabled={!caption || !files} className={(!caption || !files ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white cursor-pointer') + ' text-white text-sm md:mx-1 font-semibold py-2 px-4 rounded'} onClick={() => updateCurrentPost()}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Update'}</button>}
+                            {postData && <button disabled={!newCaption} className={(!newCaption ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white cursor-pointer') + ' text-white text-sm md:mx-1 font-semibold py-2 px-4 rounded'} onClick={() => updateCurrentPost()}>{gif ? <img className='giffAuth' src={gifLogo} alt="giflogo"/> : 'Update'}</button>}
                         </div>
                     </div>
                 </Grid>

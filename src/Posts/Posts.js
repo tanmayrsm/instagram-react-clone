@@ -33,9 +33,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     width: 800,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+     
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+    minHeight: '80vh'
   },
 }));
 
@@ -196,7 +196,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       <Modal open={viewDetailedPost}
         onClose={() => setViewDetailedPost(false)}>
         <div style={modalStyle} className={classes.paper}>
-          <div className='xs:block lg:hidden xl:hidden md:hidden p-2'><ArrowBackIcon onClick={() => setViewDetailedPost(false)} /></div>
+          <div className='xs:block lg:hidden xl:hidden md:hidden my-2 mx-1'><ArrowBackIcon onClick={() => setViewDetailedPost(false)} /></div>
           <ViewPost 
             postId={postId} 
             currentUser={currentUser}

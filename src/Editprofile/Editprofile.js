@@ -1,6 +1,7 @@
 import { Avatar, Button, Drawer } from '@mui/material';
 import React, { useEffect, useRef, useState }  from 'react'
 import Drawerr from '../Drawerr/Drawerr';
+import Snackbar from '@mui/material/Snackbar';
 
 import { FormControl } from '@mui/material';
 import './EditProfile.css';
@@ -8,6 +9,8 @@ import './EditProfile.css';
 import { getStorage, ref, getDownloadURL, uploadBytesResumable  } from "firebase/storage";
 import {db} from '../firebase-config';
 import { serverTimestamp } from "firebase/firestore";
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import TextField from '@mui/material/TextField';
 
@@ -19,7 +22,8 @@ function Editprofile({user}) {
     const [userName, setUsername] = useState(user.username);
     const [userDisplayName, setDisplayName] = useState(user.displayName);
     const [userBio, setBio] = useState(user.bio);
-    
+    const [open, setOpen] = React.useState(false);
+
     const handleClick = (e) => {
         refe.current.click();
     }
@@ -77,24 +81,28 @@ function Editprofile({user}) {
             bio: userBio,
             displayName: userDisplayName,
             imgUrl: userImg,
-            username: userName
+            username: userName,
+            uid: user.uid
         });
+        setOpen(true);
     }
+
+    const action = (
+        <React.Fragment>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => setOpen(false)}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
 
     return (
         <div className='edit-profile-container d-flex p-2 bg-white'>
-        {/* <div className='col-3'> 
-            <ul>
-                <li>
-                    Edit profile
-                </li>
-                <li>
-                    Change Password
-                </li>
-                
-            </ul>
-        </div> */}
-        {/* <div className='divider'></div> */}
+        
         <div className='col-12 edit-profile-form'>
             <span className='d-flex my-2'>
                 <Avatar className='edit-profile-avatar' alt={user.displayName} src={userImg}/>
@@ -128,6 +136,12 @@ function Editprofile({user}) {
                 <button className='font-semibold text-blue-400 px-2' onClick={() => saveDetails()}>Save</button>
             </FormControl>
         </div>
+        <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            message="Profile updated!"
+            action={action}
+        />
         </div>
     )
 }

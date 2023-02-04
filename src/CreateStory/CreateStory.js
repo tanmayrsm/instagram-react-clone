@@ -7,6 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import './CreateStory.css';
 import { getStorage, ref as Reff, getDownloadURL, uploadBytesResumable  } from "firebase/storage";
 import {addStory} from "../Utils";
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+import gifLogo from '../../src/assets/load.gif';
+
 
 import EmojiKeyboard from '../EmojiKeyboard/EmojiKeyboard';
 import SendIcon from '@mui/icons-material/Send';
@@ -15,7 +20,9 @@ function CreateStory({user, close}) {
     const [file, setFile] = useState(null);
     const [currBlobURL, setCurrBlobURL] = useState(null);
     const [msgText, setMessageInput] = useState(null);
-    
+    const [open, setOpen] = useState(true);
+    const [giff, setGif] = useState(false);
+
     const metaData = useSelector((state) => state.metaData);
   
     const refe = useRef();
@@ -61,11 +68,25 @@ function CreateStory({user, close}) {
                         // add currentUsers msg in database
                         addStory(user.uid, body);
                         close();
+                        setGif(false);
                     });
                 }
             );
             }
     }
+
+    const action = (
+        <React.Fragment>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => setOpen(false)}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
 
     return (
         <div>
@@ -90,7 +111,10 @@ function CreateStory({user, close}) {
                             <div className='absolute bottom-1 w-96 left-1'>
                                 <div className='w-100 flex'>
                                     <EmojiKeyboard placeholder='Your thoughts...' setInputText={setMessageInput}/>
-                                    <div className='send-story-btn' role='button'><SendIcon color="primary" onClick={(e) => addUserStory(e)}/></div>
+                                    <div className='send-story-btn' role='button'>
+                                    {giff ?  <button type='button'  className='font-semibold text-sm flex justify-center'><img className='giffAuth' src={gifLogo} alt="giflogo"/></button> :
+                                        <SendIcon color="primary" onClick={(e) => {addUserStory(e); setGif(true)}}/>}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -98,6 +122,12 @@ function CreateStory({user, close}) {
                 }
             </div>
             }
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                message="Story added!"
+                action={action}
+            />
         </div>
     )
 }

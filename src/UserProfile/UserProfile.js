@@ -141,7 +141,7 @@ function UserProfile({user, currentUserId}) {
                 {
                   currentUserId && currentUserId !== user.uid && 
                   <div className='flex'>
-                    {!doIFollow && <button className='bg-blue-400 text-sm md:mx-1 hover:bg-blue-500 text-white font-semibold py-2 md:px-4 rounded' onClick={() => followUserID(user)}>Follow</button>}
+                    {!doIFollow && <button className='bg-blue-400 text-sm md:mx-1 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded' onClick={() => followUserID(user)}>Follow</button>}
                     {doIFollow && <button className='bg-gray-200 text-sm md:mx-1 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded' onClick={() => unfollowUserID(user)}>Following</button>}
                     {doIFollow && <button className='bg-gray-200 text-sm hover:bg-gray-300 mx-1 text-gray-800 font-semibold py-2 px-4 rounded' onClick={() => setMessageView()}>Message</button>}
                   </div>

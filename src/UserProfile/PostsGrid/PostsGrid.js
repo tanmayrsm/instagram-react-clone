@@ -10,6 +10,7 @@ import { Modal } from '@mui/material';
 import ViewPost from '../../ViewPost/ViewPost';
 import { getUser } from '../../Utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import vidLogo from '../../../src/assets/vidFile.webp';
 
 function getModalStyle() {
   const top = 50;
@@ -26,9 +27,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     width: 800,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+     
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+    minHeight: '80vh'
   },
 }));
 
@@ -52,6 +53,7 @@ function PostsGrid({user, currentUserId, saved}) {
                             postId: doc.id,
                             uid: doc.data().uid,
                             imgUrl:doc.data().media[0].url,
+                            fileType: doc.data().media[0].fileType,
                             title: 'Post by ' + doc.data().username,
                             currentUser: userData,
                             username:userData.username, 
@@ -95,7 +97,7 @@ function PostsGrid({user, currentUserId, saved}) {
       {viewablePostsData && viewablePostsData.length ? viewablePostsData.map((item) => (
         <ImageListItem role="button" key={item.postId} className='post-img' onClick={() => setActivePost(item)}>
           <img
-            src={item.imgUrl}
+            src={item && item.fileType === 'video.mp4' ? vidLogo : item.imgUrl}
             alt={item.title}
             loading="lazy"
           />
@@ -109,7 +111,7 @@ function PostsGrid({user, currentUserId, saved}) {
       <Modal open={!!activePost}
       onClose={() => setActivePost(null)}>
       <div style={modalStyle} className={classes.paper}>
-        <div className='xs:block lg:hidden xl:hidden md:hidden mb-3'><ArrowBackIcon onClick={() => setActivePost(null)} /></div>
+        <div className='xs:block lg:hidden xl:hidden md:hidden  my-2 mx-1'><ArrowBackIcon onClick={() => setActivePost(null)} /></div>
         <ViewPost 
           postId={activePost.postId} 
           userUidWhoPosted={activePost.uid}

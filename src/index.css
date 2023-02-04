@@ -32,3 +32,6 @@ code {
     max-height: 100%;
   }
 }
+:focus-visible {
+  outline: none !important;
+}
