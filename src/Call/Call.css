@@ -4,7 +4,7 @@
 
 .users-vid {
     position: absolute;
-    bottom: 0;
+    bottom: 4em;
     right: 0;
     width: 16em;
     height: 9em;
@@ -36,3 +36,12 @@
     height: 15em !important;
     width: 9em !important;
 } 
+.mobile-screen .users-vid>div {
+    height: 100%;
+}
+.users-vid video {
+    height: 11em;
+}
+.mobile-screen .users-vid video {
+    height: 100% !important;
+}

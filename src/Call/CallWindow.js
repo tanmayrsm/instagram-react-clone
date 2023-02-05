@@ -181,7 +181,7 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
       })
       .catch(err => {
         alert("Cant open users video");
-        dispatcher({type: "POSTS", metaData: {call : "END"}});
+        // dispatcher({type: "POSTS", metaData: {call : "END"}});
       });
   }
 
@@ -390,34 +390,27 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
 
 
   return (
-    <div className='position-relative bg-black' style={{height: '90vh'}}>
+    <div className='position-relative bg-black' style={{height: '100vh'}}>
         {/* {currentRoomID && <h3>Room ID - {currentRoomID.roomID}</h3>}
         Whose room ? {callStarter} */}
         {callStarter && inRoomData?.length === 1 && showCallDialog && 
           <div className='w-100 h-100 d-flex justify-content-center flex-column align-items-center'> 
             <Avatar sx={{width: 100, height: 100}}  alt={callData?.otherUser?.displayName} src={callData.otherUser.imgUrl}/>
             {!wasCallDeclined ? 
-              (missedCall ? <h6 className='text-white'>{callData.otherUser.displayName} couldn't receive the call</h6> : <h6 className='mt-2'>calling... {callData.otherUser.displayName}</h6>) : 
+              (missedCall ? <h6 className='text-white mt-2'>{callData.otherUser.displayName} couldn't receive the call</h6> : <h6 className='mt-2 text-white'>calling... {callData.otherUser.displayName}</h6>) : 
               <h4 className='text-white'>Call declined</h4>}
           </div>
         }
 
         {/* all call attendee */}
-        
           <>
-            {/* {inRoomData?.length > 1 &&  inRoomData.map(attendee => (<div>attendee - {attendee}</div>))} */}
-
-            {/* Rejected call - 
-            {userRejectedList?.length &&  userRejectedList.map(attendee => (<div>rejector - {attendee.displayName}</div>))} */}
-            
             {
-            // currentRoomID && 
             <div>
                 <div className='users-vid'>
                   <div className='relative max-h-64 xl:h-52 lg:h-52 md:h-52'>
                     <StyledVideo muted ref={userVideo} autoPlay playsInline />
                     {!videoFlag ? 
-                      <div className='p-1 absolute m-auto left-0 right-0 top-0 bottom-0' style={{width: '6.4rem', height: '8em'}}>
+                      <div className='p-1 absolute m-auto left-0 right-0 top-0 bottom-0' style={{width: '5.5rem', height: '8em'}}>
                         <Avatar sx={{width: 80, height: 80}}  alt={callData.currentUser.displayName} src={callData.currentUser.imgUrl}/>
                         <p className='mt-2 text-center text-white'>{callData.currentUser.displayName}</p>
                       </div> : null}
@@ -487,7 +480,6 @@ function CallWindow({callData, micOn, vidOn, callStarter, currentUserVidStream, 
                     </Controls>
                   </div>
                 </div>
-                <br/>
                 {peers.map((peer, index) => {
                     let audioFlagTemp = true;
                     let videoFlagTemp = true;

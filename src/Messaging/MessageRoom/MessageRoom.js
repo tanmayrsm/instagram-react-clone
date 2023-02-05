@@ -271,14 +271,13 @@ function MessageRoom({currentUser, otherUser, children}) {
                           </div>
                         }
                       <div className='position-relative'>
-                        {data.text && data.text.includes('http') ? <ReactTinyLink
-                          cardSize="small"
-                          showGraphic={true}
-                          maxLine={2}
-                          minLine={1}
-                          url={data.text}
-                        />
-                          : <p className='titleUserName other'>{data.text}</p>}
+                      {data.text && data.text.length > 0 ? data.text.includes('http') ? <ReactTinyLink
+                            cardSize="small"
+                            showGraphic={true}
+                            maxLine={2}
+                            minLine={1}
+                            url={data.text}
+                          /> : <p className='titleUserName other'>{data.text}</p> : null}
                         {data.call?.text && 
                           <>
                             <p className='titleUserName other'>
@@ -331,13 +330,13 @@ function MessageRoom({currentUser, otherUser, children}) {
                             </div>
                           }
                         <div className='position-relative'>
-                          {data.text && data.text.includes('http') ? <ReactTinyLink
+                          {data.text && data.text.length > 0 ? data.text.includes('http') ? <ReactTinyLink
                             cardSize="small"
                             showGraphic={true}
                             maxLine={2}
                             minLine={1}
                             url={data.text}
-                          /> : <p className='titleUserName other'>{data.text}</p>}
+                          /> : <p className='titleUserName other'>{data.text}</p> : null}
                           {data.call?.text && 
                             <>
                               <p className='titleUserName other'>
