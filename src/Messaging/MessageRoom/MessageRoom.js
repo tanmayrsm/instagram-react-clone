@@ -19,7 +19,6 @@ import ReplyAllOutlinedIcon from '@mui/icons-material/ReplyAllOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { Close } from '@mui/icons-material';
-import LinkPreview from '@ashwamegh/react-link-preview';  // will need express server to do get http reuqest and overcome cors
 import { ReactTinyLink } from 'react-tiny-link'
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
