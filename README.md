@@ -59,6 +59,6 @@ As with other social networking platforms, Instagram users can like, comment on 
     User can send all type of media and link
   </ul>
 </ul>
-
-![Screenshot_2023-02-05-18-47-52-804_com android chrome](https://user-images.githubusercontent.com/45991527/216825285-2ee3fd6f-7092-483f-a96f-276640356516.jpg)
-
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/45991527/216825285-2ee3fd6f-7092-483f-a96f-276640356516.jpg" width="200" />  
+</p>
