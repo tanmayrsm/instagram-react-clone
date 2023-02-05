@@ -57,8 +57,23 @@ As with other social networking platforms, Instagram users can like, comment on 
   <li>Interesting messaging formats</li>
   <ul>
     User can send all type of media and link
+    <p align="center">
+      <img src="https://user-images.githubusercontent.com/45991527/216825285-2ee3fd6f-7092-483f-a96f-276640356516.jpg" width="200" />  
+    </p>
+  </ul>
+  <ul>
+    User stories
+    <p align="center">
+      <img src="https://user-images.githubusercontent.com/45991527/216826176-a8bdd78d-07e6-4903-b256-9adf36909d30.jpg" width="200" />  
+    </p>
+  </ul>
+  <ul>
+    User posts
+    <p align="left">
+      <img src="https://user-images.githubusercontent.com/45991527/216826254-82caa385-b2c1-4ebc-b9d7-346a772d7efd.jpg" width="200" />  
+      <img src="https://user-images.githubusercontent.com/45991527/216826411-0eb6a4d8-5f22-46b1-bd5d-369b7fe32351.jpg" width="200" /> 
+    </p>
+
   </ul>
 </ul>
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/45991527/216825285-2ee3fd6f-7092-483f-a96f-276640356516.jpg" width="200" />  
-</p>
+
