@@ -71,7 +71,9 @@ As with other social networking platforms, Instagram users can like, comment on 
     User posts
     <p align="left">
       <img src="https://user-images.githubusercontent.com/45991527/216826254-82caa385-b2c1-4ebc-b9d7-346a772d7efd.jpg" width="200" />  
-      <img src="https://user-images.githubusercontent.com/45991527/216826411-0eb6a4d8-5f22-46b1-bd5d-369b7fe32351.jpg" width="200" /> 
+      <img src="https://user-images.githubusercontent.com/45991527/216826411-0eb6a4d8-5f22-46b1-bd5d-369b7fe32351.jpg" width="200" />
+      <img src="https://user-images.githubusercontent.com/45991527/216826557-5aee5bfe-f8b4-41a3-9380-e11d05da0d2f.PNG" width="200" />
+      <img src="https://user-images.githubusercontent.com/45991527/216826594-0e5ae8fe-b9a9-429e-abf2-8992e7446f7a.PNG" width="200" />
     </p>
 
   </ul>
