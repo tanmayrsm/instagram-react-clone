@@ -80,7 +80,7 @@ As with other social networking platforms, Instagram users can like, comment on 
   <ul>
     Video call
     <p align="center">
-      <img src="[https://user-images.githubusercontent.com/45991527/216826594-0e5ae8fe-b9a9-429e-abf2-8992e7446f7a.PNG](https://user-images.githubusercontent.com/45991527/216826930-92736b04-e65f-4dcd-bbc7-317be3dc33ce.PNG)" width="450" />
+      <img src="https://user-images.githubusercontent.com/45991527/216826930-92736b04-e65f-4dcd-bbc7-317be3dc33ce.PNG" width="450" />
     </p>
   </ul>
 </ul>
