@@ -1,7 +1,5 @@
 .view-comments {
-    max-height: 10em;
     padding: .3em;
-    overflow-y: auto;
     overflow-x: hidden;
 }
 .view-post-header {
