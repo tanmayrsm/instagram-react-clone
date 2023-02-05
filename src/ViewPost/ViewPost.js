@@ -1,6 +1,6 @@
 import { Avatar, Button, Grid, Modal } from '@mui/material';
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import './ViewPost.css';
 import {db} from '../firebase-config';
@@ -17,6 +17,7 @@ import { getModalStyle, useStyles } from '../stylesUtil';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { makeStyles } from '@material-ui/core/styles';
+import vidLogo from "../assets/video-play.jpg"
 
 const useStyles4 = makeStyles((theme) => ({
   paper: {
@@ -27,8 +28,26 @@ const useStyles4 = makeStyles((theme) => ({
     boxShadow: theme.shadows[5]
   },
 }));
+const Video = (props) => {
+  const ref = useRef();
+  const [play, setPlay] = useState(false);
 
-function ViewPost({postId, userUidWhoPosted, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, close}) {
+  const playVid = () => {
+    setPlay(!play);
+    if(!play)
+      ref.current.play();
+    else  ref.current.pause();
+  }
+
+  return (
+    <>
+      {!play ? <img className='vid-play-icon' alt='play-vid' src={vidLogo} /> : null}
+      <video role="button" alt='post-video' loop ref={ref} onClick={() => playVid()} src={props.fileUrl}/>
+    </>
+  )
+};
+
+function ViewPost({postId, userUidWhoPosted, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved, close, children}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
   const [commentKeys, setCommentKeys] = useState([]);
@@ -213,6 +232,7 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
             <>
                 <div className=' xs:flex sm:flex justify-between lg:hidden xl:hidden md:hidden align-items-center p-2'>
                   <div className='d-flex align-items-center'>
+                    {children}
                     <Avatar className='post-avatar' alt={username} src={postUserDetails?.imgUrl || 'dnsj.com'}/>
                     <h6 className='mb-0'>{postUserDetails?.displayName || username}</h6>
                   </div>
@@ -223,9 +243,9 @@ function ViewPost({postId, userUidWhoPosted, currentUser, username, media, capti
                 </div>
                 <Carousel sx={{width: '25em', height: window && window.innerWidth < 767 ? '20em' : '86vh'}} className={'xl:h-full lg:h-full md:h-full w-100 d-flex justify-content-center align-items-center flex-column view-post-cc carousel-container xs:h-auto   sm:h-auto bg-black' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
                     {media.map((file_, index_) => (
-                        <div className='post-content xl:h-full lg:h-full md:h-full' key={index_}>
+                        <div className='post-content h-full flex justify-center items-center' key={index_}>
                             {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp' || file_.fileType === 'image/png') && <img className='image' src={file_.url} alt='post-img'/>}
-                            {file_.fileType === 'video/mp4' && <video alt='post-video' src={file_.url} controls/>}
+                            {file_.fileType === 'video/mp4' && <Video fileUrl={file_.url}/>}
                         </div>
                     ))}
                 </Carousel>

@@ -17,3 +17,8 @@ p {
 .image {
     object-fit: contain !important;
 }
+.vid-play-icon {
+    width: 8rem !important;
+    height: 8rem !important;
+    position: absolute;
+  }

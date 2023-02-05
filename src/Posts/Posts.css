@@ -27,6 +27,12 @@
     font-size: .8em;
     padding-bottom: 0;
 }
+h6.post_text {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
 .post-comment {
     display: flex;
     margin-top: .5em;
@@ -92,3 +98,8 @@
 .carousel-container > div > div > div > div > div {
     height: 100%;
 }
+.post-vid-play-icon {
+    width: 10rem;
+    height: 10rem;
+    position: absolute;
+  }

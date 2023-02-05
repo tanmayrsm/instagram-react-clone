@@ -112,7 +112,7 @@ function CreateStory({user, close}) {
                                 <div className='w-100 flex'>
                                     <EmojiKeyboard placeholder='Your thoughts...' setInputText={setMessageInput}/>
                                     <div className='send-story-btn' role='button'>
-                                    {giff ?  <button type='button'  className='font-semibold text-sm flex justify-center'><img className='giffAuth' src={gifLogo} alt="giflogo"/></button> :
+                                    {giff ?  <button type='button'  className='font-semibold text-sm flex justify-center'><img style={{'width': '2rem', 'height': '2rem'}} src={gifLogo} alt="giflogo"/></button> :
                                         <SendIcon color="primary" onClick={(e) => {addUserStory(e); setGif(true)}}/>}
                                     </div>
                                 </div>
@@ -122,12 +122,6 @@ function CreateStory({user, close}) {
                 }
             </div>
             }
-            <Snackbar
-                open={open}
-                autoHideDuration={6000}
-                message="Story added!"
-                action={action}
-            />
         </div>
     )
 }

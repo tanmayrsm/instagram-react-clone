@@ -28,7 +28,8 @@ import Login from './Authentication/Login';
 import Registration from './Authentication/Registration';
 import Call2 from './Call/Call2';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
+import IconButton from "@mui/material/IconButton";
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 
 import {ContextProvider} from './Context/SocketContext';
 import Sidebar from './Call/Sidebar';
@@ -112,6 +113,8 @@ function App() {
   const [outgoingCall, setOutGoingCallData] = useState();
 
   const [allFollowing, setAllFollowing] = useState([]);
+  const storyFileRef = useRef();
+  
 
   // sign In vars
   const [openSignIn, setOpenSignIn] = useState(undefined);
@@ -124,6 +127,8 @@ function App() {
 
   // current user
   const [user, setUser] = useState(null);
+
+  const dispatcher = useDispatch();
 
   // run code on change of dependency (the second param)
   useEffect(() => {
@@ -343,7 +348,7 @@ function App() {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight + 10 >= scrollHeight) {  // 10 is an offset to prevent exact values check
+      if (scrollTop + clientHeight + 20 >= scrollHeight) {  // 10 is an offset to prevent exact values check
         // TO SOMETHING HERE
         console.log('Reached bottom')
         fetchPosts(lastPostKey);
@@ -351,20 +356,24 @@ function App() {
     }
   };
 
+  const handleStoryFileChange = (event) => {
+    if(event.target.files){
+        const file_ = Array.from(event.target.files)[0];
+        if(file_) {
+          dispatcher({type: "STORY", metaData: {file : file_}});
+        }
+    }
+  }
   return (
       <>
         {!preCall  ? <div className={(currScreenSize < 767 ? 'mobile-screen' : '') + " app"}>
           {/* app header */}
           {openSignIn === false && !open && <div className='app-header'>
             <img src={instaLogo} alt='logo' className='img-header'></img>
-            {
-              user ? 
-              <Button onClick={() => signOutApp()}>Logout</Button> : 
-              <div className='app-login-container'>
-                <Button onClick={() => setOpen(true)}>Sign Up</Button>
-                <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-              </div>
-            }
+            {currScreenSize < 767 ? <IconButton  onClick={() => storyFileRef.current.click()} className='text-space'>
+                  <input ref={storyFileRef} style={{display: 'none'}} type="file" onChange={handleStoryFileChange}/> 
+                  <HistoryToggleOffIcon />
+                  </IconButton> : ''}
           </div>  }
 
           {/* Sign up page */}
@@ -375,7 +384,7 @@ function App() {
           
           {openSignIn === false && !open && <div className='main-app'>
             <Box sx={{ display: 'flex' }}>
-            <Drawerr/>
+            <Drawerr showStory={!!(currScreenSize < 767)}/>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               {(currView === "CREATEPOST" || currView === "POSTS" || currView === "STORY") && 
                 <div className='app-posts flex flex-col items-center w-100' onScroll={() => onScroll()} ref={listInnerRef}>
@@ -407,7 +416,7 @@ function App() {
                 </div>
               }
               {/* profile view */}
-              {user && (currView === "PROFILE") && <UserProfile user={user} currentUserId={user.uid}/>}
+              {user && (currView === "PROFILE") && <UserProfile user={user} logout={() => signOutApp()} currentUserId={user.uid}/>}
               {/* search user */}
               {(currView === "SRUSER") && <SearchUser user={user} currentUserId={user.uid}/>}
               {/* message user */}

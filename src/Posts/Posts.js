@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import './Posts.css';
 import { Avatar } from '@material-ui/core';
 import {db} from '../firebase-config';
@@ -17,6 +17,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import ViewPost from '../ViewPost/ViewPost';
 import AvatarStory from '../ViewStory/AvatarStory';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {useIntersectionObserver} from './useOnScreen';
+import vidLogo from "../assets/video-play.jpg"
 
 function getModalStyle() {
   const top = 50;
@@ -39,6 +41,47 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Video = (props) => {
+  const ref = useRef();
+  const [play, setPlay] = useState(false);
+  const onScreen = useIntersectionObserver(ref, { threshold: 0.5 });
+  
+  useEffect(() => {
+    if(ref && ref.current && props.othStream && props.id && props.othStream[props.id]) {
+      ref.current.srcObject = props.othStream[props.id];
+    }
+  }, [props]);
+
+  useEffect(() => {
+    if(ref && ref.current) {
+      if(!onScreen) {
+        ref.current.pause();
+        setPlay(false);
+      } 
+      else {
+          ref.current.play().then(_ => {
+            setPlay(true);
+          }).catch(err => {
+            setPlay(false);
+          });
+        } 
+    }
+  }, [onScreen])
+
+  const playVid = () => {
+    setPlay(!play);
+    if(!play)
+      ref.current.play();
+    else  ref.current.pause();
+  }
+
+  return (
+    <>
+      {!play ? <img className='post-vid-play-icon' alt='play-vid' src={vidLogo} /> : null}
+      <video role="button" alt='post-video' loop ref={ref} onClick={() => playVid()} className='post-media h-100 w-100' src={props.fileUrl}/>
+    </>
+  )
+};
 function Posts({postId, currentUser, username, media, caption, userWhoPosted, timestamp, likes, tags, saved}) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState([]);
@@ -46,11 +89,14 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
   const [liked, setLiked] = useState(false);
   const [postSaved, setPostSaved] = useState(false);
   const [viewDetailedPost, setViewDetailedPost] = useState(false);
-
+  
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
+  const elementRef = useRef();
+  // const [ref, setRef] = React.useState()
+  // const {isIntersecting} = useIntersectionObserver(ref)
   
-
+  
   // get all comments for this post
   useEffect(() => {
     let unSubs;
@@ -167,15 +213,21 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
         </div>
       {
           media && media.length > 0 &&
-            
+          <>
+              {/* {onScreen ? 'Element is on screen.' : 'Scroll more!'} */}
               <Carousel sx={{width: '25em', height: '25em'}} className={'w-100 d-flex justify-content-center align-items-center flex-column carousel-container' + (media.length === 1 ? ' no-buttons' : '')} autoPlay={false} indicators={!(media.length === 1)}>
                   {media.map((file_, index_) => (
-                      <div className='h-100 w-100' key={index_}>
+                      <div className='h-100 w-100 flex items-center justify-content-center' key={index_}>
                           {(file_.fileType === 'image/jpeg' || file_.fileType === 'image/webp' || file_.fileType === 'image/png') && <img className='post-media h-100 w-100' src={file_.url} alt='post-img'/>}
-                          {file_.fileType === 'video/mp4' && <video alt='post-video' className='post-media h-100 w-100' src={file_.url} controls/>}
+                          {file_.fileType === 'video/mp4' ? 
+                              // Is intersecting? {isOnScreen}
+                              <Video fileUrl={file_.url} />
+                              // <video alt='post-video' className='post-media h-100 w-100' src={file_.url}/>
+                            : null}
                       </div>
                   ))}
               </Carousel>
+          </>
       }
       {/* like, comment, save post icons */}
       <div className='d-flex align-items-center post_text justify-content-between icon-container'>
@@ -196,7 +248,7 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
       <Modal open={viewDetailedPost}
         onClose={() => setViewDetailedPost(false)}>
         <div style={modalStyle} className={classes.paper}>
-          <div className='xs:block lg:hidden xl:hidden md:hidden my-2 mx-1'><ArrowBackIcon onClick={() => setViewDetailedPost(false)} /></div>
+          
           <ViewPost 
             postId={postId} 
             currentUser={currentUser}
@@ -212,7 +264,9 @@ function Posts({postId, currentUser, username, media, caption, userWhoPosted, ti
             postUserDetails={postUserDetails}
             comments={comments}
             close={() => setViewDetailedPost(false)}
-          />
+          >
+            <div className='xs:block lg:hidden xl:hidden md:hidden my-2 mr-3'><ArrowBackIcon onClick={() => setViewDetailedPost(false)} /></div>
+          </ViewPost>
         </div>
       </Modal>
       

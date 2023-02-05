@@ -74,7 +74,7 @@ const Drawer = styled(MuiDrawer, {
   })
 }));
 
-export default function Drawerr() {
+export default function Drawerr({showStory}) {
   const theme = useTheme();
   const refe = React.useRef();
   const [open, setOpen] = React.useState(undefined);
@@ -83,11 +83,15 @@ export default function Drawerr() {
   const [isMobile, setIsMobile] = React.useState(undefined);
   const currView = useSelector((state) => state.view);
   const metaData = useSelector((state) => state.metaData);
-  
+  const [drawerlist, setDrawerList] = React.useState([]);
   
 
   React.useEffect(() => {
     let openDrawer = window.innerWidth >= 768;
+    if(!showStory) {
+      setDrawerList(["Home", "Profile", "Search", "Create", "Messaging", "Story"]);
+    } else 
+      setDrawerList(["Home", "Profile", "Search", "Create", "Messaging"]);
     setOpen(openDrawer);
     setIsMobile(!openDrawer);
     // dispatcher({type: currView, metaData: {...metaData, width: window.innerWidth, height: window.innerHeight}});
@@ -155,7 +159,7 @@ export default function Drawerr() {
             <Divider />
           </>}
         <List>
-          {["Home", "Profile", "Search", "Create", "Messaging", "Story"].map((text, index) => (
+          {drawerlist.map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }} onClick={() => changeView(index)}>
               <ListItemButton
                 sx={{

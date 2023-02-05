@@ -18,11 +18,32 @@ import EmojiKeyboard from '../../EmojiKeyboard/EmojiKeyboard';
 import ReplyAllOutlinedIcon from '@mui/icons-material/ReplyAllOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import { Close, Unsubscribe } from '@mui/icons-material';
-import { LinkPreview } from '@dhaiwat10/react-link-preview';  // will need express server to do get http reuqest and overcome cors
+import { Close } from '@mui/icons-material';
+import LinkPreview from '@ashwamegh/react-link-preview';  // will need express server to do get http reuqest and overcome cors
+import { ReactTinyLink } from 'react-tiny-link'
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
 import uSS from 'react-usestateref';
+import vidLogo from "../../assets/video-play.jpg"
+
+const Video = (props) => {
+  const ref = useRef();
+  const [play, setPlay] = useState(false);
+
+  const playVid = () => {
+    setPlay(!play);
+    if(!play)
+      ref.current.play();
+    else  ref.current.pause();
+  }
+
+  return (
+    <div className='flex justify-center items-center'>
+      {!play ? <img className='vid-play-icon' alt='play-vid' src={vidLogo} /> : null}
+      <video role="button" className='content-msg-video' alt='post-video' loop ref={ref} onClick={() => playVid()} src={props.fileUrl}/>
+    </div>
+  )
+};
 
 function MessageRoom({currentUser, otherUser, children}) {
   const [otherUserInfo, setOtherUserInfo] = useState(otherUser == null ? null : otherUser);
@@ -204,21 +225,6 @@ function MessageRoom({currentUser, otherUser, children}) {
     }
   }, [messageKeys]);
 
-  // useEffect(() => {
-  //   console.log("new msgs ::", allMessages);
-  //   if(allMessages && allMessages.length) {
-  //     const queries = query(ref(realtime_db, "messages/" + currentUser.uid + "/" + otherUser), limitToLast(allMessages.length) );
-  //       return onValue(queries, (snapshot) => {
-  //         const data = snapshot.val();
-  //         if (snapshot.exists() && data) {
-  //           setMessageKeys((prev) => ([...prev, ...Object.keys(data).reverse()]));
-  //           const promises = Object.values(data);
-  //           setAllMessages((prev) => ([...prev, ...promises.reverse()]));
-  //         } 
-  //       });
-  //   }
-  // }, []);
-
   return (
     <div className='message-room md:border-1 xl:border-1 lg:border-1 border-gray-300'>
       {
@@ -266,7 +272,14 @@ function MessageRoom({currentUser, otherUser, children}) {
                           </div>
                         }
                       <div className='position-relative'>
-                        {data.text && <p className='titleUserName other'>{data.text}</p>}
+                        {data.text && data.text.includes('http') ? <ReactTinyLink
+                          cardSize="small"
+                          showGraphic={true}
+                          maxLine={2}
+                          minLine={1}
+                          url={data.text}
+                        />
+                          : <p className='titleUserName other'>{data.text}</p>}
                         {data.call?.text && 
                           <>
                             <p className='titleUserName other'>
@@ -277,7 +290,7 @@ function MessageRoom({currentUser, otherUser, children}) {
                           </>
                         }
                         {data.media && data.media.type === 'image/jpeg' && <img className='content-msg-img' alt='img' src={data.media.url || ''}/>}
-                        {data.media && data.media.type === 'video/mp4' && <video controls className='content-msg-video' alt='video' src={data.media.url || ''}/>}
+                        {data.media && data.media.type === 'video/mp4' && <Video fileUrl={data.media.url || ''}/>}
                         {/* message emoji reactions */}
                         {data.reaction && 
                           <div className='msg-reaction-other'>
@@ -288,6 +301,8 @@ function MessageRoom({currentUser, otherUser, children}) {
                         }
                       </div>
                       </div>
+
+                      {/* icons to reply other user */}
                       <div className={(allMessages.length - 1 === index || (allMessages[index + 1] &&  allMessages[index + 1].whoWrote && allMessages[index + 1].whoWrote === currentUser.uid)) ? 'msg-extra-btn d-flex align-items-center' :'msg-extra-btn d-flex align-items-center shift-left'}>
                         <EmojiKeyboard className='mx-1' setInputText={setMessageInput} customEmoji={reactedEmoji} msgKey={index}/>
                         <ReplyAllOutlinedIcon role="button" className='mx-1' onClick={() => replyToMsg(index)}  />
@@ -297,11 +312,14 @@ function MessageRoom({currentUser, otherUser, children}) {
                   {
                     data.whoWrote === currentUser.uid ? 
                     <div className='d-flex flex-end  align-items-center justify-content-end user-message'>
+                      {/* icons for myself */}
                       <div className='msg-extra-btn d-flex align-items-center'>
                         <DeleteOutlinedIcon role="button" onClick={() => deleteMessage(messageKeys[index])} className='mx-1'  />
                         <ReplyAllOutlinedIcon role="button" className='mx-1'  onClick={() => replyToMsg(index)}  />
                         <EmojiKeyboard className='mx-1' setInputText={setMessageInput} customEmoji={reactedEmoji} msgKey={index}/>
                       </div>
+
+                      {/* my message */}
                       <div className='d-flex flex-column'>
                         {data.repliedTo && 
                             <div className='reply-right'>
@@ -314,7 +332,13 @@ function MessageRoom({currentUser, otherUser, children}) {
                             </div>
                           }
                         <div className='position-relative'>
-                          {data.text && <p className='titleUserName'>{data.text}</p>}
+                          {data.text && data.text.includes('http') ? <ReactTinyLink
+                            cardSize="small"
+                            showGraphic={true}
+                            maxLine={2}
+                            minLine={1}
+                            url={data.text}
+                          /> : <p className='titleUserName other'>{data.text}</p>}
                           {data.call?.text && 
                             <>
                               <p className='titleUserName other'>
@@ -325,7 +349,7 @@ function MessageRoom({currentUser, otherUser, children}) {
                             </>
                           }
                           {data.media && (data.media.type === 'image/jpeg' || data.media.type === 'image/webp') && <img className='content-msg-img' alt='img' src={data.media.url || ''}/>}
-                          {data.media && data.media.type === 'video/mp4' && <video controls className='content-msg-video' alt='video' src={data.media.url || ''}/>}
+                          {data.media && data.media.type === 'video/mp4' && <Video fileUrl={data.media.url || ''}/>}
                           {/* message emoji reactions */}
                           {data.reaction && 
                             <div className='msg-reaction'>

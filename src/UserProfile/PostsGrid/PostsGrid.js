@@ -111,7 +111,6 @@ function PostsGrid({user, currentUserId, saved}) {
       <Modal open={!!activePost}
       onClose={() => setActivePost(null)}>
       <div style={modalStyle} className={classes.paper}>
-        <div className='xs:block lg:hidden xl:hidden md:hidden  my-2 mx-1'><ArrowBackIcon onClick={() => setActivePost(null)} /></div>
         <ViewPost 
           postId={activePost.postId} 
           userUidWhoPosted={activePost.uid}
@@ -126,7 +125,9 @@ function PostsGrid({user, currentUserId, saved}) {
           postUserDetails={activePost.postUserDetails}
           comments={activePost.comments}
           close={() => setActivePost(null)}
-        />
+        >
+          <div className='xs:block lg:hidden xl:hidden md:hidden  my-2 mr-3'><ArrowBackIcon onClick={() => setActivePost(null)} /></div>
+        </ViewPost>
       </div>
     </Modal>
     }

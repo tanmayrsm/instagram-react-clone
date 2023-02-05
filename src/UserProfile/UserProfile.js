@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 import AvatarStory from '../ViewStory/AvatarStory';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-function UserProfile({user, currentUserId}) {
+function UserProfile({user, currentUserId, logout}) {
   const [setEditPageOpen, openEditProfilePage] = useState(false);
   const [noOfPosts, setNoOfPosts] = useState(0);
   const [noOfFollowers, setNoOfFollowers] = useState(0);
@@ -134,9 +134,9 @@ function UserProfile({user, currentUserId}) {
                 <strong className='xl:mx-4 lg:mx-4 md:mx-4 font-semibold'>{user.username}</strong>
                 {currentUserId && currentUserId === user.uid && <div>
                   <button className='bg-gray-200 text-sm hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded' onClick={() => openEditProfile()}>Edit profile</button>
-                  <IconButton  className='text-space'>
-                    <LogoutIcon />
-                  </IconButton>
+                  {logout ? <IconButton  className='text-space'>
+                    <LogoutIcon onClick={() => logout()} />
+                  </IconButton> : null}
                 </div>}
                 {
                   currentUserId && currentUserId !== user.uid && 
@@ -188,7 +188,6 @@ function UserProfile({user, currentUserId}) {
             onClose={() => {setShowFollowers(false); setShowFollowing(false)}}
           >
             <div style={getModalStyle()} className={classes.paper}>
-            <div className='xs:block lg:hidden xl:hidden md:hidden mb-3'><ArrowBackIcon onClick={() => {setShowFollowers(false); setShowFollowing(false)}} /></div>
               <UserLists userIdList={usersIdList}/>
             </div>
           </Modal> 
