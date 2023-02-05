@@ -37,16 +37,16 @@ function Messaging({currentUser, otherUserId}) {
     }
     sortedList.sort((user1, user2) => {
       // logic to show messages in order on left side, latest first
-      const ts1 = Object.values(user1[1])[Object.values(user1[1]).length - 1].timestamp;
-      const ts2 = Object.values(user2[1])[Object.values(user2[1]).length - 1].timestamp;
+      const ts1 = Object.values(user1[1])[Object.values(user1[1]).length - 1] && Object.values(user1[1])[Object.values(user1[1]).length - 1].timestamp;
+      const ts2 = Object.values(user2[1])[Object.values(user2[1]).length - 1] && Object.values(user2[1])[Object.values(user2[1]).length - 1].timestamp;
       return ts2 - ts1;
     });
     sortedList = sortedList.map(val => {
       // show latest message along with timestamp in fragmemt
       const len = Object.values(val[1]).length;
       const obj = Object.values(val[1])[len - 1];
-      const text = obj.text;
-      const timeStamp = obj.timestamp;
+      const text = obj && obj.text;
+      const timeStamp = obj && obj.timestamp;
       return [val[0], text, timeStamp];
     })
     setSortedUserList(sortedList);

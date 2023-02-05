@@ -1,8 +1,8 @@
 {
   "name": "Insta",
-  "short_name": "simmy",
+  "short_name": "Insta",
   "theme_color": "#1e1e1e",
-  "background_color": "#048af4",
+  "background_color": "#ffffff",
   "orientation": "portrait",
   "scope": "/",
   "icons": [
@@ -12,7 +12,7 @@
       "sizes": "192x192"
     },
     {
-      "src": "images/icon.png",
+      "src": "images/icon512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
