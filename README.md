@@ -13,6 +13,7 @@ As with other social networking platforms, Instagram users can like, comment on 
   <ul>
     <li>Send private message to your buddies</li>
     <li>Share all kinds of media together</li>
+    <li>React emoji on user messsages</li>
   </ul>
   <li><b>Stories</b></li>
   <ul>
@@ -25,6 +26,10 @@ As with other social networking platforms, Instagram users can like, comment on 
   <li><b>Use as an App</li></b>
   <ul>
     <li>Install this webapp directly from your browser, for ease of convenience</li>
+  </ul>
+  <li><b>Paginated user messages and posts</li></b>
+  <ul>
+    <li>Post, message data is loaded lazily, through infinite scroll</li>
   </ul>
 </ul>
 
