@@ -59,6 +59,7 @@ As with other social networking platforms, Instagram users can like, comment on 
     User can send all type of media and link
     <p align="center">
       <img src="https://user-images.githubusercontent.com/45991527/216825285-2ee3fd6f-7092-483f-a96f-276640356516.jpg" width="200" />  
+      <img src="https://user-images.githubusercontent.com/45991527/216826753-f60c19ba-aeed-4c78-9bbf-91dcf6b31b82.PNG" width="800" />  
     </p>
   </ul>
   <ul>
@@ -69,13 +70,18 @@ As with other social networking platforms, Instagram users can like, comment on 
   </ul>
   <ul>
     User posts
-    <p align="left">
+    <p align="center">
       <img src="https://user-images.githubusercontent.com/45991527/216826254-82caa385-b2c1-4ebc-b9d7-346a772d7efd.jpg" width="200" />  
-      <img src="https://user-images.githubusercontent.com/45991527/216826411-0eb6a4d8-5f22-46b1-bd5d-369b7fe32351.jpg" width="200" />
-      <img src="https://user-images.githubusercontent.com/45991527/216826557-5aee5bfe-f8b4-41a3-9380-e11d05da0d2f.PNG" width="200" />
-      <img src="https://user-images.githubusercontent.com/45991527/216826594-0e5ae8fe-b9a9-429e-abf2-8992e7446f7a.PNG" width="200" />
+      <img src="https://user-images.githubusercontent.com/45991527/216826411-0eb6a4d8-5f22-46b1-bd5d-369b7fe32351.jpg" width="200" /><br/>
+      <img src="https://user-images.githubusercontent.com/45991527/216826557-5aee5bfe-f8b4-41a3-9380-e11d05da0d2f.PNG" width="450" />
+      <img src="https://user-images.githubusercontent.com/45991527/216826594-0e5ae8fe-b9a9-429e-abf2-8992e7446f7a.PNG" width="450" />
     </p>
-
+  </ul>
+  <ul>
+    Video call
+    <p align="center">
+      <img src="[https://user-images.githubusercontent.com/45991527/216826594-0e5ae8fe-b9a9-429e-abf2-8992e7446f7a.PNG](https://user-images.githubusercontent.com/45991527/216826930-92736b04-e65f-4dcd-bbc7-317be3dc33ce.PNG)" width="450" />
+    </p>
   </ul>
 </ul>
 
