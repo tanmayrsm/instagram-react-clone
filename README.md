@@ -1,6 +1,6 @@
 ## Instagram clone app 🔥
 This is a free, online photo, video sharing application and social network platform
-As with other social networking platforms, Instagram users can like, comment on and bookmark others' posts, as well as send private messages to their friends via the Instagram Direct feature
+As with other social networking platforms, Instagram users can like, comment on and bookmark others' posts, as well as send private messages to their friends.
 
 <h2>Features implemented💥</h2>
 <ul>
