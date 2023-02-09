@@ -43,7 +43,7 @@ As with other social networking platforms, Instagram users can like, comment on 
 </ul>
 
 <h3>Please access the app with below url - </h3>
-<a href="https://inst-clone-react-8a913.web.app/">insta clone app</a>
+<a href="https://tim-aim-nim.web.app/">insta clone app</a>
 
 <h2>Quick demo</h2>
 <a href="https://firebasestorage.googleapis.com/v0/b/appcall-f0890.appspot.com/o/XRecorder_05022023_183456.mp4?alt=media&token=3b2639c3-0b9b-4016-9dc2-1b919c5ddd1b">App in mobile</a> <br/>
